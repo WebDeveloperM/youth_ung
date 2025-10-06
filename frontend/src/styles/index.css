@@ -6,10 +6,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-* {
-	@apply transition-all duration-500 font-[Ubuntu];
-}
-
 @layer components {
 	.max-container {
 		width: 100%;
@@ -62,10 +58,6 @@
 	.padding-b {
 		@apply pb-12 sm:pb-24;
 	}
-}
-
-body {
-	background-color: #ffffff;
 }
 
 html {
@@ -199,6 +191,8 @@ html {
 	--sidebar-accent-foreground: oklch(0.21 0.006 285.885);
 	--sidebar-border: oklch(0.92 0.004 286.32);
 	--sidebar-ring: oklch(0.623 0.214 259.815);
+	--navy-blue: oklch(41.025% 0.09477 258.356);
+	--text-navy-blue: oklch(94.261% 0.00182 249.179);
 }
 
 .dark {
@@ -233,6 +227,8 @@ html {
 	--sidebar-accent-foreground: oklch(0.985 0 0);
 	--sidebar-border: oklch(1 0 0 / 10%);
 	--sidebar-ring: oklch(0.488 0.243 264.376);
+	--navy-blue: oklch(34.673% 0.08483 258.58);
+	--text-navy-blue: oklch(94.261% 0.00182 249.179);
 }
 
 @layer base {
@@ -241,5 +237,39 @@ html {
 	}
 	body {
 		@apply bg-background text-foreground;
+	}
+
+	body {
+		padding: 0;
+		margin: 0;
+	}
+	.header {
+		color: var(--text-navy-blue);
+		height: 70px;
+		justify-content: space-between;
+		display: flex;
+		align-items: center;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+		background-color: var(--navy-blue);
+		padding: 0 2rem;
+		margin: 1rem 1rem;
+		border-radius: 1rem;
+		font-weight: 500;
+	}
+	.selectlang {
+		padding: 0.1rem;
+		cursor: pointer;
+	}
+	.selectlang option {
+		color: var(--navy-blue);
+	}
+
+	@keyframes spin {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 }
