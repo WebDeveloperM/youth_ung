@@ -1,0 +1,29 @@
+{
+  "language": "Русский",
+  "login": "Войти",
+  "register": "Регистрация",
+  "switchToRegister": "Ещё не зарегистрированы?",
+  "switchToLogin": "Уже есть аккаунт?",
+  "fullName": "Полное имя",
+  "dateOfBirth": "Дата рождения",
+  "phoneNumber": "Номер телефона",
+  "residentialAddress": "Адрес проживания",
+  "placeOfWork": "Место работы",
+  "position": "Должность",
+  "loginField": "Логин",
+  "password": "Пароль",
+  "confirmPassword": "Подтвердите пароль",
+  "submit": "Отправить",
+  "welcome": "Добро пожаловать!",
+  "createAccount": "Создайте новый аккаунт",
+  "welcomeBack": "Рады видеть вас снова!",
+  "signInToContinue": "Войдите, чтобы продолжить",
+  "errors": {
+    "required": "Это поле обязательно для заполнения",
+    "invalidEmail": "Неверный email адрес",
+    "passwordMismatch": "Пароли не совпадают",
+    "minLength": "Минимальная длина {{min}} символов",
+    "invalidPhone": "Неверный номер телефона"
+  }
+}
+
