@@ -1,13 +1,32 @@
-import React from 'react';
-import { LanguageProvider } from './contexts/LanguageContext';
-import Auth from './components/Auth/Auth';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { Footer } from './components/footer'
+import { Header } from './components/header'
+import { HomePage } from './pages/homepage'
+import { LoginPage } from './pages/login'
 
-const App = () => {
+function AppContent() {
+	const location = useLocation()
+
+	const hideHeader = location.pathname === '/login'
+
 	return (
-		<LanguageProvider>
-			<Auth />
-		</LanguageProvider>
-	);
-};
+		<>
+			{!hideHeader && <Header />}
 
-export default App;
+			<Routes>
+				<Route path='/' element={<HomePage />} />
+				<Route path='/login' element={<LoginPage />} />
+			</Routes>
+
+			{!hideHeader && <Footer />}
+		</>
+	)
+}
+
+const App = () => (
+	<BrowserRouter>
+		<AppContent />
+	</BrowserRouter>
+)
+
+export default App
