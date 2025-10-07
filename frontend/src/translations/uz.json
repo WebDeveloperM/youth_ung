@@ -1,0 +1,29 @@
+{
+  "language": "O'zbekcha",
+  "login": "Kirish",
+  "register": "Ro'yxatdan o'tish",
+  "switchToRegister": "Hali ro'yxatdan o'tmaganmisiz?",
+  "switchToLogin": "Allaqachon hisobingiz bormi?",
+  "fullName": "To'liq ism",
+  "dateOfBirth": "Tug'ilgan sana",
+  "phoneNumber": "Telefon raqami",
+  "residentialAddress": "Yashash manzili",
+  "placeOfWork": "Ish joyi",
+  "position": "Lavozim",
+  "loginField": "Login",
+  "password": "Parol",
+  "confirmPassword": "Parolni tasdiqlang",
+  "submit": "Yuborish",
+  "welcome": "Xush kelibsiz!",
+  "createAccount": "Yangi hisob yarating",
+  "welcomeBack": "Qaytganingizdan xursandmiz!",
+  "signInToContinue": "Davom etish uchun tizimga kiring",
+  "errors": {
+    "required": "Bu maydon to'ldirilishi shart",
+    "invalidEmail": "Noto'g'ri email manzil",
+    "passwordMismatch": "Parollar mos kelmaydi",
+    "minLength": "Minimal uzunlik {{min}} belgi",
+    "invalidPhone": "Noto'g'ri telefon raqami"
+  }
+}
+
