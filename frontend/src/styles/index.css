@@ -233,11 +233,13 @@ html {
 	* {
 		@apply border-border outline-ring/50;
 	}
+
+	html,
+	body {
+		overflow-x: hidden;
+	}
 	body {
 		@apply bg-background text-foreground;
-	}
-
-	body {
 		padding: 0;
 		margin: 0;
 	}
