@@ -27,7 +27,7 @@ class User(AbstractUser):
     confirmation_code = models.CharField(max_length=255, null=True, blank=True)
     verified_at = models.DateTimeField(null=True, blank=True)
     type = models.CharField(max_length=255, choices=ROLE, default=STUDENT)
-    channel = models.OneToOneField('academy.MarketingChannel', CASCADE, null=True, blank=True, related_name='users')
+    # channel = models.OneToOneField('academy.MarketingChannel', CASCADE, null=True, blank=True, related_name='users')
 
     objects = UsersManager()
 

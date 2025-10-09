@@ -1,0 +1,5 @@
+authtoken: 33mWHZ8eQXnfn1tTsgH96T2I5Ur_51nH23C94sSLo4X1cxpQY
+tunnels:
+  web:
+    proto: http
+    addr: web:8000

@@ -14,6 +14,8 @@ schema_view = get_schema_view(
         description="Guide for the REST API",
     ),
     public=True,
+    url = 'https://sublenticular-steely-kelsi.ngrok-free.dev',
+
     permission_classes=(permissions.AllowAny,),
 )
 

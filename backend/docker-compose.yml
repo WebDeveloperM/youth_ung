@@ -1,0 +1,91 @@
+#services:
+#  db:
+#    image: postgres:18
+#    container_name: postgres_db
+#    restart: always
+#    environment:
+#      POSTGRES_DB: youth_database
+#      POSTGRES_USER: postgres
+#      POSTGRES_PASSWORD: qwerty1514
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    networks:
+#      - my_network
+#
+#  web:
+#    build: .
+#    container_name: django_api
+#    command: python manage.py runserver 0.0.0.0:8000
+#    volumes:
+#      - .:/app
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - db
+#    environment:
+#      - DJANGO_SETTINGS_MODULE=config.settings
+#      - DB_HOST=192.168.2.72
+#      - DB_NAME=youth_database
+#      - DB_USER=postgres
+#      - DB_PASSWORD=qwerty1514
+#    networks:
+#      - my_network
+#    restart: always
+#
+#  ngrok:
+#    image: ngrok/ngrok:latest
+#    container_name: django_ngrok
+#    depends_on:
+#      - web
+#    command: >
+#      sh -c "mkdir -p /home/ngrok/.config/ngrok &&
+#             ngrok config add-authtoken 33mWHZ8eQXnfn1tTsgH96T2I5Ur_51nH23C94sSLo4X1cxpQY &&
+#             ngrok http web:8000"
+#    networks:
+#      - my_network
+#    restart: always
+#
+#volumes:
+#  postgres_data:
+#
+#networks:
+#  my_network:
+#    driver: bridge
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: django_api
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=config.settings
+      - DB_HOST=host.docker.internal
+      - DB_NAME=youth_database
+      - DB_USER=postgres
+      - DB_PASSWORD=qwerty1514
+    networks:
+      - my_network
+    restart: always
+
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: django_ngrok
+    depends_on:
+      - web
+    environment:
+      - NGROK_AUTHTOKEN=33mWHZ8eQXnfn1tTsgH96T2I5Ur_51nH23C94sSLo4X1cxpQY
+    command: http web:8000
+    networks:
+      - my_network
+    restart: always
+
+networks:
+  my_network:
+    driver: bridge

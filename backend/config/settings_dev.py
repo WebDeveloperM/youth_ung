@@ -5,10 +5,10 @@ ALLOWED_HOSTS = ('*',)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'youth-ung',
+        'NAME': 'youth_database',
         'USER': 'postgres',
-        'PASSWORD': 'shMM1514',
-        'HOST': 'localhost',
+        'PASSWORD': 'qwerty1514',
+        'HOST': 'host.docker.internal',
         'PORT': 5432,
     }
 }

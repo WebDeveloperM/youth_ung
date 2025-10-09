@@ -28,18 +28,21 @@ DEBUG = os.environ.get('DEBUG', False)
 
 TESTING = ('test' == sys.argv[1]) if sys.argv else False
 
-# Append module dir
-sys.path.append(os.path.join(BASE_DIR, 'apps'))
+APPS_DIR = os.path.join(BASE_DIR, 'apps')
+if APPS_DIR not in sys.path:
+    sys.path.insert(0, APPS_DIR)
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '.ngrok.io',
+    '.ngrok-free.app',
     os.environ.get('ALLOWED_HOSTS', '')
 ]
 
 # Application definition
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -57,6 +60,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -64,15 +68,78 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+]
+#
+# CORS_ORIGIN_WHITELIST = (
+#     'http://127.0.0.1',
+#     'http://localhost:3000',
+#     os.environ.get('CORS_ORIGIN_WHITELIST', 'http://localhost:3000'),
+# )
+#
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://*.ngrok-free.app',
+#     'https://*.ngrok-free.dev',
+# ]
+#
+# CORS_ALLOW_ALL_ORIGINS = True
+#
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:8000",
+#     "https://sublenticular-steely-kelsi.ngrok-free.dev",
+# ]
+#
+# CORS_ALLOW_CREDENTIALS = True
+#
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https://.*\.ngrok-free\.app$",
+#     r"^https://.*\.ngrok-free\.dev$",
+# ]
+#
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://*.ngrok-free.app",
+# ]
+# CORS_ALLOW_ALL_ORIGINS = True
+# CORS_ALLOW_CREDENTIALS = True
+#
+# CORS_ALLOWED_ORIGINS = [
+#     "https://sublenticular-steely-kelsi.ngrok-free.dev",
+#     "https://sublenticular-steely-kelsi.ngrok-free.app",
+#     "http://localhost:3000",
+#     "http://127.0.0.1:8000",
+# ]
+#
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://sublenticular-steely-kelsi.ngrok-free.dev",
+#     "https://sublenticular-steely-kelsi.ngrok-free.app",
+#     "http://localhost:3000",
+#     "http://127.0.0.1:8000",
+# ]
+#
+# CORS_ALLOWED_ORIGIN_REGEXES = [
+#     r"^https://.*\.ngrok-free\.app$",
+#     r"^https://.*\.ngrok-free\.dev$",
+# ]
 
-    'corsheaders.middleware.CorsMiddleware',
+CORS_ALLOW_ALL_ORIGINS = False
+
+CORS_ALLOWED_ORIGINS = [
+    "https://sublenticular-steely-kelsi.ngrok-free.dev",
+    "https://sublenticular-steely-kelsi.ngrok-free.app",
+    "http://localhost:3000",
+    "http://127.0.0.1:8000",
+]
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://.*\.ngrok-free\.app$",
+    r"^https://.*\.ngrok-free\.dev$",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://sublenticular-steely-kelsi.ngrok-free.dev",
+    "https://sublenticular-steely-kelsi.ngrok-free.app",
 ]
 
-CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1',
-    'http://localhost:3000',
-    os.environ.get('CORS_ORIGIN_WHITELIST', 'http://localhost:3000'),
-)
 
 ROOT_URLCONF = 'config.urls'
 
@@ -100,10 +167,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_DB', 'postgres'),
+        'NAME': os.environ.get('POSTGRES_DB', 'youth_database'),
         'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
-        'HOST': os.environ.get('POSTGRES_HOST', 'localhost'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qwerty1514'),
+        'HOST': os.getenv('HOST', 'host.docker.internal'),
         'PORT': os.environ.get('POSTGRES_PORT', 5432),
     }
 }
@@ -149,7 +216,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'files/uploads')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'users.utils.authentication.CustomTokenAuthentication',
+        'users.utils.authentication.CustomTokenAuthentication',
         # 'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
