@@ -118,7 +118,7 @@ export function Useravatar() {
 							exit={{ y: -20, opacity: 0, scale: 0.9 }}
 							transition={{ type: 'spring', stiffness: 140, damping: 14 }}
 							onClick={e => e.stopPropagation()}
-							className='absolute top-[100%] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-[380px] border border-gray-200 dark:border-gray-700 '
+							className='absolute top-[50%] bg-white dark:bg-gray-900 rounded-2xl shadow-2xl p-8 w-fit md:w-[380px] border border-gray-200 dark:border-gray-700 '
 						>
 							<Button
 								variant='ghost'
