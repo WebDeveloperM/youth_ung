@@ -14,7 +14,7 @@ export function LanguageSelector() {
 			<select
 				className='selectlang p-2'
 				name='selectLang'
-				defaultValue={localStorage.getItem('lang') || 'uz'}
+				value={i18n.language}
 				onChange={handleChange}
 			>
 				<option value='uz'>Uz</option>
