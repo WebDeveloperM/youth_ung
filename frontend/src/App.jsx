@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
-import { Footer } from './components/footer'
+// import { Footer } from './components/footer/Footer'
+import Footer from './components/footer/Footer'
 import { Header } from './components/header'
+import Navbar from './components/navbar'
 import { HomePage } from './pages/homepage'
 import { LoginPage } from './pages/login'
 
@@ -12,6 +14,7 @@ function AppContent() {
 	return (
 		<>
 			{!hideHeader && <Header />}
+			{!hideHeader && <Navbar />}
 
 			<Routes>
 				<Route path='/' element={<HomePage />} />
