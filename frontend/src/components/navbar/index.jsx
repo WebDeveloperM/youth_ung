@@ -6,7 +6,9 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
+// eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from 'framer-motion'
+
 import { Link } from 'react-router-dom'
 
 import {
@@ -17,6 +19,7 @@ import {
 } from '@/components/ui/sheet'
 
 import { Button } from '@/components/ui/button'
+import { useTranslation } from 'react-i18next'
 import { MdElectricBolt } from 'react-icons/md'
 import ColorModeToggle from '../colorModeSelector'
 import { LanguageSelector } from '../langSelector'
@@ -39,54 +42,100 @@ import {
 	Users,
 } from 'lucide-react'
 
-const menuItems = [
-	{
-		title: 'Biz haqimizda',
-		subMenu: [
-			{ title: 'Yangiliklar', url: '/login', icon: <Newspaper size={24} /> },
-			{
-				title: 'Loyiha va Innovatsiyalar',
-				url: '/',
-				icon: <Lightbulb size={24} />,
-			},
-			{ title: 'Jamoa', url: '/', icon: <Users size={24} /> },
-		],
-	},
-	{
-		title: 'Yangiliklar',
-		subMenu: [
-			{ title: 'Barcha yangiliklar', url: '/', icon: <Globe size={24} /> },
-			{ title: 'Texnologiyalar', url: '/', icon: <Settings size={24} /> },
-			{ title: 'Innovatsiyalar', url: '/', icon: <Lightbulb size={24} /> },
-		],
-	},
-	{
-		title: 'Loyiha va Innovatsiyalar',
-		subMenu: [
-			{ title: 'Yangi loyihalar', url: '/', icon: <Rocket size={24} /> },
-			{ title: 'Tadqiqotlar', url: '/', icon: <Microscope size={24} /> },
-			{ title: 'Natijalar', url: '/', icon: <BarChart size={24} /> },
-		],
-	},
-	{
-		title: 'Karyera',
-		subMenu: [
-			{ title: 'Ish o‘rinlari', url: '/', icon: <FileText size={24} /> },
-			{ title: 'Amaliyot', url: '/', icon: <GraduationCap size={24} /> },
-			{ title: 'Jamoa', url: '/', icon: <Users size={24} /> },
-		],
-	},
-	{
-		title: 'Imkoniyatlar',
-		subMenu: [
-			{ title: 'Stipendiyalar', url: '/', icon: <Coins size={24} /> },
-			{ title: 'Grantlar', url: '/', icon: <Crosshair size={24} /> },
-			{ title: 'Tanlovlar', url: '/', icon: <Trophy size={24} /> },
-		],
-	},
-]
-
 export default function Navbar() {
+	const { t } = useTranslation()
+
+	const menuItems = [
+		{
+			title: t('menu.about'),
+			subMenu: [
+				{
+					title: t('menu.sub.latestNews'),
+					url: '/login',
+					icon: <Newspaper size={24} />,
+				},
+				{
+					title: t('menu.sub.innovations'),
+					url: '/',
+					icon: <Lightbulb size={24} />,
+				},
+				{ title: t('menu.sub.team'), url: '/', icon: <Users size={24} /> },
+			],
+		},
+		{
+			title: t('menu.news'),
+			subMenu: [
+				{
+					title: t('menu.sub.latestNews'),
+					url: '/',
+					icon: <Globe size={24} />,
+				},
+				{
+					title: t('menu.sub.technologies'),
+					url: '/',
+					icon: <Settings size={24} />,
+				},
+				{
+					title: t('menu.sub.innovations'),
+					url: '/',
+					icon: <Lightbulb size={24} />,
+				},
+			],
+		},
+		{
+			title: t('menu.projects'),
+			subMenu: [
+				{
+					title: t('menu.sub.newProjects'),
+					url: '/',
+					icon: <Rocket size={24} />,
+				},
+				{
+					title: t('menu.sub.research'),
+					url: '/',
+					icon: <Microscope size={24} />,
+				},
+				{
+					title: t('menu.sub.results'),
+					url: '/',
+					icon: <BarChart size={24} />,
+				},
+			],
+		},
+		{
+			title: t('menu.career'),
+			subMenu: [
+				{ title: t('menu.sub.jobs'), url: '/', icon: <FileText size={24} /> },
+				{
+					title: t('menu.sub.internship'),
+					url: '/',
+					icon: <GraduationCap size={24} />,
+				},
+				{ title: t('menu.sub.team'), url: '/', icon: <Users size={24} /> },
+			],
+		},
+		{
+			title: t('menu.opportunities'),
+			subMenu: [
+				{
+					title: t('menu.sub.scholarships'),
+					url: '/',
+					icon: <Coins size={24} />,
+				},
+				{
+					title: t('menu.sub.grants'),
+					url: '/',
+					icon: <Crosshair size={24} />,
+				},
+				{
+					title: t('menu.sub.competitions'),
+					url: '/',
+					icon: <Trophy size={24} />,
+				},
+			],
+		},
+	]
+
 	return (
 		<nav className='m-3 md:m-5 rounded-xl bg-[var(--navy-blue)] text-xl font-bold text-white top-0 left-0 backdrop-blur-md border-b z-50 px-6 md:px-16 py-4 flex justify-between items-center'>
 			{/* LOGO */}
