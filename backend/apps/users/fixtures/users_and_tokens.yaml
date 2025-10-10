@@ -1,0 +1,36 @@
+# USERS
+-
+    model: "users.User"
+    pk: 1
+    fields:
+        username: Amigo
+        confirmation_code: a23s2ddf:123456
+        verified_at: 2024-01-01 00:00:00+00:00
+
+-
+    model: "users.User"
+    pk: 2
+    fields:
+        username: Samuel
+        phone: +998201002030
+        confirmation_code: a232dfsdf:123456
+
+-
+    model: "users.User"
+    pk: 3
+    fields:
+        username: John
+        phone: +998201002031
+        confirmation_code: a23s2dfa:123456
+
+
+# TOKENS
+-
+    model: "users.Token"
+    pk: 1
+    fields:
+        user_id: 1
+        key: af602e8f234ecc9ba03eb8eef2e6eb9c
+        expires_at: 4000-01-01 00:00:00+00:00
+        created_at: 2024-01-01 00:00:00+00:00
+        updated_at: 2024-01-01 00:00:00+00:00

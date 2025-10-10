@@ -1,0 +1,12 @@
+# BOT_CHAT
+-
+    model: "bot.Chat"
+    pk: 1
+    fields:
+        chat_id: 123456789
+        username: Amigo
+        last_action: start
+        user_id: 1
+        last_activity: 2024-01-01 00:00:00+00:00
+        created_at: 2024-01-01 00:00:00+00:00
+        updated_at: 2024-01-01 00:00:00+00:00
