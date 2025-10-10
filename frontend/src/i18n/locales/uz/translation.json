@@ -1,0 +1,30 @@
+{
+	"welcome": "Xush kelibsiz!",
+	"login": "Kirish",
+	"logout": "Chiqish",
+	"dashboard": "Bosh sahifa",
+	"language": "Til",
+
+	"menu": {
+		"about": "Biz haqimizda",
+		"news": "Yangiliklar",
+		"projects": "Loyiha va Innovatsiyalar",
+		"career": "Karyera",
+		"opportunities": "Imkoniyatlar",
+
+		"sub": {
+			"latestNews": "Barcha yangiliklar",
+			"technologies": "Texnologiyalar",
+			"innovations": "Innovatsiyalar",
+			"newProjects": "Yangi loyihalar",
+			"research": "Tadqiqotlar",
+			"results": "Natijalar",
+			"jobs": "Ish o‘rinlari",
+			"internship": "Amaliyot",
+			"team": "Jamoa",
+			"scholarships": "Stipendiyalar",
+			"grants": "Grantlar",
+			"competitions": "Tanlovlar"
+		}
+	}
+}
