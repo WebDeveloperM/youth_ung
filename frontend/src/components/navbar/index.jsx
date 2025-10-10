@@ -267,12 +267,7 @@ export default function Navbar() {
 
 								{/* FOOTER (fixed bottom) */}
 								<div className='px-6 py-4 border-t flex flex-col gap-3'>
-									<Button variant='outline' asChild>
-										<Link to='/login'>Login</Link>
-									</Button>
-									<Button asChild>
-										<Link to='/register'>Register</Link>
-									</Button>
+									<Useravatar />
 								</div>
 							</motion.div>
 						</AnimatePresence>
