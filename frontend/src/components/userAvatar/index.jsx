@@ -13,7 +13,7 @@ import { Button } from '../ui/button'
 export function Useravatar() {
 	const navigate = useNavigate()
 	return (
-		<div className='flex items-center gap-2 justify-center'>
+		<div className='flex items-center gap-1 justify-center'>
 			{' '}
 			<Button
 				variant='outline'
@@ -21,7 +21,15 @@ export function Useravatar() {
 				className='m-2 text-md font-[500] text-blue-950 dark:text-white'
 				onClick={() => navigate('/login')}
 			>
-				Kirish
+				Log In
+			</Button>
+			<Button
+				variant='default'
+				size='lg'
+				className='m-2 text-md font-[500] text-white dark:text-white'
+				onClick={() => navigate('/login')}
+			>
+				Sign In
 			</Button>
 			<DropdownMenu>
 				<DropdownMenuTrigger>

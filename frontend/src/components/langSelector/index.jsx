@@ -12,7 +12,7 @@ export function LanguageSelector() {
 	return (
 		<div>
 			<select
-				className='selectlang border rounded p-2'
+				className='selectlang p-2'
 				name='selectLang'
 				defaultValue={localStorage.getItem('lang') || 'uz'}
 				onChange={handleChange}
