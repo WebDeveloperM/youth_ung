@@ -1,4 +1,5 @@
 /**@type {import('tailwindcss').Config}*/
+import typography from '@tailwindcss/typography'
 
 export default {
 	content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
@@ -6,7 +7,19 @@ export default {
 		extend: {
 			fontFamily: {
 				Ubuntu: ['Ubuntu', 'sans-serif'],
-				sans: ['-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
+				sans: [
+					'-apple-system',
+					'BlinkMacSystemFont',
+					'Segoe UI',
+					'Roboto',
+					'Oxygen',
+					'Ubuntu',
+					'Cantarell',
+					'Fira Sans',
+					'Droid Sans',
+					'Helvetica Neue',
+					'sans-serif',
+				],
 			},
 			colors: {
 				primary: {
@@ -18,8 +31,8 @@ export default {
 			},
 			animation: {
 				'gradient-shift': 'gradientShift 15s ease infinite',
-				'float': 'float 8s ease-in-out infinite',
-				'shake': 'shake 0.4s',
+				float: 'float 8s ease-in-out infinite',
+				shake: 'shake 0.4s',
 				'success-pop': 'successPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
 				'spin-slow': 'spin 20s linear infinite',
 				'spin-reverse': 'spinReverse 15s linear infinite',
@@ -40,16 +53,16 @@ export default {
 					'75%': { transform: 'translateX(5px)' },
 				},
 				successPop: {
-					'0%': { 
-						transform: 'scale(0) rotate(-180deg)', 
-						opacity: '0' 
+					'0%': {
+						transform: 'scale(0) rotate(-180deg)',
+						opacity: '0',
 					},
-					'60%': { 
-						transform: 'scale(1.2) rotate(10deg)' 
+					'60%': {
+						transform: 'scale(1.2) rotate(10deg)',
 					},
-					'100%': { 
-						transform: 'scale(1) rotate(0deg)', 
-						opacity: '1' 
+					'100%': {
+						transform: 'scale(1) rotate(0deg)',
+						opacity: '1',
 					},
 				},
 				spinReverse: {
@@ -59,5 +72,5 @@ export default {
 			},
 		},
 	},
-	plugins: [],
+	plugins: [typography],
 }

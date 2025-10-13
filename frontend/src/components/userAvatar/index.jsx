@@ -214,17 +214,17 @@ export function Useravatar() {
 				<DropdownMenuContent>
 					<DropdownMenuLabel>My account</DropdownMenuLabel>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem>
-						<User className='w-[1.2rem] h-[1.2rem] mr-2 cursor-pointer' />
+					<DropdownMenuItem className='cursor-pointer'>
+						<User className='w-[1.2rem] h-[1.2rem] mr-2' />
 						Profile
 					</DropdownMenuItem>
-					<DropdownMenuItem>
-						<Settings className='w-[1.2rem] h-[1.2rem] mr-2 cursor-pointer' />
+					<DropdownMenuItem className='cursor-pointer'>
+						<Settings className='w-[1.2rem] h-[1.2rem] mr-2' />
 						Settings
 					</DropdownMenuItem>
 					<DropdownMenuSeparator />
-					<DropdownMenuItem variant='destructive'>
-						<LogOut className='w-[1.2rem] h-[1.2rem] mr-2 cursor-pointer' />
+					<DropdownMenuItem variant='destructive' className='cursor-pointer'>
+						<LogOut className='w-[1.2rem] h-[1.2rem] mr-2' />
 						Logout
 					</DropdownMenuItem>
 				</DropdownMenuContent>
