@@ -1,4 +1,7 @@
 import logo from '@/assets/logo.png'
+// eslint-disable-next-line no-unused-vars
+import { motion } from 'framer-motion'
+import CountUp from 'react-countup'
 
 const Hero = () => {
 	return (
@@ -7,7 +10,7 @@ const Hero = () => {
 			aria-labelledby='hero-title'
 		>
 			{/* LEFT SIDE TEXT */}
-			<div className='flex-1 text-center md:text-left '>
+			<div className='flex-1 text-center md:text-left'>
 				<h1
 					id='hero-title'
 					className='text-2xl py-2 md:text-3xl lg:text-4xl font-bold mb-4 text-[#0098C7]'
@@ -23,18 +26,37 @@ const Hero = () => {
 
 				<div className='flex flex-col sm:flex-row justify-center md:justify-start gap-6'>
 					{[
-						{ num: '1000+', label: "Aktiv a'zolar" },
-						{ num: '10+', label: 'Amaliyotda' },
-						{ num: '100+', label: "G'oyalar" },
+						{ end: 1000, suffix: '+', label: "Aktiv a'zolar" },
+						{ end: 10, suffix: '+', label: 'Amaliyotda' },
+						{ end: 100, suffix: '+', label: "G'oyalar" },
 					].map((item, idx) => (
-						<div key={idx} className='text-center'>
+						<motion.div
+							key={idx}
+							className='text-center'
+							initial={{ opacity: 0, y: 20 }}
+							whileInView={{ opacity: 1, y: 0 }}
+							transition={{
+								duration: 0.6,
+								delay: idx * 0.2,
+								ease: 'easeIn',
+							}}
+							viewport={{ once: true }}
+						>
 							<span className='block text-3xl lg:text-4xl font-bold text-[var(--navy-blue)] py-2'>
-								{item.num}
+								<CountUp
+									end={item.end}
+									duration={2.5}
+									suffix={item.suffix}
+									enableScrollSpy
+									easingFn={(t, b, c, d) =>
+										c * (1 - Math.pow(1 - t / d, 3)) + b
+									}
+								/>
 							</span>
 							<span className='block text-muted-foreground text-sm mt-1'>
 								{item.label}
 							</span>
-						</div>
+						</motion.div>
 					))}
 				</div>
 			</div>

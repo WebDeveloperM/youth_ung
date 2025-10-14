@@ -67,7 +67,7 @@ export default function Navbar() {
 			subMenu: [
 				{
 					title: t('menu.sub.latestNews'),
-					url: '/',
+					url: '/news',
 					icon: <Globe size={24} />,
 				},
 				{
@@ -266,7 +266,7 @@ export default function Navbar() {
 								</div>
 
 								{/* FOOTER (fixed bottom) */}
-								<div className='px-6 py-4 border-t flex flex-col gap-3'>
+								<div className='px-6 py-4 border-t flex flex-col gap-3 relative overflow-visible'>
 									<Useravatar />
 								</div>
 							</motion.div>

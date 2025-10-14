@@ -236,7 +236,6 @@ html {
 
 	html,
 	body {
-		overflow-x: hidden;
 	}
 	body {
 		@apply bg-background text-foreground;
