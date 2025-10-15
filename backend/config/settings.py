@@ -57,6 +57,7 @@ INSTALLED_APPS = [
 
     'users',
     'core',
+    'organisation'
 ]
 
 MIDDLEWARE = [
@@ -69,57 +70,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-#
-# CORS_ORIGIN_WHITELIST = (
-#     'http://127.0.0.1',
-#     'http://localhost:3000',
-#     os.environ.get('CORS_ORIGIN_WHITELIST', 'http://localhost:3000'),
-# )
-#
-# CSRF_TRUSTED_ORIGINS = [
-#     'https://*.ngrok-free.app',
-#     'https://*.ngrok-free.dev',
-# ]
-#
-# CORS_ALLOW_ALL_ORIGINS = True
-#
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",
-#     "http://127.0.0.1:8000",
-#     "https://sublenticular-steely-kelsi.ngrok-free.dev",
-# ]
-#
-# CORS_ALLOW_CREDENTIALS = True
-#
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     r"^https://.*\.ngrok-free\.app$",
-#     r"^https://.*\.ngrok-free\.dev$",
-# ]
-#
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://*.ngrok-free.app",
-# ]
-# CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ALLOW_CREDENTIALS = True
-#
-# CORS_ALLOWED_ORIGINS = [
-#     "https://sublenticular-steely-kelsi.ngrok-free.dev",
-#     "https://sublenticular-steely-kelsi.ngrok-free.app",
-#     "http://localhost:3000",
-#     "http://127.0.0.1:8000",
-# ]
-#
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://sublenticular-steely-kelsi.ngrok-free.dev",
-#     "https://sublenticular-steely-kelsi.ngrok-free.app",
-#     "http://localhost:3000",
-#     "http://127.0.0.1:8000",
-# ]
-#
-# CORS_ALLOWED_ORIGIN_REGEXES = [
-#     r"^https://.*\.ngrok-free\.app$",
-#     r"^https://.*\.ngrok-free\.dev$",
-# ]
 
 CORS_ALLOW_ALL_ORIGINS = False
 
@@ -216,7 +166,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'files/uploads')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'users.utils.authentication.CustomTokenAuthentication',
+        # 'users.utils.authentication.CustomTokenAutentication',
         # 'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),

@@ -9,35 +9,41 @@ from users.utils import tokens
 from users.utils.phone_validator import PHONE_VALIDATOR
 from users.utils.fields import expires_default, expires_hour
 
+from organisation.models import Organisation
+
 
 class User(AbstractUser):
-    TEACHER = 'Teacher'
-    STUDENT = 'Student'
+    MODERATOR = 'Moderator'
+    USER = 'User'
     ADMIN = 'Admin'
 
     ROLE = (
-        (TEACHER, 'Учитель'),
-        (STUDENT, 'Студент'),
+        (MODERATOR, 'Модератор'),
+        (USER, 'Пользователь'),
         (ADMIN, 'Администратор'),
     )
 
     username = models.CharField(unique=False)
+    organization=models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    position=models.CharField(max_length=100)
+    first_name = models.CharField(unique=False, max_length=50)
+    last_name = models.CharField(unique=False, max_length=50)
+    date_of_birth = models.DateField(null=True, blank=True)
+    email = models.EmailField(unique=True, blank=True)
+    address = models.CharField(unique=False, max_length=100)
+    gender = models.CharField(unique=False, max_length=100)
     avatar = models.ImageField(upload_to='users/images', null=True, blank=True)
-    phone = models.CharField(max_length=15, unique=True, validators=[PHONE_VALIDATOR])
-    confirmation_code = models.CharField(max_length=255, null=True, blank=True)
-    verified_at = models.DateTimeField(null=True, blank=True)
-    type = models.CharField(max_length=255, choices=ROLE, default=STUDENT)
-    # channel = models.OneToOneField('academy.MarketingChannel', CASCADE, null=True, blank=True, related_name='users')
+    phone = models.CharField(max_length=15, validators=[PHONE_VALIDATOR])
+    role = models.CharField(max_length=255, choices=ROLE, default=USER)
 
     objects = UsersManager()
 
-    USERNAME_FIELD = 'phone'
+    USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
 
     class Meta(AbstractUser.Meta):
         db_table = 'users_user'
         app_label = 'users'
-
 
 class Token(BaseModel):
     key = models.CharField(max_length=40, unique=True)
