@@ -1,0 +1,30 @@
+{
+	"welcome": "Welcome!",
+	"login": "Login",
+	"logout": "Logout",
+	"dashboard": "Dashboard",
+	"language": "Language",
+
+	"menu": {
+		"about": "About Us",
+		"news": "News",
+		"projects": "Projects & Innovations",
+		"career": "Career",
+		"opportunities": "Opportunities",
+
+		"sub": {
+			"latestNews": "All News",
+			"technologies": "Technologies",
+			"innovations": "Innovations",
+			"newProjects": "New Projects",
+			"research": "Research",
+			"results": "Results",
+			"jobs": "Job Vacancies",
+			"internship": "Internships",
+			"team": "Team",
+			"scholarships": "Scholarships",
+			"grants": "Grants",
+			"competitions": "Competitions"
+		}
+	}
+}

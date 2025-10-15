@@ -1,0 +1,30 @@
+{
+	"welcome": "Добро пожаловать!",
+	"login": "Войти",
+	"logout": "Выйти",
+	"dashboard": "Панель",
+	"language": "Язык",
+
+	"menu": {
+		"about": "О нас",
+		"news": "Новости",
+		"projects": "Проекты и инновации",
+		"career": "Карьера",
+		"opportunities": "Возможности",
+
+		"sub": {
+			"latestNews": "Все новости",
+			"technologies": "Технологии",
+			"innovations": "Инновации",
+			"newProjects": "Новые проекты",
+			"research": "Исследования",
+			"results": "Результаты",
+			"jobs": "Вакансии",
+			"internship": "Стажировки",
+			"team": "Команда",
+			"scholarships": "Стипендии",
+			"grants": "Гранты",
+			"competitions": "Конкурсы"
+		}
+	}
+}
