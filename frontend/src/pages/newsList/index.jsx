@@ -1,5 +1,5 @@
-import { commentsData } from '@/data/commentsData'
-import { newsData } from '@/data/newsData'
+import { commentsData } from '@/datatest/commentsData'
+import { newsData } from '@/datatest/newsData'
 import { motion } from 'framer-motion'
 import { FaComment, FaEye } from 'react-icons/fa'
 import { Link } from 'react-router-dom'

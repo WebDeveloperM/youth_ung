@@ -1,5 +1,5 @@
 import Comments from '@/components/Comments'
-import { newsData } from '@/data/newsData'
+import { newsData } from '@/datatest/newsData'
 import { FaEye, FaHeart } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
 export default function NewsDetail() {
