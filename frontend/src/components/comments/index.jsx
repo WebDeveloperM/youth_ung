@@ -1,4 +1,4 @@
-import { commentsData as initialComments } from '@/data/commentsData'
+import { commentsData as initialComments } from '@/datatest/commentsData'
 import { useState } from 'react'
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa'
 
