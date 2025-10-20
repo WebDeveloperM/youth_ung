@@ -14,4 +14,5 @@ class SignUpView(APIView):
     def post(self, request):
         serializer = SignUpSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data)
+        user = serializer.save()
+        return Response(SignUpSerializer(user).data, status=201)

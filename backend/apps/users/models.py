@@ -24,7 +24,7 @@ class User(AbstractUser):
     )
 
     username = models.CharField(unique=False)
-    organization=models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    organization=models.ForeignKey(Organisation, on_delete=models.CASCADE, null=True, blank=True)
     position=models.CharField(max_length=100)
     first_name = models.CharField(unique=False, max_length=50)
     last_name = models.CharField(unique=False, max_length=50)
