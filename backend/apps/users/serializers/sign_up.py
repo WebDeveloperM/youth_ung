@@ -8,6 +8,8 @@ User = get_user_model()
 
 class SignUpSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.DateField(input_formats=['%d-%m-%Y'], required=False)
+    password = serializers.CharField(write_only=True, min_length=6)
+    confirm_password = serializers.CharField(write_only=True, min_length=6)
 
     class Meta:
         model = User
@@ -21,7 +23,9 @@ class SignUpSerializer(serializers.ModelSerializer):
             'address',
             'gender',
             'phone',
-            'role'
+            'role',
+            'password',
+            'confirm_password',
         )
         extra_kwargs = {
             'email': {'validators': []},
@@ -30,8 +34,11 @@ class SignUpSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if User.objects.filter(email=data['email']).exists():
             raise ValidationError({'email': 'Bu email bilan foydalanuvchi mavjud.'})
-        # if User.objects.filter(phone=data['phone']).exists():
-        #     raise ValidationError({'phone': 'Bu telefon raqam allaqachon ro‘yxatdan o‘tgan.'})
+
+        if data['password'] != data['confirm_password']:
+            raise ValidationError({'password': 'Parollar mos emas.'})
+
+
         return data
 
     def save(self, **kwargs):
@@ -61,3 +68,14 @@ class SignUpSerializer(serializers.ModelSerializer):
 
         except Exception as e:
             raise ValidationError({'error': f"Foydalanuvchi yaratishda xatolik: {str(e)}"})
+
+    def create(self, validated_data):
+        validated_data.pop('confirm_password', None)
+        password = validated_data.pop('password', None)
+
+        user = User.objects.create(**validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+
+        return user

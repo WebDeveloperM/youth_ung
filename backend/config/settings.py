@@ -32,6 +32,7 @@ APPS_DIR = os.path.join(BASE_DIR, 'apps')
 if APPS_DIR not in sys.path:
     sys.path.insert(0, APPS_DIR)
 
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',

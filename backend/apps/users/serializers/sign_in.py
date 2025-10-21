@@ -10,7 +10,7 @@ from users.utils.make_sign_up_link import make_sign_up_link
 from users.utils.phone_validator import PHONE_VALIDATOR
 
 #
-class SignInSerializer(serializers.Serializer):
+class SignInSerializer(serializers.ModelSerializer):
 
 #     phone = serializers.CharField(validators=[PHONE_VALIDATOR])
 #     role = serializers.ChoiceField(choices=[('Student', 'student'), ('Teacher', 'teacher'), ('Admin', 'admin')],

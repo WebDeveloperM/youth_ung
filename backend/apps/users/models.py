@@ -35,6 +35,8 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='users/images', null=True, blank=True)
     phone = models.CharField(max_length=15, validators=[PHONE_VALIDATOR])
     role = models.CharField(max_length=255, choices=ROLE, default=USER)
+    password = models.CharField(unique=False, max_length=100)
+    confirm_password = models.CharField(unique=False, max_length=100)
 
     objects = UsersManager()
 
