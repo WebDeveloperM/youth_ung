@@ -44,6 +44,7 @@ ALLOWED_HOSTS = [
 # Application definition
 INSTALLED_APPS = [
     'jazzmin',
+    'modeltranslation',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -59,6 +60,7 @@ INSTALLED_APPS = [
     'users',
     'core',
     'organisation'
+
 ]
 
 MIDDLEWARE = [
@@ -110,6 +112,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
+
+gettext = lambda s: s
+LANGUAGES = (
+    ('uz', gettext('Uzbek')),
+    ('ru', gettext('Russia')),
+    ('en', gettext('English')),
+)
 
 
 # Database

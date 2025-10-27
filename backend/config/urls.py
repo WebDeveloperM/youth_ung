@@ -25,6 +25,7 @@ urlpatterns = [
     # path('bot/', include(('bot.urls', 'bot'))),
     path('api/v1/', include([
         path('core/', include(('core.urls', 'core'), namespace='core')),
+        path('organisation/', include(('organisation.urls', 'organisation'), namespace='organisation')),
         path('users/', include(('users.urls', 'user'), namespace='users')),
     ])),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),

@@ -1,17 +1,12 @@
 from rest_framework import serializers
-
 from users.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        fields = ('id', 'phone', 'avatar')
+class UserDetailSerializer(serializers.ModelSerializer):
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
 
-
-class UserAvatarSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField()
 
     class Meta:
         model = User
-        fields = ('id', 'avatar')
+        fields = ('id', 'organization', 'position', 'first_name', 'last_name', 'date_of_birth', 'email', 'address', 'gender', 'avatar', 'phone', 'role')

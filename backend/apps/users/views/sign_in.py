@@ -1,15 +1,16 @@
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from users.serializers.sign_in import SignInSerializer
+from rest_framework.response import Response
 
+from users.utils.authentication import sign_in_response
 
-class SignInView(APIView):
+class SignInView(GenericAPIView):
     permission_classes = (AllowAny,)
+    serializer_class = SignInSerializer
 
     def post(self, request):
-        serializer = SignInSerializer(data=request.data)
+        serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.data)
-        return Response('ok')
+        user = serializer.validated_data['user']
+        return Response(sign_in_response(user))

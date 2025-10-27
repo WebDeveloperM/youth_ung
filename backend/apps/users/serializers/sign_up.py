@@ -10,6 +10,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     date_of_birth = serializers.DateField(input_formats=['%d-%m-%Y'], required=False)
     password = serializers.CharField(write_only=True, min_length=6)
     confirm_password = serializers.CharField(write_only=True, min_length=6)
+    email= serializers.EmailField(required=True)
 
     class Meta:
         model = User
@@ -44,7 +45,7 @@ class SignUpSerializer(serializers.ModelSerializer):
     def save(self, **kwargs):
         validated_data = self.validated_data
 
-        print(validated_data)
+        # print(validated_data, "11111111111111111111111111111")
         try:
             user = User.objects.create(
                 organization=validated_data['organization'],
@@ -67,6 +68,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             return user
 
         except Exception as e:
+            print(e, "message11111111111")
             raise ValidationError({'error': f"Foydalanuvchi yaratishda xatolik: {str(e)}"})
 
     def create(self, validated_data):
