@@ -4,6 +4,22 @@
 	"logout": "Logout",
 	"dashboard": "Dashboard",
 	"language": "Language",
+	"register": "Register",
+	"switchToRegister": "Don't have an account yet?",
+	"switchToLogin": "Already have an account?",
+	"fullName": "Full Name",
+	"dateOfBirth": "Date of Birth",
+	"phoneNumber": "Phone Number",
+	"residentialAddress": "Residential Address",
+	"placeOfWork": "Place of Work",
+	"position": "Position",
+	"loginField": "Login",
+	"password": "Password",
+	"confirmPassword": "Confirm Password",
+	"submit": "Submit",
+	"createAccount": "Create a new account",
+	"welcomeBack": "Welcome back!",
+	"signInToContinue": "Sign in to continue",
 
 	"menu": {
 		"about": "About Us",
@@ -26,5 +42,287 @@
 			"grants": "Grants",
 			"competitions": "Competitions"
 		}
+	},
+
+	"hero": {
+		"title": "Uzbekneftegaz",
+		"titleHighlight": "youth platform",
+		"description": "build the foundation of your future, participate in our events and showcase your abilities.",
+		"activeMembers": "Active members",
+		"inPractice": "In practice",
+		"ideas": "Ideas"
+	},
+
+	"news": {
+		"latestNews": "Latest News",
+		"readMore": "Read more",
+		"viewAll": "All News",
+		"notFound": "News not found",
+		"back": "Back",
+		"views": "Views",
+		"likes": "Likes"
+	},
+
+	"comments": {
+		"title": "Comments",
+		"placeholder": "Write your comment...",
+		"submit": "Submit",
+		"noComments": "No comments yet.",
+		"anonymousUser": "Anonymous user"
+	},
+
+	"innovations": {
+		"title": "Innovations & Technologies",
+		"description": "Discover cutting-edge technologies and innovative solutions in the oil and gas industry",
+		"readMore": "Read more",
+		"notFound": "Innovation not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"views": "views",
+		"likes": "likes",
+		"share": "Share",
+		"shareText": "Check out this innovation!",
+		"linkCopied": "Link copied to clipboard!",
+		"relatedInnovations": "Related Innovations",
+		"categories": {
+			"technology": "Technology",
+			"ecology": "Ecology",
+			"automation": "Automation",
+			"digital": "Digitalization"
+		},
+		"cta": {
+			"title": "Want to propose your innovation?",
+			"description": "Join our platform and share your ideas with the Uzbekneftegaz team",
+			"button": "Join Now"
+		}
+	},
+
+	"about": {
+		"valuesTitle": "Our Values",
+		"valuesDescription": "The principles that guide us in work and life",
+		"historyTitle": "Our History",
+		"historyDescription": "The development journey of Uzbekneftegaz youth movement",
+		"achievementsTitle": "Our Achievements",
+		"achievementsDescription": "Awards and recognition received for our activities",
+		"email": "Email",
+		"phone": "Phone",
+		"address": "Address"
+	},
+
+	"competitions": {
+		"title": "Competitions & Contests",
+		"description": "Participate in competitions, showcase your skills and win valuable prizes",
+		"activeCount": "Active Competitions",
+		"upcomingCount": "Upcoming",
+		"totalParticipants": "Participants",
+		"totalCompetitions": "Total Competitions",
+		"viewDetails": "View Details",
+		"register": "Register",
+		"notFound": "Competition not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"share": "Share",
+		"shareText": "Check out this competition!",
+		"linkCopied": "Link copied to clipboard!",
+		"startDate": "Start Date",
+		"endDate": "End Date",
+		"deadline": "Registration Deadline",
+		"participants": "Participants",
+		"people": "people",
+		"prize": "Prize",
+		"registerNow": "Register Now!",
+		"registerDescription": "Don't miss the opportunity to showcase your skills and win valuable prizes",
+		"registerButton": "Register for Competition",
+		"relatedCompetitions": "Related Competitions",
+		"status": {
+			"active": "Active",
+			"upcoming": "Upcoming",
+			"closed": "Closed"
+		},
+		"category": {
+			"professional": "Professional Skills",
+			"innovation": "Innovation",
+			"sports": "Sports",
+			"social": "Social Projects"
+		},
+		"cta": {
+			"title": "Ready to Participate?",
+			"description": "Register on our platform and become part of our community",
+			"button": "Join Now"
+		}
+	},
+
+	"team": {
+		"title": "Our Team",
+		"description": "Meet the talented and passionate people who make our work possible",
+		"stats": {
+			"members": "Team Members",
+			"departments": "Departments",
+			"avgAge": "Average Age",
+			"experience": "Years of Experience"
+		},
+		"departments": {
+			"all": "All",
+			"leadership": "Leadership",
+			"innovation": "Innovation",
+			"education": "Education",
+			"media": "Media",
+			"sports": "Sports"
+		},
+		"cta": {
+			"title": "Want to join our team?",
+			"description": "We are always looking for talented and motivated people for our team",
+			"button": "Contact Us"
+		}
+	},
+
+	"grants": {
+		"title": "Grants & Funding",
+		"description": "Get financial support to implement your innovative projects",
+		"activeCount": "Active Grants",
+		"totalApplicants": "Applicants",
+		"totalGrants": "Total Grants",
+		"viewDetails": "View Details",
+		"apply": "Apply",
+		"notFound": "Grant not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"share": "Share",
+		"shareText": "Check out this grant!",
+		"linkCopied": "Link copied to clipboard!",
+		"amount": "Grant Amount",
+		"duration": "Duration",
+		"deadline": "Application Deadline",
+		"applicants": "Applicants",
+		"people": "people",
+		"applyNow": "Apply Now!",
+		"applyDescription": "Don't miss the opportunity to get funding for your project",
+		"applyButton": "Apply for Grant",
+		"status": {
+			"active": "Active",
+			"closed": "Closed"
+		},
+		"category": {
+			"innovation": "Innovation",
+			"ecology": "Ecology",
+			"digital": "Digital"
+		},
+		"cta": {
+			"title": "Ready to Apply?",
+			"description": "Register on the platform and get access to all grants",
+			"button": "Get Started"
+		}
+	},
+
+	"scholarships": {
+		"title": "Scholarships & Education",
+		"description": "Get a scholarship to study at the world's best universities",
+		"activeCount": "Active Scholarships",
+		"totalRecipients": "Recipients",
+		"totalScholarships": "Total Scholarships",
+		"viewDetails": "View Details",
+		"apply": "Apply",
+		"notFound": "Scholarship not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"share": "Share",
+		"shareText": "Check out this scholarship!",
+		"linkCopied": "Link copied to clipboard!",
+		"amount": "Scholarship Amount",
+		"duration": "Duration",
+		"deadline": "Application Deadline",
+		"recipients": "Recipients",
+		"people": "people",
+		"applyNow": "Apply Now!",
+		"applyDescription": "Don't miss the opportunity to get world-class education",
+		"applyButton": "Apply for Scholarship",
+		"status": {
+			"active": "Active",
+			"closed": "Closed"
+		},
+		"category": {
+			"master": "Master's",
+			"certification": "Certification",
+			"language": "Language"
+		},
+		"cta": {
+			"title": "Ready to Study?",
+			"description": "Register on the platform and get access to all scholarships",
+			"button": "Get Started"
+		}
+	},
+
+	"internships": {
+		"title": "Internships & Practice",
+		"description": "Get practical work experience in the oil and gas industry",
+		"activeCount": "Active Internships",
+		"totalApplicants": "Applicants",
+		"totalPositions": "Positions",
+		"totalInternships": "Total Internships",
+		"viewDetails": "View Details",
+		"apply": "Apply",
+		"notFound": "Internship not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"share": "Share",
+		"shareText": "Check out this internship!",
+		"linkCopied": "Link copied to clipboard!",
+		"stipend": "Stipend",
+		"duration": "Duration",
+		"deadline": "Application Deadline",
+		"positions": "Positions",
+		"positionsAvailable": "available",
+		"applyNow": "Apply Now!",
+		"applyDescription": "Don't miss the opportunity to gain valuable work experience",
+		"applyButton": "Apply for Internship",
+		"status": {
+			"active": "Active",
+			"closed": "Closed"
+		},
+		"category": {
+			"summer": "Summer",
+			"international": "International",
+			"technical": "Technical"
+		},
+		"cta": {
+			"title": "Ready to Start?",
+			"description": "Register on the platform and get access to all internships",
+			"button": "Get Started"
+		}
+	},
+
+	"breadcrumb": {
+		"home": "Home"
+	},
+
+	"footer": {
+		"company": "UZBEKNEFTEGAZ",
+		"description": "Full details",
+		"partners": "Our Partners",
+		"projects": "Our Projects",
+		"contact": "Contact",
+		"contactEmail": "Contact",
+		"support": "Support",
+		"legal": "Legal",
+		"rights": "All rights reserved.",
+		"youthPolicy": "Youth Policy"
+	},
+
+	"userMenu": {
+		"myAccount": "My Account",
+		"profile": "Profile",
+		"settings": "Settings",
+		"logout": "Logout",
+		"welcomeBack": "Welcome back",
+		"email": "Email",
+		"password": "Password"
+	},
+
+	"errors": {
+		"required": "This field is required",
+		"invalidEmail": "Invalid email address",
+		"passwordMismatch": "Passwords do not match",
+		"minLength": "Minimum length is {{min}} characters",
+		"invalidPhone": "Invalid phone number"
 	}
 }

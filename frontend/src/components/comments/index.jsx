@@ -1,8 +1,10 @@
 import { commentsData as initialComments } from '@/datatest/commentsData'
 import { useState } from 'react'
 import { FaThumbsDown, FaThumbsUp } from 'react-icons/fa'
+import { useTranslation } from 'react-i18next'
 
 const Comments = ({ newsId }) => {
+	const { t } = useTranslation()
 	const [comments, setComments] = useState(
 		initialComments
 			.filter(c => c.newsId === newsId)
@@ -17,7 +19,7 @@ const Comments = ({ newsId }) => {
 		const newEntry = {
 			id: Date.now(),
 			newsId,
-			author: 'Anonim foydalanuvchi',
+			author: t('comments.anonymousUser'),
 			content: newComment.trim(),
 			likes: 0,
 			dislikes: 0,
@@ -55,7 +57,7 @@ const Comments = ({ newsId }) => {
 	return (
 		<div className='mt-10'>
 			<h3 className='text-xl font-semibold mb-4 text-[#0098C7]'>
-				Izohlar ({comments.length})
+				{t('comments.title')} ({comments.length})
 			</h3>
 
 			{/* Add Comment Box */}
@@ -63,7 +65,7 @@ const Comments = ({ newsId }) => {
 				<textarea
 					className='flex-1 border rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0098C7]'
 					rows='2'
-					placeholder='Fikringizni yozing...'
+					placeholder={t('comments.placeholder')}
 					value={newComment}
 					onChange={e => setNewComment(e.target.value)}
 				/>
@@ -71,13 +73,13 @@ const Comments = ({ newsId }) => {
 					onClick={handleAddComment}
 					className='bg-[#0098C7] text-white px-4 py-2 rounded-lg hover:bg-[#0078a1]'
 				>
-					Yuborish
+					{t('comments.submit')}
 				</button>
 			</div>
 
 			{/* Comments List */}
 			{comments.length === 0 ? (
-				<p className='text-gray-500 text-sm'>Hozircha izoh yo‘q.</p>
+				<p className='text-gray-500 text-sm'>{t('comments.noComments')}</p>
 			) : (
 				<div className='space-y-4'>
 					{comments.map(c => (

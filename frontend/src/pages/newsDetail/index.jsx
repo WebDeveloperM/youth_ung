@@ -2,19 +2,22 @@ import Comments from '@/components/Comments'
 import { newsData } from '@/datatest/newsData'
 import { FaEye, FaHeart } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+
 export default function NewsDetail() {
+	const { t } = useTranslation()
 	const { id } = useParams()
 	const news = newsData.find(item => item.id === Number(id))
 
 	if (!news)
 		return (
-			<div className='text-center mt-20 text-gray-500'>Yangilik topilmadi</div>
+			<div className='text-center mt-20 text-gray-500'>{t('news.notFound')}</div>
 		)
 
 	return (
 		<section className='container mx-auto py-10 px-4'>
 			<Link to='/news' className='text-blue-500 hover:underline mb-4 block'>
-				← Orqaga
+				← {t('news.back')}
 			</Link>
 			<img
 				src={news.image}

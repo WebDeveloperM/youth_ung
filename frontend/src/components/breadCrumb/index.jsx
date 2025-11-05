@@ -8,8 +8,10 @@ import {
 } from '@/components/ui/breadcrumb'
 import { FaHome } from 'react-icons/fa'
 import { Link, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 const BreadcrumbComp = () => {
+	const { t } = useTranslation()
 	const location = useLocation()
 	const pathnames = location.pathname.split('/').filter(x => x)
 
@@ -25,7 +27,7 @@ const BreadcrumbComp = () => {
 									className='flex items-center gap-2 text-[#0098C7] hover:text-[#0078A1] transition-colors duration-200'
 								>
 									<FaHome className='text-base' />
-									<span className='font-medium'>Home</span>
+									<span className='font-medium'>{t('breadcrumb.home')}</span>
 								</Link>
 							</BreadcrumbLink>
 						</BreadcrumbItem>

@@ -3,8 +3,10 @@ import { newsData } from '@/datatest/newsData'
 import { motion } from 'framer-motion'
 import { FaComment, FaEye } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function NewsList() {
+	const { t } = useTranslation()
 	const latestNews = [...newsData].sort(
 		(a, b) => new Date(b.date) - new Date(a.date)
 	)
@@ -16,7 +18,7 @@ export default function NewsList() {
 		>
 			<div className='mx-auto mb-12 text-center text-[var(--navy-blue)]'>
 				<h2 id='news-title' className='text-3xl md:text-4xl font-bold'>
-					Последние новости
+					{t('news.latestNews')}
 				</h2>
 			</div>
 
@@ -72,7 +74,7 @@ export default function NewsList() {
 										to={`/news/${news.id}`}
 										className='mt-2 inline-block text-[#f97316] font-semibold hover:text-[#fb923c] transition-colors duration-300'
 									>
-										Batafsil →
+									{t('news.readMore')} →
 									</Link>
 								</div>
 							</div>

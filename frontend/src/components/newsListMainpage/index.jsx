@@ -3,8 +3,10 @@ import { newsData } from '@/datatest/newsData'
 import { motion } from 'framer-motion'
 import { FaComment, FaEye } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function NewsListMainpage() {
+	const { t } = useTranslation()
 	const latestNews = [...newsData]
 		.sort((a, b) => new Date(b.date) - new Date(a.date))
 		.slice(0, 3)
@@ -16,7 +18,7 @@ export default function NewsListMainpage() {
 		>
 			<div className='max-w-6xl mx-auto mb-12 text-center'>
 				<h2 id='news-title' className='text-3xl md:text-4xl font-extrabold'>
-					Последние новости
+					{t('news.latestNews')}
 				</h2>
 			</div>
 
@@ -68,7 +70,7 @@ export default function NewsListMainpage() {
 									to={`/news/${news.id}`}
 									className='mt-4 inline-block text-[#f97316] font-semibold hover:text-[#fb923c] transition-colors duration-300'
 								>
-									Batafsil →
+									{t('news.readMore')} →
 								</Link>
 							</div>
 						</motion.article>
@@ -81,7 +83,7 @@ export default function NewsListMainpage() {
 					to='/news'
 					className='inline-block px-8 py-3 rounded-full bg-[#0078c2] text-white font-semibold shadow-md hover:bg-[#0064a3] transition-all duration-300'
 				>
-					Barcha yangiliklar →
+					{t('news.viewAll')} →
 				</Link>
 			</div>
 		</section>

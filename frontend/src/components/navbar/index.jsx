@@ -48,19 +48,7 @@ export default function Navbar() {
 	const menuItems = [
 		{
 			title: t('menu.about'),
-			subMenu: [
-				{
-					title: t('menu.sub.latestNews'),
-					url: '/login',
-					icon: <Newspaper size={24} />,
-				},
-				{
-					title: t('menu.sub.innovations'),
-					url: '/',
-					icon: <Lightbulb size={24} />,
-				},
-				{ title: t('menu.sub.team'), url: '/', icon: <Users size={24} /> },
-			],
+			url: '/about'
 		},
 		{
 			title: t('menu.news'),
@@ -77,7 +65,7 @@ export default function Navbar() {
 				},
 				{
 					title: t('menu.sub.innovations'),
-					url: '/',
+					url: '/innovations',
 					icon: <Lightbulb size={24} />,
 				},
 			],
@@ -108,10 +96,10 @@ export default function Navbar() {
 				{ title: t('menu.sub.jobs'), url: '/', icon: <FileText size={24} /> },
 				{
 					title: t('menu.sub.internship'),
-					url: '/',
+					url: '/internships',
 					icon: <GraduationCap size={24} />,
 				},
-				{ title: t('menu.sub.team'), url: '/', icon: <Users size={24} /> },
+				{ title: t('menu.sub.team'), url: '/team', icon: <Users size={24} /> },
 			],
 		},
 		{
@@ -119,17 +107,17 @@ export default function Navbar() {
 			subMenu: [
 				{
 					title: t('menu.sub.scholarships'),
-					url: '/',
+					url: '/scholarships',
 					icon: <Coins size={24} />,
 				},
 				{
 					title: t('menu.sub.grants'),
-					url: '/',
+					url: '/grants',
 					icon: <Crosshair size={24} />,
 				},
 				{
 					title: t('menu.sub.competitions'),
-					url: '/',
+					url: '/competitions',
 					icon: <Trophy size={24} />,
 				},
 			],
@@ -137,7 +125,7 @@ export default function Navbar() {
 	]
 
 	return (
-		<nav className='m-3 md:m-5 rounded-xl bg-[var(--navy-blue)] text-xl font-bold text-white top-0 left-0 backdrop-blur-md border-b z-50 px-6 md:px-16 py-4 flex justify-between items-center'>
+		<nav className='sticky top-3 md:top-5 m-3 md:m-5 rounded-xl bg-[var(--navy-blue)] text-xl font-bold text-white backdrop-blur-md border-b z-[100] px-6 md:px-16 py-4 flex justify-between items-center'>
 			{/* LOGO */}
 			<Link to='/' className='flex items-center gap-2'>
 				<MdElectricBolt className='text-primary' size={24} />

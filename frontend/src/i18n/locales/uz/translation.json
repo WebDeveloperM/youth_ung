@@ -4,6 +4,22 @@
 	"logout": "Chiqish",
 	"dashboard": "Bosh sahifa",
 	"language": "Til",
+	"register": "Ro'yxatdan o'tish",
+	"switchToRegister": "Hali ro'yxatdan o'tmaganmisiz?",
+	"switchToLogin": "Allaqachon hisobingiz bormi?",
+	"fullName": "To'liq ism",
+	"dateOfBirth": "Tug'ilgan sana",
+	"phoneNumber": "Telefon raqami",
+	"residentialAddress": "Yashash manzili",
+	"placeOfWork": "Ish joyi",
+	"position": "Lavozim",
+	"loginField": "Login",
+	"password": "Parol",
+	"confirmPassword": "Parolni tasdiqlang",
+	"submit": "Yuborish",
+	"createAccount": "Yangi hisob yarating",
+	"welcomeBack": "Qaytganingizdan xursandmiz!",
+	"signInToContinue": "Davom etish uchun tizimga kiring",
 
 	"menu": {
 		"about": "Biz haqimizda",
@@ -19,12 +35,294 @@
 			"newProjects": "Yangi loyihalar",
 			"research": "Tadqiqotlar",
 			"results": "Natijalar",
-			"jobs": "Ish o‘rinlari",
+			"jobs": "Ish o'rinlari",
 			"internship": "Amaliyot",
 			"team": "Jamoa",
 			"scholarships": "Stipendiyalar",
 			"grants": "Grantlar",
 			"competitions": "Tanlovlar"
 		}
+	},
+
+	"hero": {
+		"title": "O'zbekneftgaz",
+		"titleHighlight": "yoshlar platformasida",
+		"description": "kelajagingiz poydevorini yarating, tadbirlarimizga ishtirok etib oʻz qobiliyatingizni namoyon eting.",
+		"activeMembers": "Aktiv a'zolar",
+		"inPractice": "Amaliyotda",
+		"ideas": "G'oyalar"
+	},
+
+	"news": {
+		"latestNews": "So'nggi yangiliklar",
+		"readMore": "Batafsil",
+		"viewAll": "Barcha yangiliklar",
+		"notFound": "Yangilik topilmadi",
+		"back": "Orqaga",
+		"views": "Ko'rishlar",
+		"likes": "Yoqtirishlar"
+	},
+
+	"comments": {
+		"title": "Izohlar",
+		"placeholder": "Fikringizni yozing...",
+		"submit": "Yuborish",
+		"noComments": "Hozircha izoh yo'q.",
+		"anonymousUser": "Anonim foydalanuvchi"
+	},
+
+	"innovations": {
+		"title": "Innovatsiyalar va texnologiyalar",
+		"description": "Neft-gaz sohasidagi ilg'or texnologiyalar va innovatsion yechimlarni kashf eting",
+		"readMore": "Batafsil",
+		"notFound": "Innovatsiya topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"views": "ko'rishlar",
+		"likes": "yoqtirishlar",
+		"share": "Ulashish",
+		"shareText": "Ushbu innovatsiyani ko'ring!",
+		"linkCopied": "Havola буфер обменга nusxalandi!",
+		"relatedInnovations": "O'xshash innovatsiyalar",
+		"categories": {
+			"technology": "Texnologiyalar",
+			"ecology": "Ekologiya",
+			"automation": "Avtomatlashtirish",
+			"digital": "Raqamlashtirish"
+		},
+		"cta": {
+			"title": "O'z innovatsiyangizni taklif qilmoqchimisiz?",
+			"description": "Platformamizga qo'shiling va o'z g'oyalaringizni O'zbekneftgaz jamoasi bilan baham ko'ring",
+			"button": "Qo'shilish"
+		}
+	},
+
+	"about": {
+		"valuesTitle": "Bizning qadriyatlarimiz",
+		"valuesDescription": "Ish va hayotda rahbarlik qiladigan tamoyillarimiz",
+		"historyTitle": "Bizning tariximiz",
+		"historyDescription": "O'zbekneftgaz yoshlar harakatining rivojlanish yo'li",
+		"achievementsTitle": "Yutuqlarimiz",
+		"achievementsDescription": "Faoliyatimiz uchun olingan mukofotlar va e'tiroflar",
+		"email": "Elektron pochta",
+		"phone": "Telefon",
+		"address": "Manzil"
+	},
+
+	"competitions": {
+		"title": "Tanlovlar va musobaqalar",
+		"description": "Tanloxlarda ishtirok eting, o'z ko'nikmalaringizni ko'rsating va qimmatli sovrinlarni yutib oling",
+		"activeCount": "Faol tanlovlar",
+		"upcomingCount": "Kelayotgan",
+		"totalParticipants": "Ishtirokchilar",
+		"totalCompetitions": "Jami tanlovlar",
+		"viewDetails": "Batafsil",
+		"register": "Ro'yxatdan o'tish",
+		"notFound": "Tanlov topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"share": "Ulashish",
+		"shareText": "Ushbu tanlovni ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"startDate": "Boshlanishi",
+		"endDate": "Tugashi",
+		"deadline": "Ro'yxatdan o'tish muddati",
+		"participants": "Ishtirokchilar",
+		"people": "kishi",
+		"prize": "Sovrin",
+		"registerNow": "Hoziroq ro'yxatdan o'ting!",
+		"registerDescription": "O'z ko'nikmalaringizni ko'rsatish va qimmatli sovrinlarni yutish imkoniyatini boy bermang",
+		"registerButton": "Tanlovga ro'yxatdan o'tish",
+		"relatedCompetitions": "O'xshash tanlovlar",
+		"status": {
+			"active": "Faol",
+			"upcoming": "Kelayotgan",
+			"closed": "Yakunlangan"
+		},
+		"category": {
+			"professional": "Professional ko'nikmalar",
+			"innovation": "Innovatsiyalar",
+			"sports": "Sport",
+			"social": "Ijtimoiy loyihalar"
+		},
+		"cta": {
+			"title": "Ishtirok etishga tayyormisiz?",
+			"description": "Platformamizga ro'yxatdan o'ting va hamjamiyatimizning bir qismi bo'ling",
+			"button": "Qo'shilish"
+		}
+	},
+
+	"team": {
+		"title": "Bizning jamoa",
+		"description": "Ishimizni amalga oshiradigan iqtidorli va g'ayratli odamlar bilan tanishing",
+		"stats": {
+			"members": "Jamoa a'zolari",
+			"departments": "Bo'limlar",
+			"avgAge": "O'rtacha yosh",
+			"experience": "Yillik tajriba"
+		},
+		"departments": {
+			"all": "Barchasi",
+			"leadership": "Rahbariyat",
+			"innovation": "Innovatsiyalar",
+			"education": "Ta'lim",
+			"media": "Media",
+			"sports": "Sport"
+		},
+		"cta": {
+			"title": "Bizning jamoaga qo'shilmoqchimisiz?",
+			"description": "Biz har doim jamoamiz uchun iqtidorli va motivatsiyali odamlarni qidiramiz",
+			"button": "Biz bilan bog'laning"
+		}
+	},
+
+	"grants": {
+		"title": "Grantlar va moliyalashtirish",
+		"description": "Innovatsion loyihalaringizni amalga oshirish uchun moliyaviy yordam oling",
+		"activeCount": "Faol grantlar",
+		"totalApplicants": "Arizachilar",
+		"totalGrants": "Jami grantlar",
+		"viewDetails": "Batafsil",
+		"apply": "Ariza topshirish",
+		"notFound": "Grant topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"share": "Ulashish",
+		"shareText": "Ushbu grantni ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"amount": "Grant miqdori",
+		"duration": "Davomiyligi",
+		"deadline": "Ariza topshirish muddati",
+		"applicants": "Arizachilar",
+		"people": "kishi",
+		"applyNow": "Hoziroq ariza topshiring!",
+		"applyDescription": "Loyihangiz uchun moliyaviy yordam olish imkoniyatini boy bermang",
+		"applyButton": "Grantga ariza topshirish",
+		"status": {
+			"active": "Faol",
+			"closed": "Yakunlangan"
+		},
+		"category": {
+			"innovation": "Innovatsiyalar",
+			"ecology": "Ekologiya",
+			"digital": "Raqamlashtirish"
+		},
+		"cta": {
+			"title": "Ariza topshirishga tayyormisiz?",
+			"description": "Platformamizga ro'yxatdan o'ting va barcha grantlarga kirish imkoniyatiga ega bo'ling",
+			"button": "Boshlash"
+		}
+	},
+
+	"scholarships": {
+		"title": "Stipendiyalar va ta'lim",
+		"description": "Dunyoning eng yaxshi universitetlarida o'qish uchun stipendiya oling",
+		"activeCount": "Faol stipendiyalar",
+		"totalRecipients": "Stipendiyachilar",
+		"totalScholarships": "Jami stipendiyalar",
+		"viewDetails": "Batafsil",
+		"apply": "Ariza topshirish",
+		"notFound": "Stipendiya topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"share": "Ulashish",
+		"shareText": "Ushbu stipendiyani ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"amount": "Stipendiya miqdori",
+		"duration": "Davomiyligi",
+		"deadline": "Ariza topshirish muddati",
+		"recipients": "Stipendiyachilar",
+		"people": "kishi",
+		"applyNow": "Hoziroq ariza topshiring!",
+		"applyDescription": "Jahon darajasidagi ta'lim olish imkoniyatini boy bermang",
+		"applyButton": "Stipendiyaga ariza topshirish",
+		"status": {
+			"active": "Faol",
+			"closed": "Yakunlangan"
+		},
+		"category": {
+			"master": "Magistratura",
+			"certification": "Sertifikatlash",
+			"language": "Tillar"
+		},
+		"cta": {
+			"title": "O'qishga tayyormisiz?",
+			"description": "Platformamizga ro'yxatdan o'ting va barcha stipendiyalarga kirish imkoniyatiga ega bo'ling",
+			"button": "Boshlash"
+		}
+	},
+
+	"internships": {
+		"title": "Stajirovkalar va amaliyot",
+		"description": "Neft-gaz sohasida amaliy tajriba orttiring",
+		"activeCount": "Faol stajirovkalar",
+		"totalApplicants": "Arizachilar",
+		"totalPositions": "O'rinlar",
+		"totalInternships": "Jami stajirovkalar",
+		"viewDetails": "Batafsil",
+		"apply": "Ariza topshirish",
+		"notFound": "Stajirovka topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"share": "Ulashish",
+		"shareText": "Ushbu stajirovkani ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"stipend": "Stipendiya",
+		"duration": "Davomiyligi",
+		"deadline": "Ariza topshirish muddati",
+		"positions": "O'rinlar",
+		"positionsAvailable": "mavjud",
+		"applyNow": "Hoziroq ariza topshiring!",
+		"applyDescription": "Qimmatli ish tajribasini olish imkoniyatini boy bermang",
+		"applyButton": "Stajirovkaga ariza topshirish",
+		"status": {
+			"active": "Faol",
+			"closed": "Yakunlangan"
+		},
+		"category": {
+			"summer": "Yozgi",
+			"international": "Xalqaro",
+			"technical": "Texnik"
+		},
+		"cta": {
+			"title": "Boshlashga tayyormisiz?",
+			"description": "Platformamizga ro'yxatdan o'ting va barcha stajirovkalarga kirish imkoniyatiga ega bo'ling",
+			"button": "Boshlash"
+		}
+	},
+
+	"breadcrumb": {
+		"home": "Bosh sahifa"
+	},
+
+	"footer": {
+		"company": "UZBEKNEFTGAZ",
+		"description": "To'liq rekvizit",
+		"partners": "Bizning hamkorlar",
+		"projects": "Loyihalarimiz",
+		"contact": "Murojat",
+		"contactEmail": "Contact",
+		"support": "Support",
+		"legal": "Legal",
+		"rights": "Barcha huquqlar himoyalangan.",
+		"youthPolicy": "Yoshlar siyosati"
+	},
+
+	"userMenu": {
+		"myAccount": "Mening hisobim",
+		"profile": "Profil",
+		"settings": "Sozlamalar",
+		"logout": "Chiqish",
+		"welcomeBack": "Xush kelibsiz",
+		"email": "Email",
+		"password": "Parol"
+	},
+
+	"errors": {
+		"required": "Bu maydon to'ldirilishi shart",
+		"invalidEmail": "Noto'g'ri email manzil",
+		"passwordMismatch": "Parollar mos kelmaydi",
+		"minLength": "Minimal uzunlik {{min}} belgi",
+		"invalidPhone": "Noto'g'ri telefon raqami"
 	}
 }

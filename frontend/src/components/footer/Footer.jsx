@@ -1,18 +1,21 @@
 import { FaInstagram, FaLinkedin, FaXTwitter } from 'react-icons/fa6'
+import { useTranslation } from 'react-i18next'
 
 const Footer = () => {
+	const { t } = useTranslation()
+
 	const partnerLinks = [
 		{ name: 'BNPZ', href: '#' },
 		{ name: 'GTL', href: '#' },
 		{ name: 'MGNK', href: '#' },
 	]
 
-	const projectLinks = [{ name: 'Yoshlar siyosati', href: '#' }]
+	const projectLinks = [{ name: t('footer.youthPolicy'), href: '#' }]
 
 	const contactLinks = [
-		{ name: 'Contact', href: '#' },
-		{ name: 'Support', href: '#' },
-		{ name: 'Legal', href: '#' },
+		{ name: t('footer.contactEmail'), href: '#' },
+		{ name: t('footer.support'), href: '#' },
+		{ name: t('footer.legal'), href: '#' },
 	]
 
 	return (
@@ -24,10 +27,10 @@ const Footer = () => {
 				{/* Company Info & Socials */}
 				<div className='flex flex-col space-y-4 lg:col-span-1'>
 					<h3 className='font-bold text-4xl text-[var(--navy-blue)]'>
-						UZBEKNEFTGAZ
+						{t('footer.company')}
 					</h3>
 					<p className='text-[var(--muted-foreground)] text-sm max-w-xs'>
-						To'liq rekvizit
+						{t('footer.description')}
 					</p>
 					<div className='flex space-x-5 text-[var(--muted-foreground)] mt-4'>
 						<a
@@ -56,9 +59,9 @@ const Footer = () => {
 
 				{/* Navigation Sections */}
 				<div className='grid grid-cols-2 sm:grid-cols-3 gap-8 md:col-span-1 lg:col-span-3'>
-					<nav aria-label='Bizning hamkorlar'>
+					<nav aria-label={t('footer.partners')}>
 						<h4 className='font-semibold text-[var(--muted-foreground)] mb-4'>
-							Bizning hamkorlar
+							{t('footer.partners')}
 						</h4>
 						<ul className='space-y-3 text-sm'>
 							{/* Ma'lumotlar dinamik ravishda render qilinadi */}
@@ -75,9 +78,9 @@ const Footer = () => {
 						</ul>
 					</nav>
 
-					<nav aria-label='Loyihalarimiz'>
+					<nav aria-label={t('footer.projects')}>
 						<h4 className='font-semibold text-[var(--muted-foreground)] mb-4'>
-							Loyihalarimiz
+							{t('footer.projects')}
 						</h4>
 						<ul className='space-y-3 text-sm'>
 							{projectLinks.map(link => (
@@ -93,9 +96,9 @@ const Footer = () => {
 						</ul>
 					</nav>
 
-					<nav aria-label='Murojat'>
+					<nav aria-label={t('footer.contact')}>
 						<h4 className='font-semibold text-[var(--muted-foreground)] mb-4'>
-							Murojat
+							{t('footer.contact')}
 						</h4>
 						<ul className='space-y-3 text-sm'>
 							{contactLinks.map(link => (
@@ -116,8 +119,8 @@ const Footer = () => {
 			{/* Copyright Section */}
 			<div className='container mx-auto px-6 mt-16 text-center text-[var(--muted-foreground)] text-xs'>
 				<p>
-					&copy; {new Date().getFullYear()} UZBEKNEFTGAZ. Barcha huquqlar
-					himoyalangan.
+					&copy; {new Date().getFullYear()} {t('footer.company')}.{' '}
+					{t('footer.rights')}
 				</p>
 			</div>
 		</footer>

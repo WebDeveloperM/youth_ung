@@ -2,8 +2,11 @@ import logo from '@/assets/logo.png'
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion'
 import CountUp from 'react-countup'
+import { useTranslation } from 'react-i18next'
 
 const Hero = () => {
+	const { t } = useTranslation()
+
 	return (
 		<section
 			className='container mx-auto flex flex-col md:flex-row items-center justify-center px-4 md:px-8 py-12 gap-12 md:gap-24 md:overflow-x-hidden'
@@ -15,20 +18,19 @@ const Hero = () => {
 					id='hero-title'
 					className='text-2xl py-2 md:text-3xl lg:text-4xl font-bold mb-4 text-[#0098C7]'
 				>
-					O'zbekneftgaz{' '}
-					<span className='text-orange-500'>yoshlar platformasida</span>
+					{t('hero.title')}{' '}
+					<span className='text-orange-500'>{t('hero.titleHighlight')}</span>
 				</h1>
 
 				<p className='text-muted-foreground text-base md:text-lg lg:text-xl leading-relaxed mb-8'>
-					kelajagingiz poydevorini yarating, tadbirlarimizga ishtirok etib oʻz
-					qobiliyatingizni namoyon eting.
+					{t('hero.description')}
 				</p>
 
 				<div className='flex flex-col sm:flex-row justify-center md:justify-start gap-6'>
 					{[
-						{ end: 1000, suffix: '+', label: "Aktiv a'zolar" },
-						{ end: 10, suffix: '+', label: 'Amaliyotda' },
-						{ end: 100, suffix: '+', label: "G'oyalar" },
+						{ end: 1000, suffix: '+', label: t('hero.activeMembers') },
+						{ end: 10, suffix: '+', label: t('hero.inPractice') },
+						{ end: 100, suffix: '+', label: t('hero.ideas') },
 					].map((item, idx) => (
 						<motion.div
 							key={idx}
