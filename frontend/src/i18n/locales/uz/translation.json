@@ -291,6 +291,47 @@
 		}
 	},
 
+	"jobs": {
+		"title": "Bo'sh ish o'rinlari",
+		"description": "O'zbekneftgaz kompaniyasida karyerangizni boshlang va rivojlantiring",
+		"activeCount": "Faol vakansiyalar",
+		"totalApplicants": "Arizachilar",
+		"totalPositions": "Ochiq o'rinlar",
+		"totalJobs": "Jami vakansiyalar",
+		"viewDetails": "Batafsil",
+		"apply": "Ariza topshirish",
+		"notFound": "Vakansiya topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"share": "Ulashish",
+		"shareText": "Ushbu vakansiyani ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"salary": "Ish haqi",
+		"location": "Joylashuv",
+		"experience": "Tajriba",
+		"positions": "O'rinlar",
+		"positionsAvailable": "mavjud",
+		"applyNow": "Hoziroq ariza topshiring!",
+		"applyDescription": "Karyerangizni rivojlantirish va professional o'sish imkoniyatini boy bermang",
+		"applyButton": "Vakansiyaga ariza topshirish",
+		"status": {
+			"active": "Faol",
+			"closed": "Yopiq"
+		},
+		"category": {
+			"it": "IT texnologiyalar",
+			"engineering": "Muhandislik",
+			"hr": "Kadrlar bo'limi",
+			"marketing": "Marketing",
+			"finance": "Moliya"
+		},
+		"cta": {
+			"title": "Bizga qo'shilishga tayyormisiz?",
+			"description": "Platformamizga ro'yxatdan o'ting va barcha vakansiyalarga kirish imkoniyatiga ega bo'ling",
+			"button": "Boshlash"
+		}
+	},
+
 	"breadcrumb": {
 		"home": "Bosh sahifa"
 	},

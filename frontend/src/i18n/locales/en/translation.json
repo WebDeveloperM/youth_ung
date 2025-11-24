@@ -291,6 +291,47 @@
 		}
 	},
 
+	"jobs": {
+		"title": "Job Vacancies",
+		"description": "Start and develop your career at Uzbekneftegaz company",
+		"activeCount": "Active Vacancies",
+		"totalApplicants": "Applicants",
+		"totalPositions": "Open Positions",
+		"totalJobs": "Total Vacancies",
+		"viewDetails": "View Details",
+		"apply": "Apply",
+		"notFound": "Vacancy not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"share": "Share",
+		"shareText": "Check out this vacancy!",
+		"linkCopied": "Link copied to clipboard!",
+		"salary": "Salary",
+		"location": "Location",
+		"experience": "Experience",
+		"positions": "Positions",
+		"positionsAvailable": "available",
+		"applyNow": "Apply Now!",
+		"applyDescription": "Don't miss the opportunity to develop your career and professional growth",
+		"applyButton": "Apply for Position",
+		"status": {
+			"active": "Active",
+			"closed": "Closed"
+		},
+		"category": {
+			"it": "IT Technologies",
+			"engineering": "Engineering",
+			"hr": "HR Department",
+			"marketing": "Marketing",
+			"finance": "Finance"
+		},
+		"cta": {
+			"title": "Ready to Join Us?",
+			"description": "Register on the platform and get access to all vacancies",
+			"button": "Get Started"
+		}
+	},
+
 	"breadcrumb": {
 		"home": "Home"
 	},

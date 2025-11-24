@@ -27,6 +27,7 @@ import { Useravatar } from '../userAvatar'
 //Menu data
 import {
 	BarChart,
+	Briefcase,
 	Coins,
 	Crosshair,
 	FileText,
@@ -93,7 +94,7 @@ export default function Navbar() {
 		{
 			title: t('menu.career'),
 			subMenu: [
-				{ title: t('menu.sub.jobs'), url: '/', icon: <FileText size={24} /> },
+				{ title: t('menu.sub.jobs'), url: '/jobs', icon: <Briefcase size={24} /> },
 				{
 					title: t('menu.sub.internship'),
 					url: '/internships',
