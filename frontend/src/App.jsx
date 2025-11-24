@@ -22,6 +22,10 @@ import InternshipsList from './pages/internshipsList'
 import InternshipDetail from './pages/internshipDetail'
 import JobsList from './pages/jobsList'
 import JobDetail from './pages/jobDetail'
+import ProjectsList from './pages/projectsList'
+import ProjectDetail from './pages/projectDetail'
+import ResearchList from './pages/researchList'
+import ResearchDetail from './pages/researchDetail'
 function AppContent() {
 	const location = useLocation()
 
@@ -52,6 +56,10 @@ function AppContent() {
 			<Route path='/internships/:id' element={<InternshipDetail />} />
 			<Route path='/jobs' element={<JobsList />} />
 			<Route path='/jobs/:id' element={<JobDetail />} />
+			<Route path='/projects' element={<ProjectsList />} />
+			<Route path='/projects/:id' element={<ProjectDetail />} />
+			<Route path='/research' element={<ResearchList />} />
+			<Route path='/research/:id' element={<ResearchDetail />} />
 		</Routes>
 
 			{!hideHeader && <Footer />}

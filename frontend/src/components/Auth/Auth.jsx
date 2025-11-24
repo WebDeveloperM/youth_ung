@@ -13,11 +13,12 @@ import {
 	FaUser,
 } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
-import { useLanguage } from '../../contexts/LanguageContext'
+import { useTranslation } from 'react-i18next'
+import { LanguageSelector } from '@/components/langSelector'
 import './Auth.css'
 
 const Auth = () => {
-	const { language, toggleLanguage, t } = useLanguage()
+	const { t, i18n } = useTranslation()
 	const navigate = useNavigate()
 
 	const [isLogin, setIsLogin] = useState(true)
@@ -228,14 +229,7 @@ const Auth = () => {
 				>
 					<Icon icon='mdi:home' width='32' height='32' />
 				</motion.button>
-				<motion.button
-					className='language-btn'
-					onClick={toggleLanguage}
-					whileHover={{ scale: 1.05 }}
-					whileTap={{ scale: 0.95 }}
-				>
-					{language === 'uz' ? "🇺🇿 O'zbekcha" : '🇷🇺 Русский'}
-				</motion.button>
+				<LanguageSelector />
 			</div>
 
 			{/* Карточка аутентификации */}
@@ -373,7 +367,7 @@ const Auth = () => {
 					layout
 				>
 					<p className='partners-title'>
-						{language === 'uz' ? 'Hamkorlar' : 'Партнёры'}
+						{t('footer.partners')}
 					</p>
 					<div className='partners-logos'>
 						{[1, 2, 3, 4].map(num => (

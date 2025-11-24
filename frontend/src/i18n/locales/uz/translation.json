@@ -291,6 +291,90 @@
 		}
 	},
 
+	"research": {
+		"title": "Tadqiqotlar",
+		"description": "Ilmiy tadqiqotlar va innovatsion ishlanmalar neft-gaz sohasida",
+		"activeCount": "Faol tadqiqotlar",
+		"totalPublications": "Nashrlar",
+		"totalCitations": "Iqtiboslar",
+		"totalResearch": "Jami tadqiqotlar",
+		"viewDetails": "Batafsil",
+		"notFound": "Tadqiqot topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"share": "Ulashish",
+		"shareText": "Ushbu tadqiqotni ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"budget": "Byudjet",
+		"period": "Davr",
+		"publications": "Nashrlar",
+		"citations": "Iqtiboslar",
+		"articles": "maqola",
+		"times": "marta",
+		"department": "Bo'lim",
+		"authors": "Mualliflar",
+		"joinResearch": "Tadqiqotga qo'shiling!",
+		"joinDescription": "Ilmiy faoliyat bilan shug'ullanish va karyerangizni rivojlantirish imkoniyatini qo'lga kiriting",
+		"viewVacancies": "Vakansiyalarni ko'rish",
+		"status": {
+			"active": "Faol",
+			"completed": "Yakunlangan",
+			"planned": "Rejalashtirilgan"
+		},
+		"category": {
+			"technology": "Texnologiya",
+			"ecology": "Ekologiya",
+			"materials": "Materiallar",
+			"digital": "Raqamlashtirish"
+		},
+		"cta": {
+			"title": "Bizning tadqiqotlarimiz bilan tanishmoqchimisiz?",
+			"description": "Biz bilan bog'laning va ilmiy hamkorlik imkoniyatlarini bilib oling",
+			"button": "Biz bilan bog'laning"
+		}
+	},
+
+	"projects": {
+		"title": "Yangi loyihalar",
+		"description": "O'zbekneftgaz kompaniyasining strategik loyihalari va rivojlanish yo'nalishlari",
+		"activeCount": "Faol loyihalar",
+		"totalTeam": "Jamoa a'zolari",
+		"totalInvestment": "Investitsiya",
+		"totalProjects": "Jami loyihalar",
+		"viewDetails": "Batafsil",
+		"notFound": "Loyiha topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"share": "Ulashish",
+		"shareText": "Ushbu loyihani ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"budget": "Byudjet",
+		"duration": "Davomiyligi",
+		"team": "Jamoa",
+		"location": "Joylashuv",
+		"people": "kishi",
+		"progress": "Jarayon",
+		"joinProject": "Loyihaga qo'shiling!",
+		"joinDescription": "Ushbu loyihada ishlash imkoniyatini qo'lga kiriting va professional tajriba orttiring",
+		"viewVacancies": "Vakansiyalarni ko'rish",
+		"status": {
+			"active": "Faol",
+			"completed": "Yakunlangan",
+			"planned": "Rejalashtirilgan"
+		},
+		"category": {
+			"infrastructure": "Infratuzilma",
+			"digital": "Raqamlashtirish",
+			"ecology": "Ekologiya",
+			"education": "Ta'lim"
+		},
+		"cta": {
+			"title": "Loyihalarimiz haqida ko'proq bilmoqchimisiz?",
+			"description": "Biz bilan bog'laning va hamkorlik imkoniyatlarini bilib oling",
+			"button": "Biz bilan bog'laning"
+		}
+	},
+
 	"jobs": {
 		"title": "Bo'sh ish o'rinlari",
 		"description": "O'zbekneftgaz kompaniyasida karyerangizni boshlang va rivojlantiring",
@@ -309,6 +393,7 @@
 		"salary": "Ish haqi",
 		"location": "Joylashuv",
 		"experience": "Tajriba",
+		"deadline": "Ariza topshirish muddati",
 		"positions": "O'rinlar",
 		"positionsAvailable": "mavjud",
 		"applyNow": "Hoziroq ariza topshiring!",
@@ -333,7 +418,18 @@
 	},
 
 	"breadcrumb": {
-		"home": "Bosh sahifa"
+		"home": "Bosh sahifa",
+		"news": "Yangiliklar",
+		"innovations": "Innovatsiyalar",
+		"about": "Biz haqimizda",
+		"competitions": "Tanlovlar",
+		"team": "Jamoa",
+		"grants": "Grantlar",
+		"scholarships": "Stipendiyalar",
+		"internships": "Stajirovkalar",
+		"jobs": "Bo'sh ish o'rinlari",
+		"projects": "Yangi loyihalar",
+		"research": "Tadqiqotlar"
 	},
 
 	"footer": {

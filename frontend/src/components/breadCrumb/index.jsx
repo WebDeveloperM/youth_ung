@@ -32,36 +32,43 @@ const BreadcrumbComp = () => {
 							</BreadcrumbLink>
 						</BreadcrumbItem>
 
-						{pathnames.map((name, index) => {
-							const routeTo = '/' + pathnames.slice(0, index + 1).join('/')
-							const isLast = index === pathnames.length - 1
-							const displayName =
-								name.charAt(0).toUpperCase() + name.slice(1).replace(/-/g, ' ')
+					{pathnames.map((name, index) => {
+						const routeTo = '/' + pathnames.slice(0, index + 1).join('/')
+						const isLast = index === pathnames.length - 1
+						
+						// Tarjima qilingan nomni olish yoki ID ni ko'rsatmaslik
+						const translatedName = t(`breadcrumb.${name}`, name)
+						const isNumeric = !isNaN(name)
+						
+						// Agar raqam bo'lsa (ID), uni ko'rsatmaymiz
+						if (isNumeric) {
+							return null
+						}
 
-							return (
-								<div key={name} className='flex items-center'>
-									<BreadcrumbSeparator className='text-gray-400 px-2'>
-										/
-									</BreadcrumbSeparator>
-									<BreadcrumbItem>
-										{isLast ? (
-											<BreadcrumbPage className='text-gray-800 dark:text-gray-200 font-semibold'>
-												{displayName}
-											</BreadcrumbPage>
-										) : (
-											<BreadcrumbLink asChild>
-												<Link
-													to={routeTo}
-													className='text-gray-600 dark:text-gray-400 hover:text-[#0098C7] transition-colors duration-200'
-												>
-													{displayName}
-												</Link>
-											</BreadcrumbLink>
-										)}
-									</BreadcrumbItem>
-								</div>
-							)
-						})}
+						return (
+							<div key={name} className='flex items-center'>
+								<BreadcrumbSeparator className='text-gray-400 px-2'>
+									/
+								</BreadcrumbSeparator>
+								<BreadcrumbItem>
+									{isLast ? (
+										<BreadcrumbPage className='text-gray-800 dark:text-gray-200 font-semibold'>
+											{translatedName}
+										</BreadcrumbPage>
+									) : (
+										<BreadcrumbLink asChild>
+											<Link
+												to={routeTo}
+												className='text-gray-600 dark:text-gray-400 hover:text-[#0098C7] transition-colors duration-200'
+											>
+												{translatedName}
+											</Link>
+										</BreadcrumbLink>
+									)}
+								</BreadcrumbItem>
+							</div>
+						)
+					})}
 					</BreadcrumbList>
 				</Breadcrumb>
 			</div>

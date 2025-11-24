@@ -291,6 +291,90 @@
 		}
 	},
 
+	"research": {
+		"title": "Research",
+		"description": "Scientific research and innovative developments in the oil and gas industry",
+		"activeCount": "Active Research",
+		"totalPublications": "Publications",
+		"totalCitations": "Citations",
+		"totalResearch": "Total Research",
+		"viewDetails": "View Details",
+		"notFound": "Research not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"share": "Share",
+		"shareText": "Check out this research!",
+		"linkCopied": "Link copied!",
+		"budget": "Budget",
+		"period": "Period",
+		"publications": "Publications",
+		"citations": "Citations",
+		"articles": "articles",
+		"times": "times",
+		"department": "Department",
+		"authors": "Authors",
+		"joinResearch": "Join the Research!",
+		"joinDescription": "Get the opportunity to engage in scientific activities and develop your career",
+		"viewVacancies": "View Vacancies",
+		"status": {
+			"active": "Active",
+			"completed": "Completed",
+			"planned": "Planned"
+		},
+		"category": {
+			"technology": "Technology",
+			"ecology": "Ecology",
+			"materials": "Materials",
+			"digital": "Digitalization"
+		},
+		"cta": {
+			"title": "Want to learn about our research?",
+			"description": "Contact us and learn about scientific collaboration opportunities",
+			"button": "Contact Us"
+		}
+	},
+
+	"projects": {
+		"title": "New Projects",
+		"description": "Strategic projects and development directions of Uzbekneftegaz company",
+		"activeCount": "Active Projects",
+		"totalTeam": "Team Members",
+		"totalInvestment": "Investment",
+		"totalProjects": "Total Projects",
+		"viewDetails": "View Details",
+		"notFound": "Project not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"share": "Share",
+		"shareText": "Check out this project!",
+		"linkCopied": "Link copied!",
+		"budget": "Budget",
+		"duration": "Duration",
+		"team": "Team",
+		"location": "Location",
+		"people": "people",
+		"progress": "Progress",
+		"joinProject": "Join the Project!",
+		"joinDescription": "Get the opportunity to work on this project and gain professional experience",
+		"viewVacancies": "View Vacancies",
+		"status": {
+			"active": "Active",
+			"completed": "Completed",
+			"planned": "Planned"
+		},
+		"category": {
+			"infrastructure": "Infrastructure",
+			"digital": "Digitalization",
+			"ecology": "Ecology",
+			"education": "Education"
+		},
+		"cta": {
+			"title": "Want to learn more about our projects?",
+			"description": "Contact us and learn about collaboration opportunities",
+			"button": "Contact Us"
+		}
+	},
+
 	"jobs": {
 		"title": "Job Vacancies",
 		"description": "Start and develop your career at Uzbekneftegaz company",
@@ -309,6 +393,7 @@
 		"salary": "Salary",
 		"location": "Location",
 		"experience": "Experience",
+		"deadline": "Application Deadline",
 		"positions": "Positions",
 		"positionsAvailable": "available",
 		"applyNow": "Apply Now!",
@@ -333,7 +418,18 @@
 	},
 
 	"breadcrumb": {
-		"home": "Home"
+		"home": "Home",
+		"news": "News",
+		"innovations": "Innovations",
+		"about": "About Us",
+		"competitions": "Competitions",
+		"team": "Team",
+		"grants": "Grants",
+		"scholarships": "Scholarships",
+		"internships": "Internships",
+		"jobs": "Job Vacancies",
+		"projects": "New Projects",
+		"research": "Research"
 	},
 
 	"footer": {

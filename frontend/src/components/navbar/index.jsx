@@ -76,12 +76,12 @@ export default function Navbar() {
 			subMenu: [
 				{
 					title: t('menu.sub.newProjects'),
-					url: '/',
+					url: '/projects',
 					icon: <Rocket size={24} />,
 				},
 				{
 					title: t('menu.sub.research'),
-					url: '/',
+					url: '/research',
 					icon: <Microscope size={24} />,
 				},
 				{
