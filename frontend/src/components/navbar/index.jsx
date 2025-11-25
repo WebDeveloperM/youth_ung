@@ -24,6 +24,7 @@ import { MdElectricBolt } from 'react-icons/md'
 import ColorModeToggle from '../colorModeSelector'
 import { LanguageSelector } from '../langSelector'
 import { Useravatar } from '../userAvatar'
+import { useState, useEffect } from 'react'
 //Menu data
 import {
 	BarChart,
@@ -45,6 +46,16 @@ import {
 
 export default function Navbar() {
 	const { t } = useTranslation()
+	const [isScrolled, setIsScrolled] = useState(false)
+
+	useEffect(() => {
+		const handleScroll = () => {
+			setIsScrolled(window.scrollY > 20)
+		}
+
+		window.addEventListener('scroll', handleScroll)
+		return () => window.removeEventListener('scroll', handleScroll)
+	}, [])
 
 	const menuItems = [
 		{
@@ -126,7 +137,13 @@ export default function Navbar() {
 	]
 
 	return (
-		<nav className='sticky top-3 md:top-5 m-3 md:m-5 rounded-xl bg-[var(--navy-blue)] text-xl font-bold text-white backdrop-blur-md border-b z-[100] px-6 md:px-16 py-4 flex justify-between items-center'>
+		<nav 
+			className={`sticky top-0 left-0 right-0 bg-[var(--navy-blue)] text-xl font-bold text-white backdrop-blur-md z-[100] px-6 md:px-16 py-4 flex justify-between items-center transition-all duration-300 ${
+				isScrolled 
+					? 'shadow-[0_4px_20px_rgba(0,0,0,0.3)] border-b border-gray-700/50' 
+					: 'shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
+			}`}
+		>
 			{/* LOGO */}
 			<Link to='/' className='flex items-center gap-2'>
 				<MdElectricBolt className='text-primary' size={24} />
