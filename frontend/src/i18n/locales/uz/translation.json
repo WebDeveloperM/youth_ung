@@ -97,6 +97,34 @@
 		}
 	},
 
+	"technologies": {
+		"title": "Texnologiyalar",
+		"description": "Neft-gaz sanoatida qo'llaniladigan zamonaviy texnologiyalar va usullar",
+		"readMore": "Batafsil",
+		"notFound": "Texnologiya topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"views": "ko'rishlar",
+		"likes": "yoqtirishlar",
+		"share": "Ulashish",
+		"shareText": "Ushbu texnologiyani ko'ring!",
+		"linkCopied": "Havola nusxalandi!",
+		"relatedTechnologies": "O'xshash texnologiyalar",
+		"categories": {
+			"exploration": "Qidiruv",
+			"drilling": "Qazish",
+			"extraction": "Qazib olish",
+			"ecology": "Ekologiya",
+			"automation": "Avtomatlashtirish",
+			"processing": "Qayta ishlash"
+		},
+		"cta": {
+			"title": "Texnologiyalarimiz haqida ko'proq bilmoqchimisiz?",
+			"description": "Biz bilan bog'laning va barcha texnologiyalarimiz haqida batafsil ma'lumot oling",
+			"button": "Biz bilan bog'laning"
+		}
+	},
+
 	"about": {
 		"valuesTitle": "Bizning qadriyatlarimiz",
 		"valuesDescription": "Ish va hayotda rahbarlik qiladigan tamoyillarimiz",
@@ -417,6 +445,54 @@
 		}
 	},
 
+	"results": {
+		"title": "Natijalar va yutuqlar",
+		"description": "O'zbekneftgaz kompaniyasining loyihalari, tadqiqotlari va dasturlarining natijalari",
+		"completedCount": "Yakunlangan natijalar",
+		"totalImpact": "Jami ta'sir",
+		"totalResults": "Jami natijalar",
+		"currentYear": "Joriy yil",
+		"year": "yil",
+		"viewDetails": "Batafsil",
+		"notFound": "Natija topilmadi",
+		"back": "Orqaga",
+		"backToList": "Ro'yxatga qaytish",
+		"achievements": "Erishilgan yutuqlar",
+		"status": {
+			"completed": "Yakunlangan",
+			"inProgress": "Jarayonda",
+			"planned": "Rejalashtirilgan"
+		},
+		"category": {
+			"project": "Loyiha",
+			"program": "Dastur",
+			"research": "Tadqiqot",
+			"ecology": "Ekologiya"
+		},
+		"metrics": {
+			"productionIncrease": "Ishlab chiqarish",
+			"energyEfficiency": "Energiya",
+			"emissionReduction": "Emissiya",
+			"newJobs": "Ish o'rinlari",
+			"participants": "Ishtirokchilar",
+			"projects": "Loyihalar",
+			"grants": "Grantlar",
+			"internships": "Stajirovkalar",
+			"publications": "Nashrlar",
+			"citations": "Iqtiboslar",
+			"patents": "Patentlar",
+			"impact": "Ta'sir",
+			"treesPlanted": "Daraxtlar",
+			"waterSaved": "Suv",
+			"areasRestored": "Hududlar"
+		},
+		"cta": {
+			"title": "Natijalarimiz haqida ko'proq bilmoqchimisiz?",
+			"description": "Biz bilan bog'laning va barcha loyihalarimizning natijalari haqida batafsil ma'lumot oling",
+			"button": "Biz bilan bog'laning"
+		}
+	},
+
 	"breadcrumb": {
 		"home": "Bosh sahifa",
 		"news": "Yangiliklar",
@@ -429,7 +505,9 @@
 		"internships": "Stajirovkalar",
 		"jobs": "Bo'sh ish o'rinlari",
 		"projects": "Yangi loyihalar",
-		"research": "Tadqiqotlar"
+		"research": "Tadqiqotlar",
+		"results": "Natijalar",
+		"technologies": "Texnologiyalar"
 	},
 
 	"footer": {

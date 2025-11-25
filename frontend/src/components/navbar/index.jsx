@@ -72,7 +72,7 @@ export default function Navbar() {
 				},
 				{
 					title: t('menu.sub.technologies'),
-					url: '/',
+					url: '/technologies',
 					icon: <Settings size={24} />,
 				},
 				{
@@ -97,7 +97,7 @@ export default function Navbar() {
 				},
 				{
 					title: t('menu.sub.results'),
-					url: '/',
+					url: '/results',
 					icon: <BarChart size={24} />,
 				},
 			],

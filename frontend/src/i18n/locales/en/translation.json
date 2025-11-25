@@ -97,6 +97,34 @@
 		}
 	},
 
+	"technologies": {
+		"title": "Technologies",
+		"description": "Modern technologies and methods used in the oil and gas industry",
+		"readMore": "Read more",
+		"notFound": "Technology not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"views": "views",
+		"likes": "likes",
+		"share": "Share",
+		"shareText": "Check out this technology!",
+		"linkCopied": "Link copied to clipboard!",
+		"relatedTechnologies": "Related Technologies",
+		"categories": {
+			"exploration": "Exploration",
+			"drilling": "Drilling",
+			"extraction": "Extraction",
+			"ecology": "Ecology",
+			"automation": "Automation",
+			"processing": "Processing"
+		},
+		"cta": {
+			"title": "Want to learn more about our technologies?",
+			"description": "Contact us and get detailed information about all our technologies",
+			"button": "Contact Us"
+		}
+	},
+
 	"about": {
 		"valuesTitle": "Our Values",
 		"valuesDescription": "The principles that guide us in work and life",
@@ -417,6 +445,54 @@
 		}
 	},
 
+	"results": {
+		"title": "Results & Achievements",
+		"description": "Results of Uzbekneftegaz company's projects, research and programs",
+		"completedCount": "Completed Results",
+		"totalImpact": "Total Impact",
+		"totalResults": "Total Results",
+		"currentYear": "Current Year",
+		"year": "year",
+		"viewDetails": "View Details",
+		"notFound": "Result not found",
+		"back": "Back",
+		"backToList": "Back to list",
+		"achievements": "Achievements",
+		"status": {
+			"completed": "Completed",
+			"inProgress": "In Progress",
+			"planned": "Planned"
+		},
+		"category": {
+			"project": "Project",
+			"program": "Program",
+			"research": "Research",
+			"ecology": "Ecology"
+		},
+		"metrics": {
+			"productionIncrease": "Production",
+			"energyEfficiency": "Energy",
+			"emissionReduction": "Emissions",
+			"newJobs": "Jobs",
+			"participants": "Participants",
+			"projects": "Projects",
+			"grants": "Grants",
+			"internships": "Internships",
+			"publications": "Publications",
+			"citations": "Citations",
+			"patents": "Patents",
+			"impact": "Impact",
+			"treesPlanted": "Trees",
+			"waterSaved": "Water",
+			"areasRestored": "Areas"
+		},
+		"cta": {
+			"title": "Want to learn more about our results?",
+			"description": "Contact us and get detailed information about the results of all our projects",
+			"button": "Contact Us"
+		}
+	},
+
 	"breadcrumb": {
 		"home": "Home",
 		"news": "News",
@@ -429,7 +505,9 @@
 		"internships": "Internships",
 		"jobs": "Job Vacancies",
 		"projects": "New Projects",
-		"research": "Research"
+		"research": "Research",
+		"results": "Results",
+		"technologies": "Technologies"
 	},
 
 	"footer": {

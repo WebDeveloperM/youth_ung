@@ -97,6 +97,34 @@
 		}
 	},
 
+	"technologies": {
+		"title": "Технологии",
+		"description": "Современные технологии и методы, используемые в нефтегазовой отрасли",
+		"readMore": "Подробнее",
+		"notFound": "Технология не найдена",
+		"back": "Назад",
+		"backToList": "Назад к списку",
+		"views": "просмотров",
+		"likes": "лайков",
+		"share": "Поделиться",
+		"shareText": "Посмотрите эту технологию!",
+		"linkCopied": "Ссылка скопирована в буфер обмена!",
+		"relatedTechnologies": "Похожие технологии",
+		"categories": {
+			"exploration": "Разведка",
+			"drilling": "Бурение",
+			"extraction": "Добыча",
+			"ecology": "Экология",
+			"automation": "Автоматизация",
+			"processing": "Переработка"
+		},
+		"cta": {
+			"title": "Хотите узнать больше о наших технологиях?",
+			"description": "Свяжитесь с нами и получите подробную информацию о всех наших технологиях",
+			"button": "Связаться с нами"
+		}
+	},
+
 	"about": {
 		"valuesTitle": "Наши ценности",
 		"valuesDescription": "Принципы, которыми мы руководствуемся в работе и жизни",
@@ -417,6 +445,54 @@
 		}
 	},
 
+	"results": {
+		"title": "Результаты и достижения",
+		"description": "Результаты проектов, исследований и программ компании Узбекнефтегаз",
+		"completedCount": "Завершенные результаты",
+		"totalImpact": "Общее влияние",
+		"totalResults": "Всего результатов",
+		"currentYear": "Текущий год",
+		"year": "год",
+		"viewDetails": "Подробнее",
+		"notFound": "Результат не найден",
+		"back": "Назад",
+		"backToList": "Назад к списку",
+		"achievements": "Достижения",
+		"status": {
+			"completed": "Завершен",
+			"inProgress": "В процессе",
+			"planned": "Запланирован"
+		},
+		"category": {
+			"project": "Проект",
+			"program": "Программа",
+			"research": "Исследование",
+			"ecology": "Экология"
+		},
+		"metrics": {
+			"productionIncrease": "Производство",
+			"energyEfficiency": "Энергия",
+			"emissionReduction": "Выбросы",
+			"newJobs": "Рабочие места",
+			"participants": "Участники",
+			"projects": "Проекты",
+			"grants": "Гранты",
+			"internships": "Стажировки",
+			"publications": "Публикации",
+			"citations": "Цитирования",
+			"patents": "Патенты",
+			"impact": "Влияние",
+			"treesPlanted": "Деревья",
+			"waterSaved": "Вода",
+			"areasRestored": "Территории"
+		},
+		"cta": {
+			"title": "Хотите узнать больше о наших результатах?",
+			"description": "Свяжитесь с нами и получите подробную информацию о результатах всех наших проектов",
+			"button": "Связаться с нами"
+		}
+	},
+
 	"breadcrumb": {
 		"home": "Главная",
 		"news": "Новости",
@@ -429,7 +505,9 @@
 		"internships": "Стажировки",
 		"jobs": "Вакансии",
 		"projects": "Новые проекты",
-		"research": "Исследования"
+		"research": "Исследования",
+		"results": "Результаты",
+		"technologies": "Технологии"
 	},
 
 	"footer": {

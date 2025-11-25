@@ -10,6 +10,7 @@ import NewsDetail from './pages/NewsDetail'
 import NewsList from './pages/NewsList'
 import InnovationsList from './pages/innovationsList'
 import InnovationDetail from './pages/innovationDetail'
+import TechnologiesList from './pages/technologiesList'
 import AboutPage from './pages/about'
 import CompetitionsList from './pages/competitionsList'
 import CompetitionDetail from './pages/competitionDetail'
@@ -26,6 +27,7 @@ import ProjectsList from './pages/projectsList'
 import ProjectDetail from './pages/projectDetail'
 import ResearchList from './pages/researchList'
 import ResearchDetail from './pages/researchDetail'
+import ResultsList from './pages/resultsList'
 function AppContent() {
 	const location = useLocation()
 
@@ -44,6 +46,7 @@ function AppContent() {
 			<Route path='/news/:id' element={<NewsDetail />} />
 			<Route path='/innovations' element={<InnovationsList />} />
 			<Route path='/innovations/:id' element={<InnovationDetail />} />
+			<Route path='/technologies' element={<TechnologiesList />} />
 			<Route path='/about' element={<AboutPage />} />
 			<Route path='/competitions' element={<CompetitionsList />} />
 			<Route path='/competitions/:id' element={<CompetitionDetail />} />
@@ -60,6 +63,7 @@ function AppContent() {
 			<Route path='/projects/:id' element={<ProjectDetail />} />
 			<Route path='/research' element={<ResearchList />} />
 			<Route path='/research/:id' element={<ResearchDetail />} />
+			<Route path='/results' element={<ResultsList />} />
 		</Routes>
 
 			{!hideHeader && <Footer />}
