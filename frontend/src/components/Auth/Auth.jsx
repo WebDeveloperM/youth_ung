@@ -15,6 +15,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageSelector } from '@/components/langSelector'
+import { authAPI } from '@/api/auth'
 import './Auth.css'
 
 const Auth = () => {
@@ -88,7 +89,7 @@ const Auth = () => {
 	}
 
 	// Отправка формы
-	const handleSubmit = e => {
+	const handleSubmit = async e => {
 		e.preventDefault()
 
 		const fieldsToValidate = isLogin
@@ -108,25 +109,63 @@ const Auth = () => {
 		setTouched(newTouched)
 
 		if (Object.keys(newErrors).length === 0) {
-			console.log('Form submitted:', formData)
-			setShowSuccess(true)
-
-			setTimeout(() => {
-				setShowSuccess(false)
-				setFormData({
-					fullName: '',
-					dateOfBirth: '',
-					phoneNumber: '',
-					residentialAddress: '',
-					placeOfWork: '',
-					position: '',
-					login: '',
-					password: '',
-					confirmPassword: '',
-				})
-				setTouched({})
-				setErrors({})
-			}, 3000)
+			console.log('✅ Form submitted:', formData)
+			console.log('🔍 Is Login?', isLogin)
+			console.log('🌐 authAPI:', authAPI)
+			
+			try {
+				console.log('🚀 Starting API call...')
+				// Отправка данных на API
+				let result
+				if (isLogin) {
+					console.log('📞 Calling signIn...')
+					result = await authAPI.signIn({
+						login: formData.login,
+						password: formData.password,
+					})
+				} else {
+					console.log('📞 Calling signUp...')
+					result = await authAPI.signUp(formData)
+				}
+				
+				console.log('📥 Result:', result)
+				
+				if (result.success) {
+					console.log('✅ Success!')
+					// Показываем успешное сообщение
+					setShowSuccess(true)
+					
+					// Перенаправляем на главную через 2 секунды
+					setTimeout(() => {
+						navigate('/')
+					}, 2000)
+				} else {
+					console.log('❌ Failed:', result.error)
+					// Обрабатываем ошибки от API
+					const apiErrors = {}
+					if (result.error) {
+						// Если ошибка - строка
+						if (typeof result.error === 'string') {
+							setErrors({ form: result.error })
+						} 
+						// Если ошибка - объект с полями
+						else if (typeof result.error === 'object') {
+							Object.keys(result.error).forEach(key => {
+								const errorValue = result.error[key]
+								apiErrors[key] = Array.isArray(errorValue) ? errorValue[0] : errorValue
+							})
+							setErrors(apiErrors)
+						}
+					}
+				}
+			} catch (error) {
+				console.error('💥 CATCH ERROR:', error)
+				console.error('💥 ERROR MESSAGE:', error.message)
+				console.error('💥 ERROR STACK:', error.stack)
+				setErrors({ form: 'Произошла ошибка. Попробуйте позже.' })
+			}
+		} else {
+			console.log('❌ Validation errors:', newErrors)
 		}
 	}
 

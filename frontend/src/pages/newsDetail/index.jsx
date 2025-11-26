@@ -40,7 +40,7 @@ export default function NewsDetail() {
 				className='prose max-w-none prose-img:rounded-lg prose-img:shadow-md prose-blockquote:border-blue-500 prose-blockquote:italic'
 				dangerouslySetInnerHTML={{ __html: news.content }}
 			/>
-			<Comments newsId={news.id} />
+			<Comments contentType="news" objectId={news.id} />
 		</section>
 	)
 }

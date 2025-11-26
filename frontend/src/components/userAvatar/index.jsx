@@ -19,18 +19,25 @@ import {
 	User,
 	UserCircle,
 	X,
+	CheckCircle,
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { Button } from '../ui/button'
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
+import { authAPI } from '@/api/auth'
 
 export function Useravatar() {
 	const { t } = useTranslation()
+	const navigate = useNavigate()
 	const [isOpen, setIsOpen] = useState(false)
 	const [isLogin, setIsLogin] = useState(true)
 	const [showPassword, setShowPassword] = useState(false)
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+	const [currentUser, setCurrentUser] = useState(null)
+	const [showSuccess, setShowSuccess] = useState(false)
+	const [successMessage, setSuccessMessage] = useState('')
 	const [formData, setFormData] = useState({
 		fullName: '',
 		dateOfBirth: '',
@@ -44,6 +51,27 @@ export function Useravatar() {
 	})
 	const [errors, setErrors] = useState({})
 	const [touched, setTouched] = useState({})
+
+	// Проверяем авторизацию при загрузке
+	useEffect(() => {
+		const loadUser = async () => {
+			// Сначала проверяем localStorage
+			const localUser = authAPI.getCurrentUser()
+			if (localUser) {
+				setCurrentUser(localUser)
+				
+				// Затем загружаем актуальные данные с сервера
+				const profileResult = await authAPI.getProfile()
+				if (profileResult.success) {
+					console.log('✅ Профиль загружен с сервера:', profileResult.data)
+					setCurrentUser(profileResult.data)
+					// Обновляем localStorage
+					localStorage.setItem('user', JSON.stringify(profileResult.data))
+				}
+			}
+		}
+		loadUser()
+	}, [])
 
 	// Валидация полей
 	const validateField = (name, value) => {
@@ -113,24 +141,102 @@ export function Useravatar() {
 		return Object.keys(newErrors).length === 0
 	}
 
-	const handleSubmit = e => {
+	const handleSubmit = async e => {
 		e.preventDefault()
-		if (validateForm()) {
-			console.log('Form submitted:', formData)
-			setIsOpen(false)
-			setFormData({
-				fullName: '',
-				dateOfBirth: '',
-				phoneNumber: '',
-				residentialAddress: '',
-				placeOfWork: '',
-				position: '',
-				email: '',
-				password: '',
-				confirmPassword: '',
-			})
-			setErrors({})
-			setTouched({})
+		
+		if (!validateForm()) {
+			return
+		}
+
+		console.log('✅ Форма валидна, отправляем на API...')
+		console.log('📦 Данные формы:', formData)
+		console.log('🔍 Режим:', isLogin ? 'Вход' : 'Регистрация')
+
+		try {
+			let result
+			
+			if (isLogin) {
+				// ВХОД
+				console.log('🔑 Отправляем запрос на вход...')
+				result = await authAPI.signIn({
+					login: formData.email,
+					password: formData.password
+				})
+			} else {
+				// РЕГИСТРАЦИЯ
+				console.log('🚀 Отправляем запрос на регистрацию...')
+				result = await authAPI.signUp({
+					fullName: formData.fullName,
+					dateOfBirth: formData.dateOfBirth,
+					phoneNumber: formData.phoneNumber,
+					residentialAddress: formData.residentialAddress,
+					placeOfWork: formData.placeOfWork,
+					position: formData.position,
+					login: formData.email,
+					password: formData.password,
+					confirmPassword: formData.confirmPassword
+				})
+			}
+
+			console.log('📥 Результат:', result)
+
+			if (result.success) {
+				console.log('✅ УСПЕХ!', result.data)
+				
+				// Сохраняем данные пользователя
+				setCurrentUser(result.data)
+				
+				// Показываем сообщение об успехе
+				const message = result.data.message || (isLogin ? 'Вход выполнен успешно!' : 'Регистрация прошла успешно!')
+				setSuccessMessage(message)
+				setShowSuccess(true)
+				
+				// Закрываем модальное окно
+				setIsOpen(false)
+				
+				// Очищаем форму
+				setFormData({
+					fullName: '',
+					dateOfBirth: '',
+					phoneNumber: '',
+					residentialAddress: '',
+					placeOfWork: '',
+					position: '',
+					email: '',
+					password: '',
+					confirmPassword: '',
+				})
+				setErrors({})
+				setTouched({})
+				
+				// Скрываем уведомление через 5 секунд
+				setTimeout(() => {
+					setShowSuccess(false)
+				}, 5000)
+			} else {
+				console.error('❌ Ошибка:', result.error)
+				
+				// Показываем ошибку
+				if (typeof result.error === 'string') {
+					alert('Ошибка: ' + result.error)
+				} else if (result.error && typeof result.error === 'object') {
+					// Если ошибка - объект с полями
+					const errorMessages = Object.entries(result.error)
+						.map(([field, messages]) => {
+							if (Array.isArray(messages)) {
+								return `${field}: ${messages.join(', ')}`
+							}
+							return `${field}: ${messages}`
+						})
+						.join('\n')
+					alert('Ошибки:\n' + errorMessages)
+				} else {
+					alert('Произошла ошибка. Попробуйте еще раз.')
+				}
+			}
+		} catch (error) {
+			console.error('💥 КРИТИЧЕСКАЯ ОШИБКА:', error)
+			alert('Произошла критическая ошибка: ' + error.message)
 		}
 	}
 
@@ -141,16 +247,49 @@ export function Useravatar() {
 		setTouched({})
 	}
 
+	// Выход из системы
+	const handleLogout = () => {
+		authAPI.signOut()
+		setCurrentUser(null)
+		console.log('🚪 Пользователь вышел из системы')
+	}
+
 	return (
 		<>
-			<Button
-				variant='outline'
-				size='lg'
-				className='m-2 text-md font-[500] text-blue-950 dark:text-white'
-				onClick={() => setIsOpen(true)}
-			>
-				{t('login')}
-			</Button>
+			{/* УВЕДОМЛЕНИЕ ОБ УСПЕХЕ */}
+			{showSuccess && createPortal(
+				<motion.div
+					initial={{ opacity: 0, y: -50 }}
+					animate={{ opacity: 1, y: 0 }}
+					exit={{ opacity: 0, y: -50 }}
+					className='fixed top-4 right-4 z-[10000] bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 max-w-md'
+				>
+					<CheckCircle size={24} className='flex-shrink-0' />
+					<div className='flex-1'>
+						<p className='font-semibold text-lg'>{t('success')}</p>
+						<p className='text-sm'>{successMessage}</p>
+					</div>
+					<button 
+						onClick={() => setShowSuccess(false)}
+						className='text-white hover:text-gray-200 transition'
+					>
+						<X size={20} />
+					</button>
+				</motion.div>,
+				document.body
+			)}
+
+			{/* Если НЕ авторизован - показываем кнопку "Войти" */}
+			{!currentUser && (
+				<Button
+					variant='outline'
+					size='lg'
+					className='m-2 text-md font-[500] text-blue-950 dark:text-white'
+					onClick={() => setIsOpen(true)}
+				>
+					{t('login')}
+				</Button>
+			)}
 
 			{isOpen &&
 				createPortal(
@@ -587,30 +726,63 @@ export function Useravatar() {
 					document.body
 				)}
 
-			<DropdownMenu>
-				<DropdownMenuTrigger>
-					<Avatar className='w-9 h-9 m-2 cursor-pointer'>
-						<UserCircle className='w-9 h-9' />
-					</Avatar>
-				</DropdownMenuTrigger>
-				<DropdownMenuContent>
-					<DropdownMenuLabel>{t('userMenu.myAccount')}</DropdownMenuLabel>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem className='cursor-pointer'>
-						<User className='w-[1.2rem] h-[1.2rem] mr-2' />
-						{t('userMenu.profile')}
-					</DropdownMenuItem>
-					<DropdownMenuItem className='cursor-pointer'>
-						<Settings className='w-[1.2rem] h-[1.2rem] mr-2' />
-						{t('userMenu.settings')}
-					</DropdownMenuItem>
-					<DropdownMenuSeparator />
-					<DropdownMenuItem variant='destructive' className='cursor-pointer'>
-						<LogOut className='w-[1.2rem] h-[1.2rem] mr-2' />
-						{t('userMenu.logout')}
-					</DropdownMenuItem>
-				</DropdownMenuContent>
-			</DropdownMenu>
+			{/* Если авторизован - показываем аватар и меню */}
+			{currentUser && (
+				<DropdownMenu>
+					<DropdownMenuTrigger className='flex items-center gap-2 m-2'>
+						<Avatar className='w-9 h-9 cursor-pointer overflow-hidden'>
+							{currentUser.avatar_url ? (
+								<img 
+									src={currentUser.avatar_url} 
+									alt={`${currentUser.first_name} ${currentUser.last_name}`}
+									className='w-full h-full object-cover'
+								/>
+							) : (
+								<div className='w-full h-full bg-gradient-to-br from-primary/30 to-primary/60 flex items-center justify-center'>
+									<UserCircle className='w-9 h-9 text-white' />
+								</div>
+							)}
+						</Avatar>
+						<div className='hidden md:block text-left'>
+							<p className='text-sm font-semibold text-gray-900 dark:text-white'>
+								{currentUser.first_name} {currentUser.last_name}
+							</p>
+							<p className='text-xs text-gray-500 dark:text-gray-400'>
+								{currentUser.email}
+							</p>
+						</div>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuLabel>
+							<div>
+								<p className='font-semibold'>{currentUser.first_name} {currentUser.last_name}</p>
+								<p className='text-xs text-gray-500 font-normal'>{currentUser.email}</p>
+							</div>
+						</DropdownMenuLabel>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem 
+							className='cursor-pointer'
+							onClick={() => navigate('/profile')}
+						>
+							<User className='w-[1.2rem] h-[1.2rem] mr-2' />
+							{t('userMenu.profile')}
+						</DropdownMenuItem>
+						<DropdownMenuItem className='cursor-pointer'>
+							<Settings className='w-[1.2rem] h-[1.2rem] mr-2' />
+							{t('userMenu.settings')}
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem 
+							variant='destructive' 
+							className='cursor-pointer text-red-600'
+							onClick={handleLogout}
+						>
+							<LogOut className='w-[1.2rem] h-[1.2rem] mr-2' />
+							{t('userMenu.logout')}
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
+			)}
 		</>
 	)
 }

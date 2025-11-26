@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        #result { margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 4px; white-space: pre-wrap; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Тест API Регистрации</h1>
+    
+    <form id="signupForm">
+        <div class="form-group">
+            <label>Полное имя:</label>
+            <input type="text" id="fullName" value="Иван Иванов" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Дата рождения:</label>
+            <input type="date" id="dateOfBirth" value="1995-01-01" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Телефон:</label>
+            <input type="tel" id="phoneNumber" value="+998901234567" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Адрес:</label>
+            <input type="text" id="residentialAddress" value="Ташкент" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Место работы:</label>
+            <input type="text" id="placeOfWork" value="IT Company" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Должность:</label>
+            <input type="text" id="position" value="Developer" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Логин (email):</label>
+            <input type="email" id="login" value="test@example.com" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Пароль:</label>
+            <input type="password" id="password" value="123456" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Подтверждение пароля:</label>
+            <input type="password" id="confirmPassword" value="123456" required>
+        </div>
+        
+        <button type="submit">🚀 Зарегистрироваться</button>
+    </form>
+    
+    <div id="result"></div>
+    
+    <script>
+        const API_URL = 'http://localhost:8000/api/v1';
+        
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = '⏳ Отправка запроса...';
+            resultDiv.className = '';
+            
+            const data = {
+                full_name: document.getElementById('fullName').value,
+                date_of_birth: document.getElementById('dateOfBirth').value,
+                phone_number: document.getElementById('phoneNumber').value,
+                residential_address: document.getElementById('residentialAddress').value,
+                place_of_work: document.getElementById('placeOfWork').value,
+                position: document.getElementById('position').value,
+                login: document.getElementById('login').value,
+                password: document.getElementById('password').value,
+                confirm_password: document.getElementById('confirmPassword').value
+            };
+            
+            console.log('📤 Sending:', data);
+            
+            try {
+                const response = await fetch(`${API_URL}/users/sign-up/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+                
+                console.log('📥 Response status:', response.status);
+                const result = await response.json();
+                console.log('📥 Response data:', result);
+                
+                if (response.ok) {
+                    resultDiv.className = 'success';
+                    resultDiv.textContent = '✅ УСПЕХ!\n\n' + JSON.stringify(result, null, 2);
+                } else {
+                    resultDiv.className = 'error';
+                    resultDiv.textContent = '❌ ОШИБКА!\n\n' + JSON.stringify(result, null, 2);
+                }
+            } catch (error) {
+                console.error('💥 Error:', error);
+                resultDiv.className = 'error';
+                resultDiv.textContent = '💥 ОШИБКА СЕТИ!\n\n' + error.message + '\n\nПроверь:\n1. Запущен ли бэкенд на http://localhost:8000\n2. CORS настройки\n3. Консоль браузера (F12)';
+            }
+        });
+        
+        console.log('🔧 API URL:', API_URL);
+        console.log('🌐 Current origin:', window.location.origin);
+    </script>
+</body>
+</html>
+
+
+

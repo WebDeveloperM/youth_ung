@@ -128,7 +128,7 @@ export default function ResearchDetail() {
 			)}
 
 			<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0 }} className='mt-8 md:mt-12'>
-				<Comments newsId={research.id} />
+				<Comments contentType="research" objectId={research.id} />
 			</motion.div>
 		</motion.section>
 	)

@@ -1,12 +1,14 @@
 from django.urls import path
 
-# from users.views.check_in import CheckInView
-# from users.views.sign_in import SignInView
 from users.views.info_user import InfoUserView
 from users.views.sign_up import SignUpView
+from users.views.sign_in import SignInView
+from users.views.profile import ProfileView, AvatarUploadView
 
 urlpatterns = [
-    path('info_user', InfoUserView.as_view(), name='info_user.py'),
-    path('sign-up', SignUpView.as_view(), name='signup'),
-
+    path('info_user', InfoUserView.as_view(), name='info_user'),
+    path('sign-up/', SignUpView.as_view(), name='signup'),
+    path('sign-in/', SignInView.as_view(), name='signin'),
+    path('profile/', ProfileView.as_view(), name='profile'),
+    path('profile/avatar/', AvatarUploadView.as_view(), name='avatar_upload'),
 ]

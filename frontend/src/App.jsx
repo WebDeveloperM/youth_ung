@@ -6,6 +6,7 @@ import { Header } from './components/header'
 import Navbar from './components/navbar'
 import { HomePage } from './pages/homepage'
 import { LoginPage } from './pages/login'
+import { TestAuthPage } from './pages/testauth'
 import NewsDetail from './pages/NewsDetail'
 import NewsList from './pages/NewsList'
 import InnovationsList from './pages/innovationsList'
@@ -28,6 +29,7 @@ import ProjectDetail from './pages/projectDetail'
 import ResearchList from './pages/researchList'
 import ResearchDetail from './pages/researchDetail'
 import ResultsList from './pages/resultsList'
+import ProfilePage from './pages/profile'
 function AppContent() {
 	const location = useLocation()
 
@@ -42,6 +44,8 @@ function AppContent() {
 		<Routes>
 			<Route path='/' element={<HomePage />} />
 			<Route path='/login' element={<LoginPage />} />
+			<Route path='/testauth' element={<TestAuthPage />} />
+			<Route path='/profile' element={<ProfilePage />} />
 			<Route path='/news' element={<NewsList />} />
 			<Route path='/news/:id' element={<NewsDetail />} />
 			<Route path='/innovations' element={<InnovationsList />} />
