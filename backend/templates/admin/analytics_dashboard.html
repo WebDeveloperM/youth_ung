@@ -1,0 +1,535 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block extrastyle %}
+<style>
+    .analytics-dashboard {
+        padding: 20px;
+    }
+    
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .stat-card {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        border-left: 4px solid #007bff;
+    }
+    
+    .stat-card.success {
+        border-left-color: #28a745;
+    }
+    
+    .stat-card.warning {
+        border-left-color: #ffc107;
+    }
+    
+    .stat-card.danger {
+        border-left-color: #dc3545;
+    }
+    
+    .stat-card.info {
+        border-left-color: #17a2b8;
+    }
+    
+    .stat-card h3 {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+    
+    .stat-card .value {
+        font-size: 32px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .stat-card .subtitle {
+        font-size: 12px;
+        color: #999;
+    }
+    
+    .chart-container {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    
+    .chart-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        color: #333;
+    }
+    
+    .publications-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .publication-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .publication-card h4 {
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        opacity: 0.9;
+    }
+    
+    .publication-card .count {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    
+    .activity-list {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .activity-item {
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-user {
+        font-weight: 600;
+        color: #007bff;
+    }
+    
+    .activity-time {
+        font-size: 12px;
+        color: #999;
+    }
+    
+    .top-content {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    
+    .top-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .top-item:last-child {
+        border-bottom: none;
+    }
+    
+    .top-item-title {
+        flex: 1;
+        font-weight: 500;
+    }
+    
+    .top-item-value {
+        font-weight: bold;
+        color: #007bff;
+    }
+    
+    .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .grid-2 {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="analytics-dashboard">
+    <h1 style="margin-bottom: 30px;">📊 Дашборд аналитики</h1>
+    
+    <!-- Основная статистика посетителей -->
+    <h2 style="margin-bottom: 15px;">Посетители</h2>
+    <div class="stats-row">
+        <div class="stat-card success">
+            <h3>Сегодня</h3>
+            <div class="value">{{ visitors_today }}</div>
+            <div class="subtitle">Уникальных: {{ unique_visitors_today }}</div>
+        </div>
+        
+        <div class="stat-card info">
+            <h3>За неделю</h3>
+            <div class="value">{{ visitors_week }}</div>
+            <div class="subtitle">Последние 7 дней</div>
+        </div>
+        
+        <div class="stat-card warning">
+            <h3>За месяц</h3>
+            <div class="value">{{ visitors_month }}</div>
+            <div class="subtitle">Последние 30 дней</div>
+        </div>
+        
+        <div class="stat-card danger">
+            <h3>Среднее время</h3>
+            <div class="value">{{ avg_time_today }}</div>
+            <div class="subtitle">минут на сайте</div>
+        </div>
+    </div>
+    
+    <!-- Статистика просмотров -->
+    <h2 style="margin-bottom: 15px;">Просмотры страниц</h2>
+    <div class="stats-row">
+        <div class="stat-card">
+            <h3>Сегодня</h3>
+            <div class="value">{{ pageviews_today }}</div>
+            <div class="subtitle">просмотров</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>За неделю</h3>
+            <div class="value">{{ pageviews_week }}</div>
+            <div class="subtitle">просмотров</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>За месяц</h3>
+            <div class="value">{{ pageviews_month }}</div>
+            <div class="subtitle">просмотров</div>
+        </div>
+        
+        <div class="stat-card">
+            <h3>На посетителя</h3>
+            <div class="value">{% if visitors_today > 0 %}{{ pageviews_today|divisibleby:visitors_today|floatformat:1 }}{% else %}0{% endif %}</div>
+            <div class="subtitle">страниц сегодня</div>
+        </div>
+    </div>
+    
+    <!-- Графики -->
+    <div class="grid-2">
+        <div class="chart-container">
+            <div class="chart-title">Посетители за последние 7 дней</div>
+            <canvas id="visitorsChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">Просмотры за последние 7 дней</div>
+            <canvas id="pageviewsChart"></canvas>
+        </div>
+    </div>
+    
+    <!-- Статистика публикаций -->
+    <h2 style="margin-bottom: 15px;">Публикации</h2>
+    <div class="stats-row">
+        <div class="stat-card success">
+            <h3>Сегодня</h3>
+            <div class="value">{{ total_publications_today }}</div>
+            <div class="subtitle">публикаций</div>
+        </div>
+        
+        <div class="stat-card info">
+            <h3>За неделю</h3>
+            <div class="value">{{ total_publications_week }}</div>
+            <div class="subtitle">публикаций</div>
+        </div>
+        
+        <div class="stat-card warning">
+            <h3>За месяц</h3>
+            <div class="value">{{ total_publications_month }}</div>
+            <div class="subtitle">публикаций</div>
+        </div>
+    </div>
+    
+    <!-- Детальная статистика по типам публикаций -->
+    <h3 style="margin-bottom: 15px;">По категориям (неделя)</h3>
+    <div class="publications-grid">
+        <div class="publication-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <h4>📰 Новости</h4>
+            <div class="count">{{ publications_week.news }}</div>
+        </div>
+        <div class="publication-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <h4>💰 Гранты</h4>
+            <div class="count">{{ publications_week.grants }}</div>
+        </div>
+        <div class="publication-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <h4>🎓 Стипендии</h4>
+            <div class="count">{{ publications_week.scholarships }}</div>
+        </div>
+        <div class="publication-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <h4>🏆 Конкурсы</h4>
+            <div class="count">{{ publications_week.competitions }}</div>
+        </div>
+        <div class="publication-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+            <h4>💡 Инновации</h4>
+            <div class="count">{{ publications_week.innovations }}</div>
+        </div>
+        <div class="publication-card" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+            <h4>👨‍🎓 Стажировки</h4>
+            <div class="count">{{ publications_week.internships }}</div>
+        </div>
+        <div class="publication-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+            <h4>💼 Вакансии</h4>
+            <div class="count">{{ publications_week.jobs }}</div>
+        </div>
+    </div>
+    
+    <!-- График публикаций -->
+    <div class="chart-container">
+        <div class="chart-title">Публикации за последние 7 дней</div>
+        <canvas id="publicationsChart"></canvas>
+    </div>
+    
+    <!-- Топ контента и активность -->
+    <div class="grid-2">
+        <!-- Топ новостей -->
+        <div class="top-content">
+            <div class="chart-title">Топ новостей (неделя)</div>
+            {% for news in top_news %}
+            <div class="top-item">
+                <div class="top-item-title">{{ news.title_ru|truncatewords:8 }}</div>
+                <div class="top-item-value">{{ news.views }} 👁</div>
+            </div>
+            {% empty %}
+            <p style="color: #999;">Нет данных</p>
+            {% endfor %}
+        </div>
+        
+        <!-- Топ инноваций -->
+        <div class="top-content">
+            <div class="chart-title">Топ инноваций (неделя)</div>
+            {% for innovation in top_innovations %}
+            <div class="top-item">
+                <div class="top-item-title">{{ innovation.title_ru|truncatewords:8 }}</div>
+                <div class="top-item-value">{{ innovation.views }} 👁</div>
+            </div>
+            {% empty %}
+            <p style="color: #999;">Нет данных</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Активность пользователей и топ авторов -->
+    <div class="grid-2">
+        <!-- Последняя активность -->
+        <div class="activity-list">
+            <div class="chart-title">Последняя активность</div>
+            {% for activity in user_activities %}
+            <div class="activity-item">
+                <div>
+                    <span class="activity-user">{{ activity.user.username }}</span>
+                    - {{ activity.get_action_display }}
+                    {% if activity.content_type %}
+                        <span style="color: #666;">({{ activity.content_type }})</span>
+                    {% endif %}
+                </div>
+                <div class="activity-time">{{ activity.timestamp|date:"d.m.Y H:i" }}</div>
+            </div>
+            {% empty %}
+            <p style="color: #999;">Нет данных</p>
+            {% endfor %}
+        </div>
+        
+        <!-- Топ авторов -->
+        <div class="activity-list">
+            <div class="chart-title">Топ авторов (месяц)</div>
+            {% for author in top_authors %}
+            <div class="top-item">
+                <div class="top-item-title">{{ author.user__username }}</div>
+                <div class="top-item-value">{{ author.count }} публикаций</div>
+            </div>
+            {% empty %}
+            <p style="color: #999;">Нет данных</p>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <!-- Статистика по устройствам и браузерам -->
+    <div class="grid-2">
+        <div class="chart-container">
+            <div class="chart-title">По устройствам (месяц)</div>
+            <canvas id="devicesChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <div class="chart-title">По браузерам (месяц)</div>
+            <canvas id="browsersChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    // График посетителей
+    const visitorsCtx = document.getElementById('visitorsChart').getContext('2d');
+    new Chart(visitorsCtx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_dates|safe }},
+            datasets: [{
+                label: 'Посетители',
+                data: {{ chart_visitors|safe }},
+                borderColor: 'rgb(75, 192, 192)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // График просмотров
+    const pageviewsCtx = document.getElementById('pageviewsChart').getContext('2d');
+    new Chart(pageviewsCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_dates|safe }},
+            datasets: [{
+                label: 'Просмотры',
+                data: {{ chart_pageviews|safe }},
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // График публикаций
+    const publicationsCtx = document.getElementById('publicationsChart').getContext('2d');
+    new Chart(publicationsCtx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_dates|safe }},
+            datasets: [{
+                label: 'Публикации',
+                data: {{ chart_publications|safe }},
+                borderColor: 'rgb(255, 99, 132)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    
+    // График по устройствам
+    const devicesCtx = document.getElementById('devicesChart').getContext('2d');
+    const deviceLabels = {{ device_stats|safe }}.map(d => {
+        const labels = {mobile: 'Мобильные', tablet: 'Планшеты', desktop: 'Десктоп'};
+        return labels[d.device] || d.device;
+    });
+    const deviceData = {{ device_stats|safe }}.map(d => d.count);
+    
+    new Chart(devicesCtx, {
+        type: 'doughnut',
+        data: {
+            labels: deviceLabels,
+            datasets: [{
+                data: deviceData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+    
+    // График по браузерам
+    const browsersCtx = document.getElementById('browsersChart').getContext('2d');
+    const browserLabels = {{ browser_stats|safe }}.map(b => b.browser);
+    const browserData = {{ browser_stats|safe }}.map(b => b.count);
+    
+    new Chart(browsersCtx, {
+        type: 'doughnut',
+        data: {
+            labels: browserLabels,
+            datasets: [{
+                data: browserData,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 206, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}
+

@@ -209,7 +209,7 @@ export default function InnovationDetail() {
 				transition={{ delay: 0.8 }}
 				className='mt-12'
 			>
-				<Comments newsId={innovation.id} />
+				<Comments contentType="innovation" objectId={innovation.id} />
 			</motion.div>
 		</motion.section>
 	)

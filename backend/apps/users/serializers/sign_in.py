@@ -1,64 +1,61 @@
-import uuid
-
-from django.conf import settings
+from django.contrib.auth import authenticate
 from rest_framework import serializers
+from users.models import User, Token
 
-# from academy.models import Student, Teacher
-from users.models import User
-from core.utils.random_numbers import random_numbers
-from users.utils.make_sign_up_link import make_sign_up_link
-from users.utils.phone_validator import PHONE_VALIDATOR
 
-#
 class SignInSerializer(serializers.Serializer):
-
-#     phone = serializers.CharField(validators=[PHONE_VALIDATOR])
-#     role = serializers.ChoiceField(choices=[('Student', 'student'), ('Teacher', 'teacher'), ('Admin', 'admin')],
-#                                    required=False)
-#     message = serializers.CharField(required=False)
-#
-#     def to_representation(self, instance):
-#         data = super().to_representation(instance)
-#         phone = data.get('phone')
-#         role = data.get('role')
-#
-#         rand_num = random_numbers(6)
-#         key = f'{str(uuid.uuid4()).split("-")[-1]}:{rand_num}'
-#
-#         has_user = User.objects.prefetch_related('chats').filter(phone=phone).first()
-#         teacher_user = Teacher.objects.filter(user=has_user).first()
-#
-#         if has_user and has_user.chats.all():
-#             chats = has_user.chats.all()
-#             has_user.confirmation_code = key
-#             has_user.save()
-#
-#             try:
-#                 for chat in chats:
-#                     main_bot.send_message(chat.chat_id, f'*Ваш проверочный код:*  `{rand_num}`', 'Markdown')
-#             except chats.DoesNotExist:
-#                 # Handle Error and send with Sentry
-#                 pass
-#             data['message'] = f'https://t.me/{settings.BOT_NAME}'
-#
-#         if not has_user:
-#             has_user, _ = User.objects.update_or_create(
-#                 phone=phone,
-#                 defaults={
-#                     'type': role and role or User.STUDENT,
-#                     'confirmation_code': key
-#                 }
-#             )
-#
-#         if not hasattr(has_user, 'student') and (not role or role == User.STUDENT):
-#             Student.objects.create(user=has_user)
-#
-#         if not teacher_user and role == User.TEACHER:
-#             Teacher.objects.create(user=has_user)
-#
-#         data['message'] = make_sign_up_link(has_user)
-#         return data
-#
-    class Meta:
-        model = User
-        fields = ('phone', 'message')
+    """Сериализатор для входа пользователя"""
+    
+    login = serializers.CharField(help_text="Email или username")
+    password = serializers.CharField(write_only=True, help_text="Пароль")
+    
+    def validate(self, data):
+        """Проверка данных для входа"""
+        login = data.get('login')
+        password = data.get('password')
+        
+        if not login or not password:
+            raise serializers.ValidationError("Необходимо указать логин и пароль")
+        
+        # Пробуем найти пользователя по email или username
+        user = None
+        if '@' in login:
+            user = User.objects.filter(email=login).first()
+        else:
+            user = User.objects.filter(username=login).first()
+        
+        if not user:
+            raise serializers.ValidationError("Пользователь не найден")
+        
+        # Проверяем пароль
+        if not user.check_password(password):
+            raise serializers.ValidationError("Неверный пароль")
+        
+        # Проверяем, активен ли пользователь
+        if not user.is_active:
+            raise serializers.ValidationError("Аккаунт деактивирован")
+        
+        # Создаем или получаем активный токен
+        token = Token.objects.filter(user=user, is_active=True).first()
+        if not token:
+            token = Token.objects.create(user=user)
+        
+        data['user'] = user
+        data['token'] = token.key
+        
+        return data
+    
+    def to_representation(self, instance):
+        """Формирование ответа"""
+        user = instance['user']
+        return {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'phone': user.phone,
+            'role': user.role,
+            'token': instance['token'],
+            'message': 'Вход выполнен успешно!'
+        }

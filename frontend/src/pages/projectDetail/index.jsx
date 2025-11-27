@@ -122,7 +122,7 @@ export default function ProjectDetail() {
 			)}
 
 			<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }} className='mt-8 md:mt-12'>
-				<Comments newsId={project.id} />
+				<Comments contentType="project" objectId={project.id} />
 			</motion.div>
 		</motion.section>
 	)

@@ -312,7 +312,7 @@ export default function CompetitionDetail() {
 				transition={{ delay: 1 }}
 				className='mt-8 md:mt-12'
 			>
-				<Comments newsId={competition.id} />
+				<Comments contentType="competition" objectId={competition.id} />
 			</motion.div>
 		</motion.section>
 	)

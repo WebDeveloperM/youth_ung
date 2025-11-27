@@ -20,12 +20,15 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    path('admin/analytics/', include('analytics.urls')),
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     # path('bot/', include(('bot.urls', 'bot'))),
     path('api/v1/', include([
         path('core/', include(('core.urls', 'core'), namespace='core')),
         path('users/', include(('users.urls', 'user'), namespace='users')),
+        path('comments/', include('content.urls.comments')),
     ])),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),

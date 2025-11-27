@@ -1,3 +1,5 @@
+import os
+
 DEBUG = True
 
 ALLOWED_HOSTS = ('*',)
@@ -5,11 +7,11 @@ ALLOWED_HOSTS = ('*',)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'youth_database',
-        'USER': 'postgres',
-        'PASSWORD': 'qwerty1514',
-        'HOST': 'host.docker.internal',
-        'PORT': 5432,
+        'NAME': os.environ.get('POSTGRES_DB', 'youth_database'),
+        'USER': os.environ.get('POSTGRES_USER', 'postgres'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qwerty1514'),
+        'HOST': os.environ.get('HOST', 'host.docker.internal'),
+        'PORT': os.environ.get('POSTGRES_PORT', 5432),
     }
 }
 

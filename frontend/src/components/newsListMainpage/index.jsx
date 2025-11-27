@@ -1,7 +1,6 @@
-import { commentsData } from '@/datatest/commentsData'
 import { newsData } from '@/datatest/newsData'
 import { motion } from 'framer-motion'
-import { FaComment, FaEye } from 'react-icons/fa'
+import { FaEye } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -24,9 +23,6 @@ export default function NewsListMainpage() {
 
 			<div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 container mx-auto py-10 px-4'>
 				{latestNews.map((news, index) => {
-					const commentCount = commentsData.filter(
-						c => c.newsId === news.id
-					).length
 					return (
 						<motion.article
 							key={news.id}
@@ -59,9 +55,6 @@ export default function NewsListMainpage() {
 									<div className='flex items-center gap-3'>
 										<span className='flex items-center gap-1'>
 											<FaEye className='text-[#0078c2]' /> {news.views}
-										</span>
-										<span className='flex items-center gap-1'>
-											<FaComment className='text-[#0078c2]' /> {commentCount}
 										</span>
 									</div>
 									<span>{news.date}</span>
