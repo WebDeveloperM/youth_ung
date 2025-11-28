@@ -1,149 +1,243 @@
-# Admin Dashboard - Boshqaruv Paneli
+# 🎨 UNG Youth Admin Dashboard
 
-Professional admin panel React, TypeScript, Tailwind CSS va Recharts bilan yaratilgan.
+Современная административная панель для управления платформой UNG Youth.
 
-## 🚀 Xususiyatlari
+## 🚀 Что уже реализовано
 
-### 📊 Dashboard (Boshqaruv Paneli)
-- **Statistika kartalar**: Foydalanuvchilar, Loyihalar, Tadqiqotlar, Kunlik tashrif
-- **O'sish ko'rsatkichlari**: Har bir metrika uchun foiz o'zgarish
-- **Turli xil chartlar**:
-  - Kunlik tashrif statistikasi (Area Chart)
-  - Ma'lumotlar taqsimoti (Pie Chart)
-  - Eng ko'p ko'rilgan sahifalar (Bar Chart)
-  - Sahifa ko'rishlari tendensiyasi (Line Chart)
-- **So'nggi faoliyat jadvali**: Barcha sahifalar bo'yicha batafsil statistika
+### ✅ API Клиенты
+- `authAPI` - аутентификация и авторизация
+- `usersAPI` - управление пользователями
+- `contentAPI` - управление всем контентом (news, grants, scholarships, competitions, innovations, internships, jobs, team)
+- `commentsAPI` - модерация комментариев
+- `analyticsAPI` - аналитика и статистика
 
-### 👥 Foydalanuvchilar boshqaruvi
-- **CRUD operatsiyalari**:
-  - ✅ Yangi foydalanuvchi yaratish
-  - ✅ Foydalanuvchi ma'lumotlarini o'zgartirish
-  - ✅ Foydalanuvchini o'chirish
-  - ✅ Foydalanuvchilarni qidirish
-- **Foydalanuvchi rollari**: Admin, Moderator, Foydalanuvchi
-- **Holat boshqaruvi**: Faol/Nofaol
-- **Statistika**: Jami, Faol, Adminlar soni
+### ✅ Страницы
+1. **Dashboard** - главная страница с статистикой и графиками
+2. **News** - управление новостями (список, создание, редактирование, удаление)
+3. **Comments** - модерация комментариев (одобрение, удаление, массовые действия)
+4. **Users** - управление пользователями
+5. **Analytics** - детальная аналитика
 
-### 📈 Analitika
-- **Umumiy ko'rsatkichlar**: Ko'rishlar, Tashrif, O'rtacha vaqt, O'sish sur'ati
-- **Chartlar**:
-  - Haftalik tendensiya (Area Chart)
-  - Soatlik faollik (Line Chart)
-  - Sahifalar taqqoslash (Bar Chart)
-- **Batafsil jadval**: Har bir sahifa uchun to'liq statistika
-- **Performance metrikalari**: Eng ko'p ko'rilgan, Eng uzun vaqt, Eng yuqori konversiya
+### ✅ Функционал
+- 📊 Real-time статистика на Dashboard
+- 🔍 Поиск и фильтрация
+- 📄 Пагинация
+- 🎨 Современный UI/UX (дизайн сохранен!)
+- 📱 Responsive дизайн
+- ⚡ Быстрая загрузка с loading состояниями
 
-## 🛠️ Texnologiyalar
+## 📦 Установка
 
-- **Frontend Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS
-- **Charts**: Recharts
-- **Icons**: Lucide React
-- **Routing**: React Router v6
-- **Date Handling**: date-fns
-
-## 📦 O'rnatish
-
-### 1. Dependencies o'rnatish
 ```bash
+# Установить зависимости
 npm install
-```
 
-### 2. Development server ishga tushirish
-```bash
+# Запустить dev сервер
 npm run dev
-```
 
-Server `http://localhost:5173` da ochiladi.
-
-### 3. Production build
-```bash
+# Собрать для продакшена
 npm run build
 ```
 
-Build fayllar `dist` papkasida saqlanadi.
+## ⚙️ Настройка
 
-### 4. Production preview
-```bash
-npm run preview
+### API Base URL
+
+Измени URL бэкенда в файле `/src/api/client.ts`:
+
+```typescript
+const API_BASE_URL = 'http://172.20.10.2:8000/api/v1';
 ```
 
-## 📁 Loyiha strukturasi
+### Токен авторизации
+
+Токен сохраняется в `localStorage` с ключом `admin_token`.
+
+## 🎯 TODO (что нужно доделать)
+
+### 1. Создать Backend Endpoints
+
+Админка готова, но нужно создать API endpoints в Django:
+
+```python
+# В Django нужно добавить:
+# /api/v1/admin/news/          - CRUD для новостей
+# /api/v1/admin/grants/        - CRUD для грантов
+# /api/v1/admin/scholarships/  - CRUD для стипендий
+# /api/v1/admin/competitions/  - CRUD для конкурсов
+# /api/v1/admin/innovations/   - CRUD для инноваций
+# /api/v1/admin/internships/   - CRUD для стажировок
+# /api/v1/admin/jobs/          - CRUD для вакансий
+# /api/v1/admin/team/          - CRUD для команды
+# /api/v1/admin/users/         - CRUD для пользователей
+# /api/v1/admin/comments/      - Модерация комментариев
+# /api/v1/admin/analytics/dashboard/  - Статистика
+# /api/v1/admin/analytics/visitors/   - Посетители
+# /api/v1/admin/analytics/pages/      - Аналитика страниц
+```
+
+### 2. Добавить остальные страницы контента
+
+Создать аналогичные страницы для:
+- Grants (по примеру News)
+- Scholarships
+- Competitions
+- Innovations
+- Internships
+- Jobs
+- Team
+
+### 3. Формы создания/редактирования
+
+Добавить модальные окна или отдельные страницы для:
+- Создания нового контента
+- Редактирования существующего
+- Загрузки изображений
+- Rich Text Editor для контента
+
+### 4. Аутентификация
+
+- Страница логина
+- Защита роутов (PrivateRoute)
+- Проверка роли пользователя (Admin/Moderator)
+
+### 5. Rich Text Editor
+
+Интегрировать для редактирования контента:
+- React Quill
+- или TipTap
+- или CKEditor
+
+## 📁 Структура проекта
 
 ```
 dashboard/
 ├── src/
-│   ├── components/
-│   │   ├── Layout.tsx          # Asosiy layout (sidebar, header)
-│   │   └── StatCard.tsx        # Statistika kartasi komponenti
-│   ├── pages/
-│   │   ├── Dashboard.tsx       # Bosh sahifa
-│   │   ├── Users.tsx          # Foydalanuvchilar sahifasi
-│   │   └── Analytics.tsx      # Analitika sahifasi
-│   ├── types/
-│   │   └── index.ts           # TypeScript type definitions
-│   ├── data/
-│   │   └── mockData.ts        # Mock ma'lumotlar
-│   ├── App.tsx                # Asosiy App komponenti
-│   ├── main.tsx              # Entry point
-│   └── index.css             # Global styles
-├── index.html
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── tailwind.config.js
-└── postcss.config.js
+│   ├── api/              # API клиенты
+│   │   ├── client.ts     # Axios инстанс
+│   │   ├── auth.ts       # Аутентификация
+│   │   ├── users.ts      # Пользователи
+│   │   ├── content.ts    # Весь контент
+│   │   ├── comments.ts   # Комментарии
+│   │   └── analytics.ts  # Аналитика
+│   ├── components/       # Переиспользуемые компоненты
+│   │   ├── Layout.tsx    # Главный layout с sidebar
+│   │   └── StatCard.tsx  # Карточка статистики
+│   ├── pages/            # Страницы
+│   │   ├── Dashboard.tsx # Главная страница
+│   │   ├── News.tsx      # Управление новостями
+│   │   ├── Comments.tsx  # Модерация комментариев
+│   │   ├── Users.tsx     # Пользователи
+│   │   └── Analytics.tsx # Аналитика
+│   ├── data/             # Mock данные (fallback)
+│   ├── types/            # TypeScript типы
+│   ├── App.tsx           # Роуты
+│   └── main.tsx          # Entry point
+└── package.json
 ```
 
-## 🎨 Dizayn xususiyatlari
+## 🎨 Дизайн
 
-- **Modern va professional UI**
-- **Responsive dizayn** - barcha ekran o'lchamlari uchun
-- **Smooth animatsiyalar** va o'tishlar
-- **Intuitive navigation** - qulay menyu tizimi
-- **Color coding** - har xil holat va rollar uchun
-- **Interactive charts** - Recharts yordamida
-- **Custom scrollbar** - zamonaviy ko'rinish
+Дизайн сохранен как в оригинале:
+- ✅ Sidebar с навигацией
+- ✅ Header с уведомлениями
+- ✅ Карточки статистики
+- ✅ Таблицы с hover эффектами
+- ✅ Цветовая схема (primary-500, green, blue, orange, purple)
+- ✅ Иконки от Lucide React
+- ✅ Графики от Recharts
 
-## 📊 Ma'lumotlar
+## 🔧 Технологии
 
-Hozirda loyiha mock ma'lumotlar bilan ishlaydi (`src/data/mockData.ts`). 
-Real backend bilan integratsiya qilish uchun:
+- **React 18** - UI library
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **React Router** - Navigation
+- **Axios** - HTTP requests
+- **Recharts** - Charts and graphs
+- **Lucide React** - Icons
+- **date-fns** - Date formatting
 
-1. API service yarating
-2. Mock ma'lumotlarni API chaqiruvlari bilan almashtiring
-3. State management library qo'shing (Redux, Zustand, etc.)
+## 📱 Responsive
 
-## 🔐 Xavfsizlik
+Админка адаптивна для:
+- 📱 Mobile (< 640px)
+- 💻 Tablet (640px - 1024px)
+- 🖥️ Desktop (> 1024px)
 
-Production muhitda quyidagilarni qo'shing:
-- Authentication tizimi
-- Authorization va permission checks
-- API security (JWT tokens)
-- Input validation
-- XSS va CSRF himoyasi
+## 🚀 Запуск в сети
 
-## 🚀 Kelajakdagi yaxshilanishlar
+```bash
+# Запустить с доступом из сети
+npm run dev -- --host
 
-- [ ] Real-time ma'lumotlar yangilanishi
-- [ ] Export functionality (PDF, Excel)
-- [ ] Advanced filtering va sorting
-- [ ] Dark mode
-- [ ] Email notifications
-- [ ] Role-based access control
-- [ ] Audit logs
-- [ ] Multi-language support
+# Откроется на:
+# http://localhost:5173/
+# http://172.20.10.2:5173/  (или твой IP)
+```
 
-## 📝 Litsenziya
+## 📝 Примеры использования API
 
-Bu loyiha ochiq kod hisoblanadi va o'rganish maqsadlarida ishlatilishi mumkin.
+### Получить новости
+```typescript
+import { newsAPI } from './api';
 
-## 👨‍💻 Dasturchi
+const loadNews = async () => {
+  const response = await newsAPI.getList({
+    page: 1,
+    page_size: 20,
+    search: 'query',
+    ordering: '-date',
+  });
+  console.log(response.results);
+};
+```
 
-Professional admin dashboard - Senior developer tomonidan yaratilgan
+### Создать новость
+```typescript
+const createNews = async () => {
+  const formData = {
+    title_uz: 'Yangilik',
+    title_ru: 'Новость',
+    title_en: 'News',
+    content_uz: '...',
+    content_ru: '...',
+    content_en: '...',
+    image: fileObject,
+    date: '2025-11-27',
+    is_published: true,
+  };
+  
+  const news = await newsAPI.create(formData);
+};
+```
+
+### Модерировать комментарий
+```typescript
+import { commentsAPI } from './api';
+
+// Одобрить
+await commentsAPI.moderate(commentId, { is_moderated: true });
+
+// Удалить
+await commentsAPI.delete(commentId);
+
+// Массовое действие
+await commentsAPI.bulkModerate([1, 2, 3], 'approve');
+```
+
+## ⚠️ Важно
+
+1. **Backend должен быть запущен** на `http://172.20.10.2:8000`
+2. **CORS должен быть настроен** в Django для `http://172.20.10.2:5173`
+3. **Токен аутентификации** должен быть в localStorage
+
+## 🤝 Вклад
+
+Создано с ❤️ для UNG Youth Platform
 
 ---
 
-**Eslatma**: Bu loyiha demo maqsadida yaratilgan va mock ma'lumotlar bilan ishlaydi. Real production uchun backend integratsiya va xavfsizlik choralari qo'shilishi kerak.
-
+**Статус:** ✅ Базовый функционал готов  
+**Версия:** 1.0.0  
+**Дата:** 27 ноября 2025

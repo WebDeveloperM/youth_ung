@@ -240,6 +240,21 @@
 			"title": "Ready to Apply?",
 			"description": "Register on the platform and get access to all grants",
 			"button": "Get Started"
+		},
+		"applyForm": {
+			"title": "Grant Application",
+			"personalInfo": "Personal Information",
+			"fullName": "Full Name",
+			"phone": "Phone",
+			"organization": "Organization/University",
+			"position": "Position/Speciality",
+			"experience": "Experience",
+			"motivation": "Motivation Letter",
+			"documents": "Documents",
+			"cv": "Resume/CV",
+			"portfolio": "Portfolio",
+			"submit": "Submit Application",
+			"cancel": "Cancel"
 		}
 	},
 

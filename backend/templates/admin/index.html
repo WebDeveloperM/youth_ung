@@ -1,0 +1,440 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin admin_urls %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<style>
+    /* MODERN DASHBOARD STYLES */
+    .dashboard-container {
+        padding: 2rem;
+        background: transparent;
+    }
+    
+    .dashboard-header {
+        margin-bottom: 2.5rem;
+        animation: slideInDown 0.6s ease;
+    }
+    
+    .dashboard-header h1 {
+        font-size: 2.5rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+    }
+    
+    .dashboard-subtitle {
+        font-size: 1.1rem;
+        color: rgba(0, 0, 0, 0.6);
+        font-weight: 500;
+    }
+    
+    /* STATS CARDS GRID */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 1.8rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 2px solid transparent;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+    
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--gradient);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        border-color: var(--border-color);
+    }
+    
+    .stat-card.card-1 {
+        --gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --border-color: #667eea;
+    }
+    
+    .stat-card.card-2 {
+        --gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        --border-color: #f093fb;
+    }
+    
+    .stat-card.card-3 {
+        --gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        --border-color: #4facfe;
+    }
+    
+    .stat-card.card-4 {
+        --gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        --border-color: #43e97b;
+    }
+    
+    .stat-card.card-5 {
+        --gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        --border-color: #fa709a;
+    }
+    
+    .stat-card.card-6 {
+        --gradient: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        --border-color: #30cfd0;
+    }
+    
+    .stat-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        background: var(--gradient);
+        color: white;
+        margin-bottom: 1.2rem;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        transition: all 0.4s ease;
+    }
+    
+    .stat-card:hover .stat-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #2d3748;
+        margin-bottom: 0.3rem;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 1rem;
+        color: #718096;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stat-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        margin-top: 0.8rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .stat-change.positive {
+        background: rgba(72, 187, 120, 0.15);
+        color: #38a169;
+    }
+    
+    .stat-change.negative {
+        background: rgba(245, 101, 101, 0.15);
+        color: #e53e3e;
+    }
+    
+    /* QUICK ACTIONS */
+    .quick-actions {
+        margin-bottom: 2rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2d3748;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .section-title::before {
+        content: '';
+        width: 4px;
+        height: 30px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 10px;
+    }
+    
+    .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    .action-btn {
+        padding: 1.5rem;
+        background: white;
+        border-radius: 15px;
+        border: 2px solid #e2e8f0;
+        text-decoration: none;
+        color: #2d3748;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .action-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+        color: #667eea;
+        text-decoration: none;
+    }
+    
+    .action-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-size: 1.3rem;
+    }
+    
+    /* RECENT ACTIVITY */
+    .recent-activity {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    }
+    
+    .activity-item {
+        padding: 1rem;
+        border-left: 3px solid #e2e8f0;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        border-radius: 0 10px 10px 0;
+    }
+    
+    .activity-item:hover {
+        background: #f7fafc;
+        border-color: #667eea;
+        transform: translateX(5px);
+    }
+    
+    .activity-time {
+        font-size: 0.85rem;
+        color: #a0aec0;
+        font-weight: 500;
+    }
+    
+    .activity-text {
+        color: #4a5568;
+        font-weight: 500;
+        margin-top: 0.3rem;
+    }
+    
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .stat-card {
+        animation: fadeInUp 0.6s ease forwards;
+    }
+    
+    .stat-card:nth-child(1) { animation-delay: 0.1s; }
+    .stat-card:nth-child(2) { animation-delay: 0.2s; }
+    .stat-card:nth-child(3) { animation-delay: 0.3s; }
+    .stat-card:nth-child(4) { animation-delay: 0.4s; }
+    .stat-card:nth-child(5) { animation-delay: 0.5s; }
+    .stat-card:nth-child(6) { animation-delay: 0.6s; }
+</style>
+
+<div class="dashboard-container">
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h1>🚀 Добро пожаловать, {{ user.get_full_name|default:user.username }}!</h1>
+        <p class="dashboard-subtitle">Управляйте вашей платформой UNG Youth</p>
+    </div>
+    
+    <!-- STATS CARDS -->
+    <div class="stats-grid">
+        <div class="stat-card card-1">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-value">{{ total_users|default:"0" }}</div>
+            <div class="stat-label">Пользователи</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> +12% за месяц
+            </span>
+        </div>
+        
+        <div class="stat-card card-2">
+            <div class="stat-icon">
+                <i class="fas fa-newspaper"></i>
+            </div>
+            <div class="stat-value">{{ total_news|default:"0" }}</div>
+            <div class="stat-label">Новости</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> +8% за месяц
+            </span>
+        </div>
+        
+        <div class="stat-card card-3">
+            <div class="stat-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <div class="stat-value">{{ total_innovations|default:"0" }}</div>
+            <div class="stat-label">Инновации</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> +15% за месяц
+            </span>
+        </div>
+        
+        <div class="stat-card card-4">
+            <div class="stat-icon">
+                <i class="fas fa-briefcase"></i>
+            </div>
+            <div class="stat-value">{{ total_jobs|default:"0" }}</div>
+            <div class="stat-label">Вакансии</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> +5% за месяц
+            </span>
+        </div>
+        
+        <div class="stat-card card-5">
+            <div class="stat-icon">
+                <i class="fas fa-eye"></i>
+            </div>
+            <div class="stat-value">{{ total_views|default:"0" }}</div>
+            <div class="stat-label">Просмотры</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> +25% за месяц
+            </span>
+        </div>
+        
+        <div class="stat-card card-6">
+            <div class="stat-icon">
+                <i class="fas fa-comments"></i>
+            </div>
+            <div class="stat-value">{{ total_comments|default:"0" }}</div>
+            <div class="stat-label">Комментарии</div>
+            <span class="stat-change positive">
+                <i class="fas fa-arrow-up"></i> +18% за месяц
+            </span>
+        </div>
+    </div>
+    
+    <!-- QUICK ACTIONS -->
+    <div class="quick-actions">
+        <h2 class="section-title">Быстрые действия</h2>
+        <div class="actions-grid">
+            <a href="{% url 'admin:content_news_add' %}" class="action-btn">
+                <div class="action-icon"><i class="fas fa-plus"></i></div>
+                <span>Добавить новость</span>
+            </a>
+            <a href="{% url 'admin:content_innovation_add' %}" class="action-btn">
+                <div class="action-icon"><i class="fas fa-lightbulb"></i></div>
+                <span>Добавить инновацию</span>
+            </a>
+            <a href="{% url 'admin:content_job_add' %}" class="action-btn">
+                <div class="action-icon"><i class="fas fa-briefcase"></i></div>
+                <span>Добавить вакансию</span>
+            </a>
+            <a href="{% url 'admin:users_user_changelist' %}" class="action-btn">
+                <div class="action-icon"><i class="fas fa-users-cog"></i></div>
+                <span>Управление пользователями</span>
+            </a>
+            <a href="/admin/analytics/dashboard/" class="action-btn">
+                <div class="action-icon"><i class="fas fa-chart-line"></i></div>
+                <span>Аналитика</span>
+            </a>
+            <a href="{% url 'admin:content_comment_changelist' %}" class="action-btn">
+                <div class="action-icon"><i class="fas fa-comments"></i></div>
+                <span>Комментарии</span>
+            </a>
+        </div>
+    </div>
+    
+    <!-- RECENT MODELS -->
+    <div class="quick-actions">
+        <h2 class="section-title">Управление контентом</h2>
+        <div class="actions-grid">
+            {% for app in app_list %}
+                {% for model in app.models %}
+                    <a href="{{ model.admin_url }}" class="action-btn">
+                        <div class="action-icon"><i class="fas fa-{{ model.icon|default:'circle' }}"></i></div>
+                        <span>{{ model.name }}</span>
+                    </a>
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // ANIMATE NUMBERS
+    document.addEventListener('DOMContentLoaded', function() {
+        const statValues = document.querySelectorAll('.stat-value');
+        
+        statValues.forEach(el => {
+            const target = parseInt(el.textContent);
+            if (isNaN(target)) return;
+            
+            let current = 0;
+            const increment = target / 50;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    el.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    el.textContent = Math.floor(current);
+                }
+            }, 20);
+        });
+    });
+</script>
+{% endblock %}
+
+

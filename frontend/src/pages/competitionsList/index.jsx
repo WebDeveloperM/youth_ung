@@ -1,4 +1,4 @@
-import { competitionsData } from '@/datatest/competitionsData'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
 	FaCalendarAlt,
@@ -11,16 +11,57 @@ import {
 } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getCompetitionsList } from '@/api/competitions'
 
 export default function CompetitionsList() {
 	const { t, i18n } = useTranslation()
-	const currentLang = i18n.language
+	const [competitions, setCompetitions] = useState([])
+	const [loading, setLoading] = useState(true)
+
+	// Нормализуем язык (uz-UZ -> uz)
+	const currentLang = i18n.language.split('-')[0]
+
+	// Загружаем конкурсы с API
+	useEffect(() => {
+		const loadCompetitions = async () => {
+			try {
+				setLoading(true)
+				const data = await getCompetitionsList()
+				setCompetitions(Array.isArray(data) ? data : [])
+			} catch (error) {
+				console.error('Ошибка загрузки конкурсов:', error)
+				setCompetitions([])
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		loadCompetitions()
+	}, [])
+
+	// Функция для получения заголовка на текущем языке
+	const getTitle = (competition) => {
+		return competition[`title_${currentLang}`] || competition.title_ru || competition.title_uz || competition.title_en || ''
+	}
+
+	// Функция для получения краткого описания на текущем языке
+	const getShortDescription = (competition) => {
+		return competition[`short_description_${currentLang}`] || competition.short_description_ru || competition.short_description_uz || competition.short_description_en || ''
+	}
 
 	// Сортировка: активные, предстоящие, завершенные
-	const sortedCompetitions = [...competitionsData].sort((a, b) => {
+	const sortedCompetitions = [...competitions].sort((a, b) => {
 		const statusOrder = { active: 0, upcoming: 1, closed: 2 }
 		return statusOrder[a.status] - statusOrder[b.status]
 	})
+
+	if (loading) {
+		return (
+			<div className='w-full min-h-screen flex items-center justify-center'>
+				<div className='text-xl'>Загрузка...</div>
+			</div>
+		)
+	}
 
 	const getStatusIcon = status => {
 		switch (status) {
@@ -87,7 +128,7 @@ export default function CompetitionsList() {
 							className='text-center p-3 md:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md'
 						>
 							<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-2'>
-								{competitionsData.filter(c => c.status === 'active').length}
+								{competitions.filter(c => c.status === 'active').length}
 							</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
 								{t('competitions.activeCount')}
@@ -102,7 +143,7 @@ export default function CompetitionsList() {
 							className='text-center p-3 md:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md'
 						>
 							<div className='text-3xl sm:text-4xl font-bold text-yellow-600 mb-2'>
-								{competitionsData.filter(c => c.status === 'upcoming').length}
+								{competitions.filter(c => c.status === 'upcoming').length}
 							</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
 								{t('competitions.upcomingCount')}
@@ -117,7 +158,7 @@ export default function CompetitionsList() {
 							className='text-center p-3 md:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md'
 						>
 							<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-2'>
-								{competitionsData.reduce((sum, c) => sum + c.participants, 0)}
+								{competitions.reduce((sum, c) => sum + c.participants, 0)}
 							</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
 								{t('competitions.totalParticipants')}
@@ -132,7 +173,7 @@ export default function CompetitionsList() {
 							className='text-center p-3 md:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md'
 						>
 							<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-2'>
-								{competitionsData.length}
+								{competitions.length}
 							</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
 								{t('competitions.totalCompetitions')}
@@ -159,8 +200,8 @@ export default function CompetitionsList() {
 									{/* Image */}
 									<div className='md:w-2/5 relative h-48 md:h-auto overflow-hidden'>
 										<motion.img
-											src={competition.image}
-											alt={competition.title[currentLang]}
+											src={competition.image || '/images/placeholder.jpg'}
+											alt={getTitle(competition)}
 											className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
 										/>
 										<div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />
@@ -189,10 +230,10 @@ export default function CompetitionsList() {
 									<div className='md:w-3/5 p-5 md:p-8 flex flex-col justify-between'>
 										<div>
 											<h2 className='text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-3 md:mb-4 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors'>
-												{competition.title[currentLang]}
+												{getTitle(competition)}
 											</h2>
 											<p className='text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 md:mb-6 line-clamp-2'>
-												{competition.shortDescription[currentLang]}
+												{getShortDescription(competition)}
 											</p>
 
 											{/* Info Grid */}
@@ -203,7 +244,7 @@ export default function CompetitionsList() {
 														<span className='font-semibold block text-gray-800 dark:text-gray-200'>
 															{t('competitions.startDate')}
 														</span>
-														{competition.startDate}
+														{competition.start_date}
 													</div>
 												</div>
 
@@ -213,7 +254,7 @@ export default function CompetitionsList() {
 														<span className='font-semibold block text-gray-800 dark:text-gray-200'>
 															{t('competitions.deadline')}
 														</span>
-														{competition.registrationDeadline}
+														{competition.registration_deadline}
 													</div>
 												</div>
 

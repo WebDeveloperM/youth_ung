@@ -1,16 +1,57 @@
+import { useState, useEffect } from 'react'
 import Comments from '@/components/Comments'
-import { innovationsData } from '@/datatest/innovationsData'
 import { motion } from 'framer-motion'
 import { FaArrowLeft, FaEye, FaHeart, FaLightbulb, FaShare } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getInnovationDetail } from '@/api/innovations'
 
 export default function InnovationDetail() {
 	const { t, i18n } = useTranslation()
 	const { id } = useParams()
-	const currentLang = i18n.language
-	
-	const innovation = innovationsData.find(item => item.id === Number(id))
+	const [innovation, setInnovation] = useState(null)
+	const [loading, setLoading] = useState(true)
+
+	// Нормализуем язык (uz-UZ -> uz)
+	const currentLang = i18n.language.split('-')[0]
+
+	// Функция для получения заголовка на текущем языке
+	const getTitle = (innov) => {
+		if (!innov) return ''
+		return innov[`title_${currentLang}`] || innov.title_ru || innov.title_uz || innov.title_en || ''
+	}
+
+	// Функция для получения контента на текущем языке
+	const getContent = (innov) => {
+		if (!innov) return ''
+		return innov[`content_${currentLang}`] || innov.content_ru || innov.content_uz || innov.content_en || ''
+	}
+
+	// Загружаем инновацию с API
+	useEffect(() => {
+		const loadInnovation = async () => {
+			try {
+				setLoading(true)
+				const data = await getInnovationDetail(id)
+				setInnovation(data)
+			} catch (error) {
+				console.error('Ошибка загрузки инновации:', error)
+				setInnovation(null)
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		loadInnovation()
+	}, [id])
+
+	if (loading) {
+		return (
+			<div className='w-full min-h-screen flex items-center justify-center'>
+				<div className='text-xl'>Загрузка...</div>
+			</div>
+		)
+	}
 
 	if (!innovation) {
 		return (
@@ -39,7 +80,7 @@ export default function InnovationDetail() {
 		if (navigator.share) {
 			navigator
 				.share({
-					title: innovation.title[currentLang],
+					title: getTitle(innovation),
 					text: t('innovations.shareText'),
 					url: window.location.href,
 				})
@@ -87,7 +128,7 @@ export default function InnovationDetail() {
 				transition={{ delay: 0.3 }}
 				className='text-3xl md:text-5xl font-bold bg-gradient-to-r from-blue-700 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6 leading-tight'
 			>
-				{innovation.title[currentLang]}
+				{getTitle(innovation)}
 			</motion.h1>
 
 			{/* Meta Information */}
@@ -132,8 +173,8 @@ export default function InnovationDetail() {
 				className='relative rounded-2xl overflow-hidden mb-8 shadow-2xl'
 			>
 				<img
-					src={innovation.image}
-					alt={innovation.title[currentLang]}
+					src={innovation.image || '/images/placeholder.jpg'}
+					alt={getTitle(innovation)}
 					className='w-full max-h-[600px] object-cover'
 				/>
 				<div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
@@ -154,53 +195,8 @@ export default function InnovationDetail() {
 					prose-blockquote:rounded-r-lg prose-blockquote:py-2
 					prose-a:text-blue-600 hover:prose-a:text-blue-700
 					mb-12'
-				dangerouslySetInnerHTML={{ __html: innovation.content[currentLang] }}
+				dangerouslySetInnerHTML={{ __html: getContent(innovation) }}
 			/>
-
-			{/* Related Innovations */}
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.7 }}
-				className='mt-16 pt-8 border-t border-gray-200 dark:border-gray-700'
-			>
-				<h3 className='text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200'>
-					{t('innovations.relatedInnovations')}
-				</h3>
-				<div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-					{innovationsData
-						.filter(item => item.id !== innovation.id && item.category === innovation.category)
-						.slice(0, 2)
-						.map(relatedInnovation => (
-							<Link
-								key={relatedInnovation.id}
-								to={`/innovations/${relatedInnovation.id}`}
-								className='group p-4 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg'
-							>
-								<div className='flex gap-4'>
-									<img
-										src={relatedInnovation.image}
-										alt={relatedInnovation.title[currentLang]}
-										className='w-24 h-24 object-cover rounded-lg'
-									/>
-									<div className='flex-1'>
-										<h4 className='font-semibold text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 line-clamp-2'>
-											{relatedInnovation.title[currentLang]}
-										</h4>
-										<div className='flex items-center gap-3 text-sm text-gray-500'>
-											<span className='flex items-center gap-1'>
-												<FaEye className='text-blue-600' /> {relatedInnovation.views}
-											</span>
-											<span className='flex items-center gap-1'>
-												<FaHeart className='text-red-500' /> {relatedInnovation.likes}
-											</span>
-										</div>
-									</div>
-								</div>
-							</Link>
-						))}
-				</div>
-			</motion.div>
 
 			{/* Comments Section */}
 			<motion.div

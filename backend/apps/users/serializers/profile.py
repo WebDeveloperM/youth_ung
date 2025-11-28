@@ -34,11 +34,13 @@ class ProfileSerializer(serializers.ModelSerializer):
             'avatar',
             'avatar_url',
             'role',
+            'allowed_menus',
+            'is_superuser',
             'current_password',
             'new_password',
             'confirm_password',
         ]
-        read_only_fields = ['id', 'email', 'role']  # Email нельзя менять
+        read_only_fields = ['id', 'email', 'role', 'allowed_menus', 'is_superuser']  # Email, роль, права и is_superuser нельзя менять через профиль
     
     def get_avatar_url(self, obj):
         """Получить полный URL аватара"""

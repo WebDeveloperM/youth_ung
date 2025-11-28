@@ -15,7 +15,7 @@ class News(BaseModel):
     content_ru = RichTextField(verbose_name="Контент (RU)")
     content_en = RichTextField(verbose_name="Контент (EN)")
     
-    image = models.ImageField(upload_to='news/', verbose_name="Изображение")
+    image = models.ImageField(upload_to='news/', verbose_name="Изображение", blank=True, null=True)
     date = models.DateField(verbose_name="Дата")
     
     # Статистика
@@ -52,7 +52,7 @@ class Grant(BaseModel):
     content_ru = RichTextField(verbose_name="Полное описание (RU)")
     content_en = RichTextField(verbose_name="Полное описание (EN)")
     
-    image = models.ImageField(upload_to='grants/', verbose_name="Изображение")
+    image = models.ImageField(upload_to='grants/', verbose_name="Изображение", blank=True, null=True)
     
     # Параметры гранта
     amount = models.CharField(max_length=100, verbose_name="Сумма гранта")
@@ -102,7 +102,7 @@ class Scholarship(BaseModel):
     content_ru = RichTextField(verbose_name="Полное описание (RU)")
     content_en = RichTextField(verbose_name="Полное описание (EN)")
     
-    image = models.ImageField(upload_to='scholarships/', verbose_name="Изображение")
+    image = models.ImageField(upload_to='scholarships/', verbose_name="Изображение", blank=True, null=True)
     
     # Параметры стипендии
     amount = models.CharField(max_length=100, verbose_name="Сумма стипендии")
@@ -152,7 +152,7 @@ class Competition(BaseModel):
     content_ru = RichTextField(verbose_name="Полное описание (RU)")
     content_en = RichTextField(verbose_name="Полное описание (EN)")
     
-    image = models.ImageField(upload_to='competitions/', verbose_name="Изображение")
+    image = models.ImageField(upload_to='competitions/', verbose_name="Изображение", blank=True, null=True)
     
     # Даты конкурса
     start_date = models.DateField(verbose_name="Дата начала")
@@ -199,7 +199,7 @@ class Innovation(BaseModel):
     content_ru = RichTextField(verbose_name="Описание (RU)")
     content_en = RichTextField(verbose_name="Описание (EN)")
     
-    image = models.ImageField(upload_to='innovations/', verbose_name="Изображение")
+    image = models.ImageField(upload_to='innovations/', verbose_name="Изображение", blank=True, null=True)
     
     date = models.DateField(verbose_name="Дата")
     
@@ -242,7 +242,7 @@ class Internship(BaseModel):
     content_ru = RichTextField(verbose_name="Полное описание (RU)")
     content_en = RichTextField(verbose_name="Полное описание (EN)")
     
-    image = models.ImageField(upload_to='internships/', verbose_name="Изображение")
+    image = models.ImageField(upload_to='internships/', verbose_name="Изображение", blank=True, null=True)
     
     # Параметры стажировки
     stipend = models.CharField(max_length=100, verbose_name="Стипендия")
@@ -439,4 +439,11 @@ class AboutPage(BaseModel):
         return super().save(*args, **kwargs)
 
 
+# Импортируем модель заявок
+from .models_applications import Application
+
+__all__ = [
+    'News', 'Grant', 'Scholarship', 'Competition', 'Innovation',
+    'Internship', 'Job', 'TeamMember', 'AboutPage', 'Application'
+]
 

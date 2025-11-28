@@ -1,12 +1,53 @@
-import { internshipsData } from '@/datatest/internshipsData'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaCalendarAlt, FaClock, FaDollarSign, FaUsers, FaCheckCircle, FaBriefcase, FaMapMarkerAlt } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getInternshipsList } from '@/api/internships'
 
 export default function InternshipsList() {
 	const { t, i18n } = useTranslation()
-	const currentLang = i18n.language
+	const [internships, setInternships] = useState([])
+	const [loading, setLoading] = useState(true)
+
+	// Нормализуем язык (uz-UZ -> uz)
+	const currentLang = i18n.language.split('-')[0]
+
+	// Загружаем стажировки с API
+	useEffect(() => {
+		const loadInternships = async () => {
+			try {
+				setLoading(true)
+				const data = await getInternshipsList()
+				setInternships(Array.isArray(data) ? data : [])
+			} catch (error) {
+				console.error('Ошибка загрузки стажировок:', error)
+				setInternships([])
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		loadInternships()
+	}, [])
+
+	// Функция для получения заголовка на текущем языке
+	const getTitle = (internship) => {
+		return internship[`title_${currentLang}`] || internship.title_ru || internship.title_uz || internship.title_en || ''
+	}
+
+	// Функция для получения краткого описания на текущем языке
+	const getShortDescription = (internship) => {
+		return internship[`short_description_${currentLang}`] || internship.short_description_ru || internship.short_description_uz || internship.short_description_en || ''
+	}
+
+	if (loading) {
+		return (
+			<div className='w-full min-h-screen flex items-center justify-center'>
+				<div className='text-xl'>Загрузка...</div>
+			</div>
+		)
+	}
 
 	return (
 		<div className='w-full overflow-hidden relative z-0'>
@@ -29,19 +70,19 @@ export default function InternshipsList() {
 				<div className='container mx-auto'>
 					<div className='grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8'>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-orange-600 mb-2'>{internshipsData.filter(i => i.status === 'active').length}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-orange-600 mb-2'>{internships.filter(i => i.status === 'active').length}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('internships.activeCount')}</div>
 						</motion.div>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-2'>{internshipsData.reduce((sum, i) => sum + i.applicants, 0)}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-2'>{internships.reduce((sum, i) => sum + i.applicants, 0)}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('internships.totalApplicants')}</div>
 						</motion.div>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-2'>{internshipsData.reduce((sum, i) => sum + i.positions, 0)}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-2'>{internships.reduce((sum, i) => sum + i.positions, 0)}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('internships.totalPositions')}</div>
 						</motion.div>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-2'>{internshipsData.length}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-2'>{internships.length}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('internships.totalInternships')}</div>
 						</motion.div>
 					</div>
@@ -51,11 +92,11 @@ export default function InternshipsList() {
 			<section className='py-10 md:py-16 px-4 md:px-12'>
 				<div className='container mx-auto max-w-7xl'>
 					<div className='grid gap-6 md:gap-8'>
-						{internshipsData.map((internship, index) => (
+						{internships.map((internship, index) => (
 							<motion.article key={internship.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1, duration: 0.5 }} className='group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1'>
 								<div className='md:flex'>
 									<div className='md:w-2/5 relative h-48 md:h-auto overflow-hidden'>
-										<motion.img src={internship.image} alt={internship.title[currentLang]} className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110' />
+										<motion.img src={internship.image || '/images/placeholder.jpg'} alt={getTitle(internship)} className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110' />
 										<div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />
 										<div className='absolute top-4 left-4'>
 											<span className='inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs sm:text-sm font-semibold bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200'>
@@ -70,8 +111,8 @@ export default function InternshipsList() {
 									</div>
 									<div className='md:w-3/5 p-5 md:p-8 flex flex-col justify-between'>
 										<div>
-											<h2 className='text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-3 md:mb-4 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors'>{internship.title[currentLang]}</h2>
-											<p className='text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 md:mb-6 line-clamp-2'>{internship.shortDescription[currentLang]}</p>
+											<h2 className='text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-3 md:mb-4 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors'>{getTitle(internship)}</h2>
+											<p className='text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 md:mb-6 line-clamp-2'>{getShortDescription(internship)}</p>
 											<div className='grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-4 md:mb-6'>
 												<div className='flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
 													<FaDollarSign className='text-orange-500 flex-shrink-0' />

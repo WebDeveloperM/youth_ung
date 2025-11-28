@@ -138,7 +138,7 @@ export default function Navbar() {
 
 	return (
 		<nav 
-			className={`sticky top-0 left-0 right-0 bg-[var(--navy-blue)] text-xl font-bold text-white backdrop-blur-md z-[100] px-6 md:px-16 py-4 flex justify-between items-center transition-all duration-300 ${
+			className={`sticky top-0 left-0 right-0 bg-[var(--navy-blue)] text-white backdrop-blur-md z-[100] px-6 md:px-16 py-4 flex justify-between items-center transition-all duration-300 ${
 				isScrolled 
 					? 'shadow-[0_4px_20px_rgba(0,0,0,0.3)] border-b border-gray-700/50' 
 					: 'shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
@@ -146,8 +146,8 @@ export default function Navbar() {
 		>
 			{/* LOGO */}
 			<Link to='/' className='flex items-center gap-2'>
-				<MdElectricBolt className='text-primary' size={24} />
-				<span className='font-bold text-2xl'>UNG Yoshlari</span>
+				<MdElectricBolt className='text-primary' size={28} />
+				<span className='font-bold text-xl'>UNG Yoshlari</span>
 			</Link>
 
 			{/* DESKTOP MENU */}
@@ -158,23 +158,23 @@ export default function Navbar() {
 							<NavigationMenuItem key={item.title}>
 								{item.subMenu ? (
 									<>
-										<NavigationMenuTrigger className='bg-transparent gap-1 pr-2'>
+										<NavigationMenuTrigger className='bg-transparent gap-1 pr-2 text-base font-medium hover:text-primary transition-colors'>
 											{item.title}
 										</NavigationMenuTrigger>
 										<NavigationMenuContent>
-											<ul className='p-4 space-y-2'>
+											<ul className='p-4 space-y-2 min-w-[220px]'>
 												{item.subMenu.map(sub => (
 													<li key={sub.title}>
 														<Link
 															to={sub.url}
-															className='flex items-center gap-4 p-2 rounded-md hover:bg-accent font-medium'
+															className='flex items-center gap-3 p-3 rounded-md hover:bg-accent font-medium text-sm transition-colors'
 														>
 															{sub.icon && (
-																<span className='text-muted-foreground'>
+																<span className='text-muted-foreground shrink-0'>
 																	{sub.icon}
 																</span>
 															)}
-															{sub.title}
+															<span className='whitespace-nowrap'>{sub.title}</span>
 														</Link>
 													</li>
 												))}
@@ -185,7 +185,7 @@ export default function Navbar() {
 									<NavigationMenuLink asChild>
 										<Link
 											to={item.url}
-											className='px-3 py-2 hover:text-primary'
+											className='px-3 py-2 text-base font-medium hover:text-primary transition-colors'
 										>
 											{item.title}
 										</Link>

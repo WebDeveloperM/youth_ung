@@ -35,6 +35,7 @@ class User(AbstractUser):
     avatar = models.ImageField(upload_to='users/images', null=True, blank=True)
     phone = models.CharField(max_length=15, validators=[PHONE_VALIDATOR])
     role = models.CharField(max_length=255, choices=ROLE, default=USER)
+    allowed_menus = models.JSONField(default=list, blank=True, help_text="Список разрешенных меню для администратора")
 
     objects = UsersManager()
 

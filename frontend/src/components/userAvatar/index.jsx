@@ -58,12 +58,14 @@ export function Useravatar() {
 			// Сначала проверяем localStorage
 			const localUser = authAPI.getCurrentUser()
 			if (localUser) {
+				console.log('📦 Пользователь из localStorage:', localUser)
 				setCurrentUser(localUser)
 				
 				// Затем загружаем актуальные данные с сервера
 				const profileResult = await authAPI.getProfile()
 				if (profileResult.success) {
 					console.log('✅ Профиль загружен с сервера:', profileResult.data)
+					console.log('🖼️ Avatar URL:', profileResult.data.avatar_url)
 					setCurrentUser(profileResult.data)
 					// Обновляем localStorage
 					localStorage.setItem('user', JSON.stringify(profileResult.data))
@@ -183,8 +185,18 @@ export function Useravatar() {
 			if (result.success) {
 				console.log('✅ УСПЕХ!', result.data)
 				
-				// Сохраняем данные пользователя
-				setCurrentUser(result.data)
+				// Загружаем актуальные данные профиля с сервера
+				const profileResult = await authAPI.getProfile()
+				if (profileResult.success) {
+					console.log('✅ Профиль обновлен:', profileResult.data)
+					console.log('🖼️ Avatar URL после входа:', profileResult.data.avatar_url)
+					setCurrentUser(profileResult.data)
+					// Обновляем localStorage актуальными данными
+					localStorage.setItem('user', JSON.stringify(profileResult.data))
+				} else {
+					// Если не удалось загрузить профиль, используем данные из результата входа
+					setCurrentUser(result.data)
+				}
 				
 				// Показываем сообщение об успехе
 				const message = result.data.message || (isLogin ? 'Вход выполнен успешно!' : 'Регистрация прошла успешно!')
@@ -731,23 +743,41 @@ export function Useravatar() {
 				<DropdownMenu>
 					<DropdownMenuTrigger className='flex items-center gap-2 m-2'>
 						<Avatar className='w-9 h-9 cursor-pointer overflow-hidden'>
-							{currentUser.avatar_url ? (
-								<img 
-									src={currentUser.avatar_url} 
-									alt={`${currentUser.first_name} ${currentUser.last_name}`}
-									className='w-full h-full object-cover'
-								/>
-							) : (
-								<div className='w-full h-full bg-gradient-to-br from-primary/30 to-primary/60 flex items-center justify-center'>
-									<UserCircle className='w-9 h-9 text-white' />
-								</div>
-							)}
+							{(() => {
+								// Получаем URL аватара
+								const avatarUrl = currentUser.avatar_url || currentUser.avatar
+								console.log('🖼️ Отображение аватара:', avatarUrl)
+								
+								return avatarUrl ? (
+									<img 
+										src={avatarUrl}
+										alt={`${currentUser.first_name || ''} ${currentUser.last_name || ''}`}
+										className='w-full h-full object-cover'
+										onError={(e) => {
+											console.error('❌ Ошибка загрузки аватара:', avatarUrl)
+											e.target.style.display = 'none'
+											e.target.parentElement.innerHTML = `
+												<div class="w-full h-full bg-gradient-to-br from-primary/30 to-primary/60 flex items-center justify-center">
+													<svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+														<circle cx="12" cy="12" r="10" stroke-width="2"/>
+														<path d="M12 8v4m0 4h.01" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+													</svg>
+												</div>
+											`
+										}}
+									/>
+								) : (
+									<div className='w-full h-full bg-gradient-to-br from-primary/30 to-primary/60 flex items-center justify-center'>
+										<UserCircle className='w-9 h-9 text-white' />
+									</div>
+								)
+							})()}
 						</Avatar>
 						<div className='hidden md:block text-left'>
-							<p className='text-sm font-semibold text-gray-900 dark:text-white'>
+							<p className='text-sm font-semibold text-white'>
 								{currentUser.first_name} {currentUser.last_name}
 							</p>
-							<p className='text-xs text-gray-500 dark:text-gray-400'>
+							<p className='text-xs text-gray-300'>
 								{currentUser.email}
 							</p>
 						</div>

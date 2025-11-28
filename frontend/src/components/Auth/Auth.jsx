@@ -146,17 +146,28 @@ const Auth = () => {
 					if (result.error) {
 						// Если ошибка - строка
 						if (typeof result.error === 'string') {
-							setErrors({ form: result.error })
+							apiErrors.form = result.error
 						} 
 						// Если ошибка - объект с полями
 						else if (typeof result.error === 'object') {
+							// Проверяем есть ли поле message для общей ошибки
+							if (result.error.message) {
+								apiErrors.form = result.error.message
+							}
+							// Обрабатываем ошибки для конкретных полей
 							Object.keys(result.error).forEach(key => {
-								const errorValue = result.error[key]
-								apiErrors[key] = Array.isArray(errorValue) ? errorValue[0] : errorValue
+								if (key !== 'message') {
+									const errorValue = result.error[key]
+									apiErrors[key] = Array.isArray(errorValue) ? errorValue[0] : errorValue
+								}
 							})
-							setErrors(apiErrors)
 						}
 					}
+					// Если нет конкретных ошибок, показываем общую
+					if (Object.keys(apiErrors).length === 0) {
+						apiErrors.form = t('errors.loginFailed') || 'Ошибка входа. Проверьте логин и пароль.'
+					}
+					setErrors(apiErrors)
 				}
 			} catch (error) {
 				console.error('💥 CATCH ERROR:', error)
@@ -367,6 +378,18 @@ const Auth = () => {
 						)}
 					</AnimatePresence>
 
+					{/* Общая ошибка формы */}
+					{errors.form && (
+						<motion.div
+							className='error-message'
+							style={{ textAlign: 'center', marginBottom: '1rem', padding: '0.75rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', color: '#ef4444' }}
+							initial={{ opacity: 0, y: -10 }}
+							animate={{ opacity: 1, y: 0 }}
+						>
+							{errors.form}
+						</motion.div>
+					)}
+					
 					{/* Кнопка отправки */}
 					<motion.button
 						type='submit'

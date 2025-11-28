@@ -1,17 +1,58 @@
-import { innovationsData } from '@/datatest/innovationsData'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaEye, FaHeart, FaLightbulb } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getInnovationsList } from '@/api/innovations'
 
 export default function InnovationsList() {
 	const { t, i18n } = useTranslation()
-	const currentLang = i18n.language
+	const [innovations, setInnovations] = useState([])
+	const [loading, setLoading] = useState(true)
+
+	// Нормализуем язык (uz-UZ -> uz)
+	const currentLang = i18n.language.split('-')[0]
+
+	// Загружаем инновации с API
+	useEffect(() => {
+		const loadInnovations = async () => {
+			try {
+				setLoading(true)
+				const data = await getInnovationsList()
+				setInnovations(Array.isArray(data) ? data : [])
+			} catch (error) {
+				console.error('Ошибка загрузки инноваций:', error)
+				setInnovations([])
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		loadInnovations()
+	}, [])
+
+	// Функция для получения заголовка на текущем языке
+	const getTitle = (innovation) => {
+		return innovation[`title_${currentLang}`] || innovation.title_ru || innovation.title_uz || innovation.title_en || ''
+	}
+
+	// Функция для получения контента на текущем языке
+	const getContent = (innovation) => {
+		return innovation[`content_${currentLang}`] || innovation.content_ru || innovation.content_uz || innovation.content_en || ''
+	}
 
 	// Сортировка по дате (новые сначала)
-	const sortedInnovations = [...innovationsData].sort(
+	const sortedInnovations = [...innovations].sort(
 		(a, b) => new Date(b.date) - new Date(a.date)
 	)
+
+	if (loading) {
+		return (
+			<div className='w-full min-h-screen flex items-center justify-center'>
+				<div className='text-xl'>Загрузка...</div>
+			</div>
+		)
+	}
 
 	return (
 		<section
@@ -56,8 +97,8 @@ export default function InnovationsList() {
 							{/* Image */}
 							<div className='relative h-56 overflow-hidden'>
 								<motion.img
-									src={innovation.image}
-									alt={innovation.title[currentLang]}
+									src={innovation.image || '/images/placeholder.jpg'}
+									alt={getTitle(innovation)}
 									className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
 								/>
 								<div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent group-hover:from-blue-600/40 transition-all duration-500' />
@@ -72,12 +113,12 @@ export default function InnovationsList() {
 							<div className='p-6 flex flex-col justify-between'>
 								<div className='flex flex-col gap-3'>
 									<h3 className='text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 line-clamp-2'>
-										{innovation.title[currentLang]}
+										{getTitle(innovation)}
 									</h3>
 									<p
 										className='text-muted-foreground text-sm mb-4 flex-1 leading-relaxed line-clamp-3'
 										dangerouslySetInnerHTML={{
-											__html: innovation.content[currentLang].substring(0, 150) + '...',
+											__html: getContent(innovation).substring(0, 150) + '...',
 										}}
 									/>
 								</div>

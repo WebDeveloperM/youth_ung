@@ -1,27 +1,72 @@
-import { Users, FolderKanban, FileText, TrendingUp } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Users, FolderKanban, FileText, TrendingUp, Eye, MessageCircle } from 'lucide-react';
 import StatCard from '../components/StatCard';
 import { 
   LineChart, Line, AreaChart, Area, BarChart, Bar, 
   PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, 
   Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
-import { mockDashboardStats, mockDailyVisitors, mockPageAnalytics } from '../data/mockData';
+import { analyticsAPI, DashboardStats, DailyVisitor, PageAnalytics } from '../api';
 
 const Dashboard = () => {
-  const stats = mockDashboardStats;
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [dailyVisitors, setDailyVisitors] = useState<DailyVisitor[]>([]);
+  const [pageAnalytics, setPageAnalytics] = useState<PageAnalytics[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [statsData, visitorsData, pagesData] = await Promise.all([
+        analyticsAPI.getDashboardStats(),
+        analyticsAPI.getVisitorsStats({ period: 'month' }),
+        analyticsAPI.getPageAnalytics({ period: 'month' }),
+      ]);
+      
+      setStats(statsData);
+      setDailyVisitors(visitorsData.daily);
+      setPageAnalytics(pagesData);
+    } catch (error) {
+      console.error('Ошибка загрузки данных dashboard:', error);
+      // Fallback to mock data if API fails
+      import('../data/mockData').then(({ mockDashboardStats, mockDailyVisitors, mockPageAnalytics }) => {
+        setStats(mockDashboardStats as any);
+        setDailyVisitors(mockDailyVisitors);
+        setPageAnalytics(mockPageAnalytics);
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading || !stats) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
   
-  // Data for pie chart
+  // Data for pie chart - распределение контента по типам
   const distributionData = [
-    { name: 'Foydalanuvchilar', value: stats.totalUsers, color: '#3b82f6' },
-    { name: 'Loyihalar', value: stats.totalProjects * 30, color: '#10b981' },
-    { name: 'Tadqiqotlar', value: stats.totalResearch * 8, color: '#8b5cf6' },
+    { name: 'Yangiliklar', value: stats.total_news, color: '#3b82f6' },
+    { name: 'Grantlar', value: stats.total_grants, color: '#10b981' },
+    { name: 'Stipendiyalar', value: stats.total_scholarships, color: '#f59e0b' },
+    { name: 'Konkurslar', value: stats.total_competitions, color: '#8b5cf6' },
+    { name: 'Innovatsiyalar', value: stats.total_innovations, color: '#ec4899' },
+    { name: 'Stajirovkalar', value: stats.total_internships, color: '#06b6d4' },
+    { name: 'Vakansiyalar', value: stats.total_jobs, color: '#84cc16' },
   ];
 
   // Top pages for bar chart
-  const topPages = mockPageAnalytics.slice(0, 5).map(page => ({
-    name: page.page,
-    'koʻrishlar': page.views,
-    tashrif: page.uniqueVisitors
+  const topPages = pageAnalytics.slice(0, 5).map(page => ({
+    name: page.page.length > 15 ? page.page.substring(0, 15) + '...' : page.page,
+    'Ko\'rishlar': page.views,
+    'Tashrif': page.uniqueVisitors
   }));
 
   return (
@@ -35,33 +80,69 @@ const Dashboard = () => {
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
-          title="Foydalanuvchilar soni"
-          value={stats.totalUsers}
+          title="Foydalanuvchilar"
+          value={stats.total_users}
           icon={Users}
-          trend={stats.userGrowth}
+          trend={stats.user_growth}
           color="blue"
         />
         <StatCard
-          title="Loyihalar soni"
-          value={stats.totalProjects}
+          title="Jami Kontentlar"
+          value={stats.total_news + stats.total_innovations + stats.total_grants + stats.total_scholarships + stats.total_competitions + stats.total_internships + stats.total_jobs}
           icon={FolderKanban}
-          trend={stats.projectGrowth}
+          trend={stats.content_growth}
           color="green"
         />
         <StatCard
-          title="Tadqiqotlar soni"
-          value={stats.totalResearch}
-          icon={FileText}
-          trend={stats.researchGrowth}
+          title="Ko'rishlar"
+          value={stats.total_views}
+          icon={Eye}
+          trend={stats.views_growth}
           color="purple"
         />
         <StatCard
-          title="Bugungi tashrif"
-          value={stats.todayVisitors}
-          icon={TrendingUp}
-          trend={stats.visitorGrowth}
+          title="Kommentariyalar"
+          value={stats.total_comments}
+          icon={MessageCircle}
+          trend={0}
           color="orange"
         />
+      </div>
+
+      {/* Content Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Yangiliklar</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total_news}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Grantlar</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total_grants}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Stipendiyalar</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total_scholarships}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Konkurslar</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total_competitions}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Innovatsiyalar</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total_innovations}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Stajirovkalar</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total_internships}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Vakansiyalar</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total_jobs}</p>
+        </div>
+        <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+          <p className="text-sm text-gray-600 mb-1">Kutilmoqda moderatsiya</p>
+          <p className="text-2xl font-bold text-orange-600">{stats.pending_comments}</p>
+        </div>
       </div>
 
       {/* Charts Row 1 */}
@@ -72,7 +153,7 @@ const Dashboard = () => {
             Kunlik tashrif statistikasi
           </h3>
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={mockDailyVisitors}>
+            <AreaChart data={dailyVisitors}>
               <defs>
                 <linearGradient id="colorVisitors" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
@@ -164,7 +245,7 @@ const Dashboard = () => {
             Sahifa ko'rishlari tendensiyasi
           </h3>
           <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={mockDailyVisitors}>
+            <LineChart data={dailyVisitors}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
               <XAxis 
                 dataKey="date" 
@@ -219,7 +300,7 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {mockPageAnalytics.map((page, index) => (
+              {pageAnalytics.map((page, index) => (
                 <tr key={index} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">{page.page}</div>

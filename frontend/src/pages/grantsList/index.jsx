@@ -1,12 +1,51 @@
-import { grantsData } from '@/datatest/grantsData'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaCalendarAlt, FaClock, FaDollarSign, FaUsers, FaCheckCircle, FaTimesCircle } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getGrantsList } from '@/api/grants'
 
 export default function GrantsList() {
 	const { t, i18n } = useTranslation()
-	const currentLang = i18n.language
+	const [grants, setGrants] = useState([])
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		loadGrants()
+	}, [])
+
+	const loadGrants = async () => {
+		try {
+			setLoading(true)
+			const data = await getGrantsList()
+			setGrants(data)
+		} catch (error) {
+			console.error('Ошибка загрузки грантов:', error)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	// Получаем поля в зависимости от языка (нормализация!)
+	const getTitle = (grant) => {
+		const lang = i18n.language.split('-')[0].toLowerCase()
+		return grant[`title_${lang}`] || grant.title_ru || grant.title_en || ''
+	}
+
+	const getShortDescription = (grant) => {
+		const lang = i18n.language.split('-')[0].toLowerCase()
+		return grant[`short_description_${lang}`] || grant.short_description_ru || grant.short_description_en || ''
+	}
+
+	if (loading) {
+		return (
+			<div className='w-full overflow-hidden relative z-0'>
+				<div className='text-center py-20'>
+					<div className='inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#0078c2]'></div>
+				</div>
+			</div>
+		)
+	}
 
 	const getStatusIcon = status => {
 		return status === 'active' ? (
@@ -58,46 +97,46 @@ export default function GrantsList() {
 			<section className='py-10 md:py-16 px-4 md:px-12 bg-gray-50 dark:bg-gray-900'>
 				<div className='container mx-auto'>
 					<div className='grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-8'>
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'
-						>
-							<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-2'>
-								{grantsData.filter(g => g.status === 'active').length}
-							</div>
-							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
-								{t('grants.activeCount')}
-							</div>
-						</motion.div>
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'
+					>
+						<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-2'>
+							{grants.filter(g => g.status === 'active').length}
+						</div>
+						<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
+							{t('grants.activeCount')}
+						</div>
+					</motion.div>
 
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ delay: 0.1 }}
-							className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'
-						>
-							<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-2'>
-								{grantsData.reduce((sum, g) => sum + g.applicants, 0)}
-							</div>
-							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
-								{t('grants.totalApplicants')}
-							</div>
-						</motion.div>
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.1 }}
+						className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'
+					>
+						<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-2'>
+							{grants.reduce((sum, g) => sum + (g.applicants || 0), 0)}
+						</div>
+						<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
+							{t('grants.totalApplicants')}
+						</div>
+					</motion.div>
 
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ delay: 0.2 }}
-							className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md col-span-2 md:col-span-1'
-						>
-							<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-2'>
-								{grantsData.length}
-							</div>
-							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						whileInView={{ opacity: 1, y: 0 }}
+						viewport={{ once: true }}
+						transition={{ delay: 0.2 }}
+						className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md col-span-2 md:col-span-1'
+					>
+						<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-2'>
+							{grants.length}
+						</div>
+						<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
 								{t('grants.totalGrants')}
 							</div>
 						</motion.div>
@@ -109,7 +148,11 @@ export default function GrantsList() {
 			<section className='py-10 md:py-16 px-4 md:px-12'>
 				<div className='container mx-auto max-w-7xl'>
 					<div className='grid gap-6 md:gap-8'>
-						{grantsData.map((grant, index) => (
+						{grants.map((grant, index) => {
+							const title = getTitle(grant)
+							const shortDesc = getShortDescription(grant)
+							
+							return (
 							<motion.article
 								key={grant.id}
 								initial={{ opacity: 0, y: 20 }}
@@ -120,12 +163,18 @@ export default function GrantsList() {
 							>
 								<div className='md:flex'>
 									{/* Image */}
-									<div className='md:w-2/5 relative h-48 md:h-auto overflow-hidden'>
-										<motion.img
-											src={grant.image}
-											alt={grant.title[currentLang]}
-											className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
-										/>
+									<div className='md:w-2/5 relative h-48 md:h-auto overflow-hidden bg-gray-200'>
+										{grant.image ? (
+											<motion.img
+												src={grant.image}
+												alt={title}
+												className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+											/>
+										) : (
+											<div className='w-full h-full flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200'>
+												<span className='text-6xl text-green-400'>💰</span>
+											</div>
+										)}
 										<div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />
 
 										{/* Status Badge */}
@@ -152,10 +201,10 @@ export default function GrantsList() {
 									<div className='md:w-3/5 p-5 md:p-8 flex flex-col justify-between'>
 										<div>
 											<h2 className='text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-3 md:mb-4 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors'>
-												{grant.title[currentLang]}
+												{title}
 											</h2>
 											<p className='text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 md:mb-6 line-clamp-2'>
-												{grant.shortDescription[currentLang]}
+												{shortDesc}
 											</p>
 
 											{/* Info Grid */}
@@ -219,7 +268,8 @@ export default function GrantsList() {
 									</div>
 								</div>
 							</motion.article>
-						))}
+							)
+						})}
 					</div>
 				</div>
 			</section>

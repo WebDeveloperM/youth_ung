@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react'
 import Comments from '@/components/Comments'
-import { competitionsData } from '@/datatest/competitionsData'
+import ApplicationForm from '@/components/ApplicationForm'
 import { motion } from 'framer-motion'
 import {
 	FaArrowLeft,
@@ -14,13 +15,55 @@ import {
 } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getCompetitionDetail } from '@/api/competitions'
 
 export default function CompetitionDetail() {
 	const { t, i18n } = useTranslation()
 	const { id } = useParams()
-	const currentLang = i18n.language
+	const [competition, setCompetition] = useState(null)
+	const [loading, setLoading] = useState(true)
+	const [showApplicationForm, setShowApplicationForm] = useState(false)
 
-	const competition = competitionsData.find(item => item.id === Number(id))
+	// Нормализуем язык (uz-UZ -> uz)
+	const currentLang = i18n.language.split('-')[0]
+
+	// Функция для получения заголовка на текущем языке
+	const getTitle = (comp) => {
+		if (!comp) return ''
+		return comp[`title_${currentLang}`] || comp.title_ru || comp.title_uz || comp.title_en || ''
+	}
+
+	// Функция для получения контента на текущем языке
+	const getContent = (comp) => {
+		if (!comp) return ''
+		return comp[`content_${currentLang}`] || comp.content_ru || comp.content_uz || comp.content_en || ''
+	}
+
+	// Загружаем конкурс с API
+	useEffect(() => {
+		const loadCompetition = async () => {
+			try {
+				setLoading(true)
+				const data = await getCompetitionDetail(id)
+				setCompetition(data)
+			} catch (error) {
+				console.error('Ошибка загрузки конкурса:', error)
+				setCompetition(null)
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		loadCompetition()
+	}, [id])
+
+	if (loading) {
+		return (
+			<div className='w-full min-h-screen flex items-center justify-center'>
+				<div className='text-xl'>Загрузка...</div>
+			</div>
+		)
+	}
 
 	if (!competition) {
 		return (
@@ -72,7 +115,7 @@ export default function CompetitionDetail() {
 		if (navigator.share) {
 			navigator
 				.share({
-					title: competition.title[currentLang],
+					title: getTitle(competition),
 					text: t('competitions.shareText'),
 					url: window.location.href
 				})
@@ -126,7 +169,7 @@ export default function CompetitionDetail() {
 				transition={{ delay: 0.3 }}
 				className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-blue-700 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4 md:mb-6 leading-tight'
 			>
-				{competition.title[currentLang]}
+				{getTitle(competition)}
 			</motion.h1>
 
 			{/* Meta Information */}
@@ -143,7 +186,7 @@ export default function CompetitionDetail() {
 							{t('competitions.startDate')}
 						</span>
 						<span className='text-sm font-semibold text-gray-800 dark:text-gray-200'>
-							{competition.startDate}
+							{competition.start_date}
 						</span>
 					</div>
 				</div>
@@ -155,7 +198,7 @@ export default function CompetitionDetail() {
 							{t('competitions.deadline')}
 						</span>
 						<span className='text-sm font-semibold text-gray-800 dark:text-gray-200'>
-							{competition.registrationDeadline}
+							{competition.registration_deadline}
 						</span>
 					</div>
 				</div>
@@ -210,8 +253,8 @@ export default function CompetitionDetail() {
 				className='relative rounded-2xl overflow-hidden mb-6 md:mb-8 shadow-2xl'
 			>
 				<img
-					src={competition.image}
-					alt={competition.title[currentLang]}
+					src={competition.image || '/images/placeholder.jpg'}
+					alt={getTitle(competition)}
 					className='w-full max-h-[400px] md:max-h-[600px] object-cover'
 				/>
 				<div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
@@ -232,7 +275,7 @@ export default function CompetitionDetail() {
 					prose-blockquote:rounded-r-lg prose-blockquote:py-2
 					prose-a:text-blue-600 hover:prose-a:text-blue-700
 					mb-8 md:mb-12'
-				dangerouslySetInnerHTML={{ __html: competition.content[currentLang] }}
+				dangerouslySetInnerHTML={{ __html: getContent(competition) }}
 			/>
 
 			{/* Registration CTA */}
@@ -249,61 +292,29 @@ export default function CompetitionDetail() {
 					<p className='text-sm sm:text-base md:text-lg mb-4 md:mb-6 opacity-90'>
 						{t('competitions.registerDescription')}
 					</p>
-					<button className='px-6 md:px-8 py-3 md:py-4 bg-white text-blue-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base'>
+					<button 
+						onClick={() => setShowApplicationForm(true)}
+						className='px-6 md:px-8 py-3 md:py-4 bg-white text-blue-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base'
+					>
 						{t('competitions.registerButton')} →
 					</button>
 				</motion.div>
 			)}
 
-			{/* Related Competitions */}
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.9 }}
-				className='mt-12 md:mt-16 pt-8 border-t border-gray-200 dark:border-gray-700'
-			>
-				<h3 className='text-xl sm:text-2xl font-bold mb-4 md:mb-6 text-gray-800 dark:text-gray-200'>
-					{t('competitions.relatedCompetitions')}
-				</h3>
-				<div className='grid sm:grid-cols-2 gap-4 md:gap-6'>
-					{competitionsData
-						.filter(
-							item =>
-								item.id !== competition.id &&
-								item.category === competition.category
-						)
-						.slice(0, 2)
-						.map(relatedCompetition => (
-							<Link
-								key={relatedCompetition.id}
-								to={`/competitions/${relatedCompetition.id}`}
-								className='group p-4 md:p-6 rounded-xl border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-500 transition-all hover:shadow-lg bg-white dark:bg-gray-900'
-							>
-								<div className='flex gap-4'>
-									<img
-										src={relatedCompetition.image}
-										alt={relatedCompetition.title[currentLang]}
-										className='w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-lg flex-shrink-0'
-									/>
-									<div className='flex-1 min-w-0'>
-										<h4 className='font-semibold text-sm sm:text-base text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors mb-2 line-clamp-2'>
-											{relatedCompetition.title[currentLang]}
-										</h4>
-										<div className='flex items-center gap-3 text-xs sm:text-sm text-gray-500'>
-											<span className='flex items-center gap-1'>
-												<FaUsers className='text-purple-600' />{' '}
-												{relatedCompetition.participants}
-											</span>
-											<span className='flex items-center gap-1'>
-												<FaTrophy className='text-yellow-600' />
-											</span>
-										</div>
-									</div>
-								</div>
-							</Link>
-						))}
-				</div>
-			</motion.div>
+			{/* Application Form Modal */}
+			{showApplicationForm && (
+				<ApplicationForm
+					contentType="competition"
+					objectId={competition.id}
+					onClose={() => setShowApplicationForm(false)}
+					onSuccess={() => {
+						setShowApplicationForm(false)
+						// Перезагружаем конкурс чтобы обновить счетчик участников
+						getCompetitionDetail(id).then(data => setCompetition(data))
+					}}
+				/>
+			)}
+
 
 			{/* Comments Section */}
 			<motion.div

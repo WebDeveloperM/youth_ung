@@ -2,6 +2,8 @@ from django.contrib import admin
 
 # Import Comment admin
 from .admin_comments import CommentAdmin
+# Import Application admin
+from .admin_applications import ApplicationAdmin
 from django.utils.html import format_html
 from django.db.models import Count, Q
 from django.utils.translation import gettext_lazy as _

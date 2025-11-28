@@ -8,7 +8,7 @@ from users.serializers.sign_in import SignInSerializer
 class SignInView(APIView):
     """API endpoint для входа пользователя"""
     permission_classes = (AllowAny,)
-    
+
     def post(self, request):
         """
         Вход пользователя в систему

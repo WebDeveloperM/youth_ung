@@ -240,6 +240,21 @@
 			"title": "Ariza topshirishga tayyormisiz?",
 			"description": "Platformamizga ro'yxatdan o'ting va barcha grantlarga kirish imkoniyatiga ega bo'ling",
 			"button": "Boshlash"
+		},
+		"applyForm": {
+			"title": "Grantga ariza topshirish",
+			"personalInfo": "Shaxsiy ma'lumotlar",
+			"fullName": "To'liq ism-familiya",
+			"phone": "Telefon",
+			"organization": "Tashkilot/Universitet",
+			"position": "Lavozim/Mutaxassislik",
+			"experience": "Tajriba",
+			"motivation": "Motivatsion xat",
+			"documents": "Hujjatlar",
+			"cv": "Rezyume/CV",
+			"portfolio": "Portfolio",
+			"submit": "Yuborish",
+			"cancel": "Bekor qilish"
 		}
 	},
 
