@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import { adminsAPI, AdminUserType, MenuItem } from '../../api';
 
 interface AdminFormProps {
@@ -85,7 +86,25 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation
+    if (!formData.email || !formData.username || !formData.first_name || !formData.last_name) {
+      toast.error('Илтимос, барча майдонларни тўлдиринг!');
+      return;
+    }
+
+    if (!admin && !formData.password) {
+      toast.error('Янги администратор учун пароль киритинг!');
+      return;
+    }
+
+    if (formData.allowed_menus.length === 0) {
+      toast.error('Камида битта менюни танланг!');
+      return;
+    }
+
     setLoading(true);
+    const loadingToast = toast.loading(admin ? 'Сақланмоқда...' : 'Яратилмоқда...');
 
     try {
       const submitData: any = { ...formData };
@@ -97,32 +116,33 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
         delete submitData.password;
       }
 
-      // Проверка что выбрано хотя бы одно меню
-      if (submitData.allowed_menus.length === 0) {
-        alert('Выберите хотя бы одно меню для администратора');
-        setLoading(false);
-        return;
-      }
-
       if (admin) {
         await adminsAPI.update(admin.id, submitData);
-        alert('Администратор обновлен');
+        toast.success('Администратор муваффақиятли янгиланди! ✅', { id: loadingToast });
       } else {
-        // При создании пароль обязателен
-        if (!formData.password) {
-          alert('Введите пароль для нового администратора');
-          setLoading(false);
-          return;
-        }
         await adminsAPI.create(submitData);
-        alert('Администратор создан');
+        toast.success('Администратор муваффақиятли яратилди! 🎉', { id: loadingToast });
       }
       
       onSuccess();
       onClose();
     } catch (error: any) {
       console.error('Ошибка при сохранении администратора:', error);
-      alert(error.response?.data?.error || 'Ошибка при сохранении администратора');
+      
+      // Better error messages
+      if (error.response?.data) {
+        const errors = error.response.data;
+        if (typeof errors === 'object') {
+          const errorMessages = Object.entries(errors)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('\n');
+          toast.error(`Хатолик:\n${errorMessages}`, { id: loadingToast });
+        } else {
+          toast.error(`Хатолик: ${errors.error || errors}`, { id: loadingToast });
+        }
+      } else {
+        toast.error(`Хатолик: ${error.message}`, { id: loadingToast });
+      }
     } finally {
       setLoading(false);
     }

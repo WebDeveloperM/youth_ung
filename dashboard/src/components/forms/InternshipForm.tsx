@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Internship, internshipsAPI } from '../../api';
@@ -77,7 +78,30 @@ const InternshipForm = ({ internship, onClose, onSuccess }: InternshipFormProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation
+    if (!formData.title_uz || !formData.title_ru || !formData.title_en) {
+      toast.error('Илтимос, барча тилларда сарлавҳа киритинг!');
+      return;
+    }
+
+    if (!formData.short_description_uz || !formData.short_description_ru || !formData.short_description_en) {
+      toast.error('Илтимос, қисқача таъриф киритинг!');
+      return;
+    }
+
+    if (!formData.stipend || !formData.duration || !formData.deadline || !formData.start_date) {
+      toast.error('Илтимос, стажировка маълумотларини тўлдиринг!');
+      return;
+    }
+
+    if (!formData.positions || parseInt(formData.positions) < 1) {
+      toast.error('Илтимос, ўринлар сонини киритинг (минимум 1)!');
+      return;
+    }
+
     setLoading(true);
+    const loadingToast = toast.loading(internship ? 'Сақланмоқда...' : 'Яратилмоқда...');
 
     try {
       const submitData: any = { ...formData };
@@ -97,16 +121,32 @@ const InternshipForm = ({ internship, onClose, onSuccess }: InternshipFormProps)
 
       if (internship) {
         await internshipsAPI.update(internship.id, submitData);
+        toast.success('Стажировка муваффақиятли янгиланди! ✅', { id: loadingToast });
       } else {
         const result = await internshipsAPI.create(submitData);
         console.log('✅ СТАЖИРОВКА СОЗДАНА:', result);
+        toast.success('Стажировка муваффақиятли яратилди! 🎉', { id: loadingToast });
       }
       
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка при сохранении стажировки:', error);
-      alert('Ошибка при сохранении стажировки');
+      
+      // Better error messages
+      if (error.response?.data) {
+        const errors = error.response.data;
+        if (typeof errors === 'object') {
+          const errorMessages = Object.entries(errors)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('\n');
+          toast.error(`Хатолик:\n${errorMessages}`, { id: loadingToast });
+        } else {
+          toast.error(`Хатолик: ${errors}`, { id: loadingToast });
+        }
+      } else {
+        toast.error(`Хатолик: ${error.message}`, { id: loadingToast });
+      }
     } finally {
       setLoading(false);
     }

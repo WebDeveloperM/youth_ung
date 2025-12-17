@@ -19,7 +19,8 @@ import {
   UsersRound,
   MessageCircle,
   FileText,
-  Shield
+  Shield,
+  BookOpen
 } from 'lucide-react';
 import { authAPI } from '../api';
 
@@ -63,6 +64,7 @@ const Layout = () => {
     { name: 'Stajirovkalar', href: '/internships', icon: Target, key: 'internships' },
     { name: 'Vakansiyalar', href: '/jobs', icon: Briefcase, key: 'jobs' },
     { name: 'Jamoa', href: '/team', icon: UsersRound, key: 'team' },
+    { name: 'Maqolalar', href: '/articles', icon: BookOpen, key: 'articles' },
     { name: 'Foydalanuvchilar', href: '/users', icon: Users, key: 'users' },
     { name: 'Kommentariyalar', href: '/comments', icon: MessageCircle, key: 'comments' },
     { name: 'Arizalar', href: '/applications', icon: FileText, key: 'applications' },

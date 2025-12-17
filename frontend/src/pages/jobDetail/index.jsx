@@ -1,15 +1,80 @@
+import { useState, useEffect } from 'react'
 import Comments from '@/components/Comments'
-import { jobsData } from '@/datatest/jobsData'
+import ApplicationForm from '@/components/ApplicationForm'
+import { getJobDetail } from '@/api/jobs'
 import { motion } from 'framer-motion'
 import { FaArrowLeft, FaMoneyBillWave, FaMapMarkerAlt, FaClock, FaUsers, FaShare, FaCheckCircle, FaBriefcase } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { toast } from 'sonner'
 
 export default function JobDetail() {
 	const { t, i18n } = useTranslation()
 	const { id } = useParams()
 	const currentLang = i18n.language
-	const job = jobsData.find(item => item.id === Number(id))
+	const [job, setJob] = useState(null)
+	const [loading, setLoading] = useState(true)
+	const [showApplicationForm, setShowApplicationForm] = useState(false)
+
+	useEffect(() => {
+		loadJobDetail()
+	}, [id])
+
+	const loadJobDetail = async () => {
+		try {
+			setLoading(true)
+			const data = await getJobDetail(id)
+			
+			// Transform backend data to frontend format
+			const transformedJob = {
+				id: data.id,
+				title: {
+					uz: data.title_uz,
+					ru: data.title_ru,
+					en: data.title_en,
+				},
+				shortDescription: {
+					uz: data.short_description_uz,
+					ru: data.short_description_ru,
+					en: data.short_description_en,
+				},
+				content: {
+					uz: data.content_uz,
+					ru: data.content_ru,
+					en: data.content_en,
+				},
+				image: data.image || '/images/default-job.jpg',
+				salary: data.salary,
+				location: data.location,
+				type: data.type,
+				experience: data.experience,
+				deadline: data.deadline,
+				category: data.category,
+				employment_type: data.employment_type,
+				status: data.status,
+				applicants: data.applicants || 0,
+				positions: data.positions || 1,
+			}
+			
+			setJob(transformedJob)
+			console.log('✅ Вакансия загружена:', transformedJob)
+		} catch (error) {
+			console.error('❌ Ошибка загрузки вакансии:', error)
+			setJob(null)
+		} finally {
+			setLoading(false)
+		}
+	}
+
+	if (loading) {
+		return (
+			<div className='container mx-auto py-20 px-4 text-center'>
+				<div className='flex justify-center items-center'>
+					<div className='animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600'></div>
+				</div>
+			</div>
+		)
+	}
 
 	if (!job) {
 		return (
@@ -101,10 +166,13 @@ export default function JobDetail() {
 
 			{job.status === 'active' && (
 				<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className='bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white mb-8 md:mb-12'>
-					<h3 className='text-xl sm:text-2xl md:text-3xl font-bold mb-3 md:mb-4'>{t('jobs.applyNow')}</h3>
-					<p className='text-sm sm:text-base md:text-lg mb-4 md:mb-6 opacity-90'>{t('jobs.applyDescription')}</p>
-					<button className='px-6 md:px-8 py-3 md:py-4 bg-white text-blue-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base'>
-						{t('jobs.applyButton')} →
+					<h3 className='text-xl sm:text-2xl md:text-3xl font-bold mb-3 md:mb-4'>{t('jobs.applyNow') || 'Ҳозироқ ариза юборинг'}</h3>
+					<p className='text-sm sm:text-base md:text-lg mb-4 md:mb-6 opacity-90'>{t('jobs.applyDescription') || 'Бу вакансияга ариза юборинг ва ўз карьерангизни бошланг!'}</p>
+					<button 
+						onClick={() => setShowApplicationForm(true)}
+						className='px-6 md:px-8 py-3 md:py-4 bg-white text-blue-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base'
+					>
+						{t('jobs.applyButton') || 'Ариза юбориш'} →
 					</button>
 				</motion.div>
 			)}
@@ -112,6 +180,22 @@ export default function JobDetail() {
 			<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }} className='mt-8 md:mt-12'>
 				<Comments contentType="job" objectId={job.id} />
 			</motion.div>
+
+			{/* Application Form Modal */}
+			{showApplicationForm && (
+				<ApplicationForm
+					contentType="job"
+					objectId={job.id}
+					contentTitle={job.title[currentLang]}
+					onClose={() => setShowApplicationForm(false)}
+					onSuccess={() => {
+						toast.success('✅ Ариза муваффақиятли юборилди! Тез орада сиз билан боғланамиз.')
+						setShowApplicationForm(false)
+						// Refresh job to update applicants count
+						loadJobDetail()
+					}}
+				/>
+			)}
 		</motion.section>
 	)
 }

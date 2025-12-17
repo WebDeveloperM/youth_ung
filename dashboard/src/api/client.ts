@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // API Base URL - измени на свой backend URL
-const API_BASE_URL = 'http://172.20.10.2:8000/api/v1';
+const API_BASE_URL = 'http://localhost:8000/api/v1';
 
 // Создаем инстанс axios с настройками
 export const apiClient = axios.create({

@@ -4,7 +4,7 @@ import { FaTimes, FaFileAlt, FaBriefcase } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
 import axios from 'axios'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://172.20.10.2:8000/api/v1'
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
 export default function ApplicationForm({ contentType, objectId, contentTitle, onClose, onSuccess }) {
 	const { t } = useTranslation()
@@ -76,11 +76,16 @@ export default function ApplicationForm({ contentType, objectId, contentTitle, o
 				onSuccess()
 			}
 			
-			alert('✅ Заявка успешно отправлена! Мы свяжемся с вами в ближайшее время.')
-			onClose()
+			// Success notification is handled by parent component
+			if (onSuccess) {
+				onSuccess()
+			} else {
+				onClose()
+			}
 		} catch (error) {
 			console.error('❌ Ошибка отправки заявки:', error)
-			alert(`Ошибка: ${error.response?.data?.message || error.message}`)
+			const errorMessage = error.response?.data?.message || error.message || 'Ариза юборишда хатолик!'
+			alert(`❌ Хатолик: ${errorMessage}`)
 		} finally {
 			setLoading(false)
 		}

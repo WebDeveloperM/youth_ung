@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Edit2, Trash2, Eye, ThumbsUp } from 'lucide-react';
+import { toast } from 'sonner';
 import { newsAPI, News as NewsType, ListResponse } from '../api';
 import { format } from 'date-fns';
 import NewsForm from '../components/forms/NewsForm';
@@ -30,6 +31,7 @@ const News = () => {
       setTotalPages(Math.ceil(response.count / 20));
     } catch (error) {
       console.error('Ошибка загрузки новостей:', error);
+      toast.error('Янгиликларни юклашда хатолик юз берди');
     } finally {
       setLoading(false);
     }
@@ -38,12 +40,14 @@ const News = () => {
   const handleDelete = async (id: number) => {
     if (!window.confirm('Новостни ўчиришга ишончингиз комилми?')) return;
     
+    const loadingToast = toast.loading('Ўчирилмоқда...');
     try {
       await newsAPI.delete(id);
+      toast.success('Янгилик муваффақиятли ўчирилди!', { id: loadingToast });
       loadNews();
     } catch (error) {
       console.error('Ошибка удаления:', error);
-      alert('Хатолик юз берди');
+      toast.error('Янгиликни ўчиришда хатолик!', { id: loadingToast });
     }
   };
 

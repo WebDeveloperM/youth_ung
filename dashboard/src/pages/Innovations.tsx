@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { Eye, ThumbsUp } from 'lucide-react';
+import { toast } from 'sonner';
 import ContentListPage from '../components/common/ContentListPage';
 import InnovationForm from '../components/forms/InnovationForm';
 import { innovationsAPI, Innovation } from '../api';
@@ -56,10 +57,34 @@ const Innovations = () => {
     },
   ];
 
+  const [stats, setStats] = useState({
+    total: 0,
+    featured: 0,
+    totalViews: 0,
+  });
+
+  const loadStats = async () => {
+    try {
+      const response = await innovationsAPI.getList();
+      const innovations = response.results;
+      setStats({
+        total: response.count,
+        featured: innovations.filter(i => i.is_featured).length,
+        totalViews: innovations.reduce((sum, i) => sum + (i.views || 0), 0),
+      });
+    } catch (error) {
+      console.error('Статистика юклашда хатолик:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, [refreshKey]);
+
   const statsCards = [
-    { label: 'Жами инновациялар', value: '0' },
-    { label: 'Танланган', value: '0', color: 'text-yellow-600' },
-    { label: 'Жами кўришлар', value: '0', color: 'text-blue-600' },
+    { label: 'Жами инновациялар', value: stats.total.toString() },
+    { label: 'Танланган', value: stats.featured.toString(), color: 'text-yellow-600' },
+    { label: 'Жами кўришлар', value: stats.totalViews.toString(), color: 'text-blue-600' },
   ];
 
   return (
@@ -82,9 +107,9 @@ const Innovations = () => {
             console.log('💡 ЗАГРУЖЕНА ПОЛНАЯ ИННОВАЦИЯ:', fullInnovation);
             setEditingInnovation(fullInnovation);
             setIsModalOpen(true);
-          } catch (error) {
+          } catch (error: any) {
             console.error('Ошибка загрузки инновации:', error);
-            alert('Ошибка загрузки инновации');
+            toast.error('Инновацияни юклашда хатолик!');
           }
         }}
         statsCards={statsCards}

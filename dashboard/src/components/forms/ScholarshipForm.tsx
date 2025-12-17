@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Scholarship, scholarshipsAPI } from '../../api';
@@ -73,7 +74,25 @@ const ScholarshipForm = ({ scholarship, onClose, onSuccess }: ScholarshipFormPro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation
+    if (!formData.title_uz || !formData.title_ru || !formData.title_en) {
+      toast.error('Илтимос, барча тилларда сарлавҳа киритинг!');
+      return;
+    }
+
+    if (!formData.short_description_uz || !formData.short_description_ru || !formData.short_description_en) {
+      toast.error('Илтимос, қисқача таъриф киритинг!');
+      return;
+    }
+
+    if (!formData.amount || !formData.duration || !formData.deadline) {
+      toast.error('Илтимос, стипендия маълумотларини тўлдиринг!');
+      return;
+    }
+
     setLoading(true);
+    const loadingToast = toast.loading(scholarship ? 'Сақланмоқда...' : 'Яратилмоқда...');
 
     try {
       const submitData: any = { ...formData };
@@ -93,16 +112,32 @@ const ScholarshipForm = ({ scholarship, onClose, onSuccess }: ScholarshipFormPro
 
       if (scholarship) {
         await scholarshipsAPI.update(scholarship.id, submitData);
+        toast.success('Стипендия муваффақиятли янгиланди! ✅', { id: loadingToast });
       } else {
         const result = await scholarshipsAPI.create(submitData);
         console.log('✅ СТИПЕНДИЯ СОЗДАНА:', result);
+        toast.success('Стипендия муваффақиятли яратилди! 🎉', { id: loadingToast });
       }
       
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка при сохранении стипендии:', error);
-      alert('Ошибка при сохранении стипендии');
+      
+      // Better error messages
+      if (error.response?.data) {
+        const errors = error.response.data;
+        if (typeof errors === 'object') {
+          const errorMessages = Object.entries(errors)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('\n');
+          toast.error(`Хатолик:\n${errorMessages}`, { id: loadingToast });
+        } else {
+          toast.error(`Хатолик: ${errors}`, { id: loadingToast });
+        }
+      } else {
+        toast.error(`Хатолик: ${error.message}`, { id: loadingToast });
+      }
     } finally {
       setLoading(false);
     }

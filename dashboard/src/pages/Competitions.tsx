@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { FileText } from 'lucide-react';
+import { toast } from 'sonner';
 import ContentListPage from '../components/common/ContentListPage';
 import CompetitionForm from '../components/forms/CompetitionForm';
 import ContentApplicationsModal from '../components/ContentApplicationsModal';
@@ -92,10 +93,34 @@ const Competitions = () => {
     },
   ];
 
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    totalParticipants: 0,
+  });
+
+  const loadStats = async () => {
+    try {
+      const response = await competitionsAPI.getList();
+      const competitions = response.results;
+      setStats({
+        total: response.count,
+        active: competitions.filter(c => c.status === 'active').length,
+        totalParticipants: competitions.reduce((sum, c) => sum + (c.participants || 0), 0),
+      });
+    } catch (error) {
+      console.error('Статистика юклашда хатолик:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, [refreshKey]);
+
   const statsCards = [
-    { label: 'Жами конкурслар', value: '0' },
-    { label: 'Фаол', value: '0', color: 'text-green-600' },
-    { label: 'Жами иштирокчилар', value: '0', color: 'text-blue-600' },
+    { label: 'Жами конкурслар', value: stats.total.toString() },
+    { label: 'Фаол', value: stats.active.toString(), color: 'text-green-600' },
+    { label: 'Жами иштирокчилар', value: stats.totalParticipants.toString(), color: 'text-blue-600' },
   ];
 
   return (
@@ -118,9 +143,9 @@ const Competitions = () => {
             console.log('🏆 ЗАГРУЖЕН ПОЛНЫЙ КОНКУРС:', fullCompetition);
             setEditingCompetition(fullCompetition);
             setIsModalOpen(true);
-          } catch (error) {
+          } catch (error: any) {
             console.error('Ошибка загрузки конкурса:', error);
-            alert('Ошибка загрузки конкурса');
+            toast.error('Конкурсни юклашда хатолик!');
           }
         }}
         statsCards={statsCards}

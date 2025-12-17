@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import { authAPI } from './api';
 import Layout from './components/Layout';
 import Login from './pages/Login';
@@ -16,6 +17,7 @@ import Users from './pages/Users';
 import Analytics from './pages/Analytics';
 import Applications from './pages/Applications';
 import Administrators from './pages/Administrators';
+import Articles from './pages/Articles';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -31,6 +33,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 function App() {
   return (
     <Router>
+      <Toaster 
+        position="top-right" 
+        richColors 
+        expand={true}
+        duration={4000}
+      />
       <Routes>
         <Route path="/login" element={<Login />} />
         
@@ -57,6 +65,7 @@ function App() {
           <Route path="users" element={<Users />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="administrators" element={<Administrators />} />
+          <Route path="articles" element={<Articles />} />
         </Route>
       </Routes>
     </Router>

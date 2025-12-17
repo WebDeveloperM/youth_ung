@@ -1,5 +1,6 @@
 import { useState, useEffect, ReactNode } from 'react';
 import { Plus, Search, Edit2, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 
 interface Column<T> {
@@ -57,6 +58,7 @@ function ContentListPage<T extends { id: number }>({
       setTotalPages(Math.ceil(response.count / 20));
     } catch (error) {
       console.error('Ошибка загрузки:', error);
+      toast.error('Маълумотларни юклашда хатолик!');
     } finally {
       setLoading(false);
     }
@@ -65,12 +67,14 @@ function ContentListPage<T extends { id: number }>({
   const handleDelete = async (id: number) => {
     if (!window.confirm('Ўчиришга ишончингиз комилми?')) return;
 
+    const loadingToast = toast.loading('Ўчирилмоқда...');
     try {
       await api.delete(id);
+      toast.success(`${title} муваффақиятли ўчирилди! ✅`, { id: loadingToast });
       loadItems();
     } catch (error) {
       console.error('Ошибка удаления:', error);
-      alert('Хатолик юз берди');
+      toast.error('Ўчиришда хатолик!', { id: loadingToast });
     }
   };
 

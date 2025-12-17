@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { Toaster } from 'sonner'
 // import { Footer } from './components/footer/Footer'
 import BreadcrumbComp from './components/breadCrumb'
 import Footer from './components/footer/Footer'
@@ -30,6 +31,9 @@ import ResearchList from './pages/researchList'
 import ResearchDetail from './pages/researchDetail'
 import ResultsList from './pages/resultsList'
 import ProfilePage from './pages/profile'
+import ArticlesList from './pages/articlesList'
+import ArticleDetail from './pages/articleDetail'
+import SubmitArticle from './pages/submitArticle'
 function AppContent() {
 	const location = useLocation()
 
@@ -68,6 +72,9 @@ function AppContent() {
 			<Route path='/research' element={<ResearchList />} />
 			<Route path='/research/:id' element={<ResearchDetail />} />
 			<Route path='/results' element={<ResultsList />} />
+			<Route path='/articles' element={<ArticlesList />} />
+			<Route path='/articles/:id' element={<ArticleDetail />} />
+			<Route path='/submit-article' element={<SubmitArticle />} />
 		</Routes>
 
 			{!hideHeader && <Footer />}
@@ -78,6 +85,7 @@ function AppContent() {
 const App = () => (
 	<BrowserRouter>
 		<AppContent />
+		<Toaster richColors position="top-right" duration={4000} expand={true} />
 	</BrowserRouter>
 )
 

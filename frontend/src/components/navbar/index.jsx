@@ -134,6 +134,11 @@ export default function Navbar() {
 				},
 			],
 		},
+		{
+			title: 'Xalqaro va mahalliy maqolalar',
+			url: '/articles',
+			icon: <FileText size={24} />
+		},
 	]
 
 	return (

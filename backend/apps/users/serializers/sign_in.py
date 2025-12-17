@@ -49,13 +49,19 @@ class SignInSerializer(serializers.Serializer):
         """Формирование ответа"""
         user = instance['user']
         return {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'phone': user.phone,
-            'role': user.role,
             'token': instance['token'],
+            'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'phone': user.phone,
+                'role': user.role,
+                'avatar': user.avatar.url if user.avatar else None,
+                'is_superuser': user.is_superuser,
+                'is_staff': user.is_staff,
+                'allowed_menus': user.allowed_menus if hasattr(user, 'allowed_menus') else [],
+            },
             'message': 'Вход выполнен успешно!'
         }

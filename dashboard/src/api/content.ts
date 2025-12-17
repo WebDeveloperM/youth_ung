@@ -188,6 +188,68 @@ export interface TeamMember extends BaseContent {
   is_active: boolean;
 }
 
+// MAQOLALAR (ARTICLES)
+export interface Article extends BaseContent {
+  id: number;
+  title_uz: string;
+  title_ru: string;
+  title_en: string;
+  abstract_uz: string;
+  abstract_ru: string;
+  abstract_en: string;
+  content_uz: string;
+  content_ru: string;
+  content_en: string;
+  keywords_uz: string;
+  keywords_ru: string;
+  keywords_en: string;
+  category: 'international' | 'local' | 'scientific' | 'analytical' | 'practical';
+  cover_image?: string;
+  pdf_file?: string;
+  doi?: string;
+  publication_date?: string;
+  author: {
+    id: number;
+    username: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+  };
+  status: 'pending' | 'approved' | 'rejected' | 'revision';
+  is_published: boolean;
+  is_featured: boolean;
+  views: number;
+  downloads: number;
+  likes: number;
+  admin_comment?: string;
+  approved_by?: number;
+  approved_at?: string;
+}
+
+export interface ArticleFormData {
+  title_uz: string;
+  title_ru?: string;
+  title_en?: string;
+  abstract_uz: string;
+  abstract_ru?: string;
+  abstract_en?: string;
+  content_uz: string;
+  content_ru?: string;
+  content_en?: string;
+  keywords_uz?: string;
+  keywords_ru?: string;
+  keywords_en?: string;
+  category: string;
+  cover_image?: File | string;
+  pdf_file?: File | string;
+  doi?: string;
+  publication_date?: string;
+  status?: string;
+  is_published?: boolean;
+  is_featured?: boolean;
+  admin_comment?: string;
+}
+
 // Общий интерфейс для ответа со списком
 export interface ListResponse<T> {
   count: number;
@@ -296,6 +358,33 @@ export const innovationsAPI = createCRUDAPI<Innovation>('/admin/innovations/');
 export const internshipsAPI = createCRUDAPI<Internship>('/admin/internships/');
 export const jobsAPI = createCRUDAPI<Job>('/admin/jobs/');
 export const teamAPI = createCRUDAPI<TeamMember>('/admin/team/');
+
+// Articles API with additional approval methods
+const baseArticlesAPI = createCRUDAPI<Article, ArticleFormData>('/admin/articles/');
+
+export const articlesAPI = {
+  ...baseArticlesAPI,
+  // Approve article
+  approve: async (id: number, data: { admin_comment?: string }): Promise<Article> => {
+    const response = await apiClient.post(`/admin/articles/${id}/approve/`, data);
+    return response.data;
+  },
+  // Reject article
+  reject: async (id: number, data: { admin_comment: string }): Promise<Article> => {
+    const response = await apiClient.post(`/admin/articles/${id}/reject/`, data);
+    return response.data;
+  },
+  // Request revision
+  requestRevision: async (id: number, data: { admin_comment: string }): Promise<Article> => {
+    const response = await apiClient.post(`/admin/articles/${id}/request_revision/`, data);
+    return response.data;
+  },
+  // Get statistics
+  getStats: async (): Promise<any> => {
+    const response = await apiClient.get('/admin/articles/stats/');
+    return response.data;
+  },
+};
 
 // Экспортируем все вместе
 export const contentAPI = {

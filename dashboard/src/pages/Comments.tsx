@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Check, X, Search, Trash2, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 import { commentsAPI, Comment, ListResponse } from '../api';
 
 const Comments = () => {
@@ -36,36 +37,41 @@ const Comments = () => {
       setTotalPages(Math.ceil(response.count / 20));
     } catch (error) {
       console.error('Ошибка загрузки комментариев:', error);
+      toast.error('Комментарияларни юклашда хатолик!');
     } finally {
       setLoading(false);
     }
   };
 
   const handleApprove = async (id: number) => {
+    const loadingToast = toast.loading('Тасдиқланмоқда...');
     try {
       await commentsAPI.moderate(id, { is_moderated: true });
+      toast.success('Комментария тасдиқланди! ✅', { id: loadingToast });
       loadComments();
     } catch (error) {
       console.error('Ошибка одобрения:', error);
-      alert('Хатолик юз берди');
+      toast.error('Тасдиқлашда хатолик!', { id: loadingToast });
     }
   };
 
   const handleDelete = async (id: number) => {
     if (!window.confirm('Комментарийни ўчиришга ишончингиз комилми?')) return;
     
+    const loadingToast = toast.loading('Ўчирилмоқда...');
     try {
       await commentsAPI.delete(id);
+      toast.success('Комментария ўчирилди! ✅', { id: loadingToast });
       loadComments();
     } catch (error) {
       console.error('Ошибка удаления:', error);
-      alert('Хатолик юз берди');
+      toast.error('Ўчиришда хатолик!', { id: loadingToast });
     }
   };
 
   const handleBulkAction = async (action: 'approve' | 'delete' | 'spam') => {
     if (selectedComments.length === 0) {
-      alert('Камида битта комментарий танланг');
+      toast.warning('Камида битта комментарий танланг!');
       return;
     }
 
@@ -73,13 +79,15 @@ const Comments = () => {
       return;
     }
 
+    const loadingToast = toast.loading(`${selectedComments.length} та комментария ${action === 'approve' ? 'тасдиқланмоқда' : 'ўчирилмоқда'}...`);
     try {
       await commentsAPI.bulkModerate(selectedComments, action);
+      toast.success(`${selectedComments.length} та комментария ${action === 'approve' ? 'тасдиқланди' : 'ўчирилди'}! ✅`, { id: loadingToast });
       setSelectedComments([]);
       loadComments();
     } catch (error) {
       console.error('Ошибка массового действия:', error);
-      alert('Хатолик юз берди');
+      toast.error('Хатолик юз берди!', { id: loadingToast });
     }
   };
 

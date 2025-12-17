@@ -37,7 +37,10 @@ urlpatterns = [
         path('competitions/', include('content.urls.competitions')),  # Публичный API конкурсов для frontend
         path('innovations/', include('content.urls.innovations')),  # Публичный API инноваций для frontend
         path('internships/', include('content.urls.internships')),  # Публичный API стажировок для frontend
+        path('jobs/', include('content.urls.jobs')),  # Публичный API вакансий для frontend
+        path('team/', include('content.urls.team')),  # Публичный API команды для frontend
         path('applications/', include('content.urls.applications')),  # Подача заявок
+        path('articles/', include('content.urls.articles')),  # API maqolalar uchun
         path('admin/', include([
             path('', include('content.urls.admin_urls')),
             path('admins/', include('users.urls_admin')),  # Управление администраторами

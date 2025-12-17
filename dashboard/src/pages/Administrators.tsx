@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { Plus, Edit, Trash2, UserCheck, UserX } from 'lucide-react';
+import { Plus, Edit, Trash2, UserCheck, UserX, Search } from 'lucide-react';
+import { toast } from 'sonner';
 import { adminsAPI, AdminUserType } from '../api';
 import AdminForm from '../components/forms/AdminForm';
 
@@ -10,13 +11,17 @@ const Administrators = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState<AdminUserType | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [refreshKey, setRefreshKey] = useState(0);
+
   const loadAdmins = async () => {
     try {
       setLoading(true);
       const data = await adminsAPI.getAll();
       setAdmins(data);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка загрузки администраторов:', error);
+      toast.error('Администраторларни юклашда хатолик!');
     } finally {
       setLoading(false);
     }
@@ -24,21 +29,33 @@ const Administrators = () => {
 
   useEffect(() => {
     loadAdmins();
-  }, []);
+  }, [refreshKey]);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Вы уверены, что хотите деактивировать этого администратора?')) {
+    if (!window.confirm('Администраторни деактивация қилишга ишончингиз комилми?')) {
       return;
     }
 
+    const loadingToast = toast.loading('Деактивация қилинмоқда...');
     try {
       await adminsAPI.delete(id);
-      alert('Администратор деактивирован');
-      loadAdmins();
+      toast.success('Администратор муваффақиятли деактивация қилинди!', { id: loadingToast });
+      setRefreshKey(prev => prev + 1);
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Ошибка при удалении администратора');
+      console.error('Ошибка при удалении администратора:', error);
+      toast.error(`Хатолик: ${error.response?.data?.error || error.message}`, { id: loadingToast });
     }
   };
+
+  const filteredAdmins = admins.filter(admin => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      admin.email.toLowerCase().includes(searchLower) ||
+      admin.username.toLowerCase().includes(searchLower) ||
+      `${admin.first_name} ${admin.last_name}`.toLowerCase().includes(searchLower) ||
+      admin.role.toLowerCase().includes(searchLower)
+    );
+  });
 
   const getRoleBadge = (role: string) => {
     const colors = {
@@ -119,6 +136,20 @@ const Administrators = () => {
         </div>
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Администратор қидириш..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+          />
+        </div>
+      </div>
+
       {/* Table */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
         <div className="overflow-x-auto">
@@ -152,7 +183,14 @@ const Administrators = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {admins.map((admin) => (
+              {filteredAdmins.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                    {searchTerm ? 'Администратор топилмади' : 'Администраторлар йўқ'}
+                  </td>
+                </tr>
+              ) : (
+                filteredAdmins.map((admin) => (
                 <tr key={admin.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
                     #{admin.id}
@@ -204,12 +242,15 @@ const Administrators = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={async () => {
+                          const loadingToast = toast.loading('Администратор юкланмоқда...');
                           try {
                             const fullAdmin = await adminsAPI.getOne(admin.id);
                             setEditingAdmin(fullAdmin);
                             setIsModalOpen(true);
-                          } catch (error) {
-                            alert('Ошибка загрузки администратора');
+                            toast.dismiss(loadingToast);
+                          } catch (error: any) {
+                            console.error('Ошибка загрузки администратора:', error);
+                            toast.error('Администраторни юклашда хатолик!', { id: loadingToast });
                           }
                         }}
                         className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
@@ -225,7 +266,8 @@ const Administrators = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>

@@ -11,11 +11,22 @@ from users.serializers.admin_serializer import (
     AdminUserUpdateSerializer,
     AdminUserDetailSerializer
 )
+from users.utils.authentication import CustomTokenAuthentication
+
+
+class IsAdminOrModerator(IsAuthenticated):
+    """Проверка что пользователь Admin или Moderator"""
+    
+    def has_permission(self, request, view):
+        if not super().has_permission(request, view):
+            return False
+        return request.user.role in ['Admin', 'Moderator']
 
 
 class AdminUserViewSet(viewsets.ModelViewSet):
     """ViewSet для управления администраторами"""
-    permission_classes = [IsAuthenticated]
+    authentication_classes = [CustomTokenAuthentication]
+    permission_classes = [IsAdminOrModerator]
     
     def get_queryset(self):
         """Возвращаем только администраторов и модераторов"""

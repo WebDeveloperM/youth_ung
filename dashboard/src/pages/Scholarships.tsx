@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { FileText } from 'lucide-react';
+import { toast } from 'sonner';
 import ContentListPage from '../components/common/ContentListPage';
 import ScholarshipForm from '../components/forms/ScholarshipForm';
 import ContentApplicationsModal from '../components/ContentApplicationsModal';
@@ -92,10 +93,34 @@ const Scholarships = () => {
     },
   ];
 
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    totalApplications: 0,
+  });
+
+  const loadStats = async () => {
+    try {
+      const response = await scholarshipsAPI.getList();
+      const scholarships = response.results;
+      setStats({
+        total: response.count,
+        active: scholarships.filter(s => s.status === 'active').length,
+        totalApplications: scholarships.reduce((sum, s) => sum + (s.recipients || 0), 0),
+      });
+    } catch (error) {
+      console.error('Статистика юклашда хатолик:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, [refreshKey]);
+
   const statsCards = [
-    { label: 'Жами стипендиялар', value: '0' },
-    { label: 'Фаол', value: '0', color: 'text-green-600' },
-    { label: 'Жами аризалар', value: '0', color: 'text-blue-600' },
+    { label: 'Жами стипендиялар', value: stats.total.toString() },
+    { label: 'Фаол', value: stats.active.toString(), color: 'text-green-600' },
+    { label: 'Жами аризалар', value: stats.totalApplications.toString(), color: 'text-blue-600' },
   ];
 
   return (
@@ -118,9 +143,9 @@ const Scholarships = () => {
             console.log('📰 ЗАГРУЖЕНА ПОЛНАЯ СТИПЕНДИЯ:', fullScholarship);
             setEditingScholarship(fullScholarship);
             setIsModalOpen(true);
-          } catch (error) {
+          } catch (error: any) {
             console.error('Ошибка загрузки стипендии:', error);
-            alert('Ошибка загрузки стипендии');
+            toast.error('Стипендияни юклашда хатолик!');
           }
         }}
         statsCards={statsCards}

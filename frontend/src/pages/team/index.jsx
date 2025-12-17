@@ -1,24 +1,82 @@
-import { teamData, teamStats } from '@/datatest/teamData'
+import { useState, useEffect } from 'react'
+import { getTeamMembersList } from '@/api/team'
 import { motion } from 'framer-motion'
 import {
 	FaEnvelope,
 	FaPhone,
 	FaLinkedinIn,
 	FaTelegramPlane,
-	FaInstagram,
-	FaGithub,
-	FaUsers,
-	FaBriefcase,
-	FaCalendarAlt,
-	FaStar
+	FaUsers
 } from 'react-icons/fa'
 import { useTranslation } from 'react-i18next'
-import { useState } from 'react'
 
 export default function TeamPage() {
 	const { t, i18n } = useTranslation()
 	const currentLang = i18n.language
 	const [selectedDepartment, setSelectedDepartment] = useState('all')
+	const [teamMembers, setTeamMembers] = useState([])
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		loadTeamMembers()
+	}, [])
+
+	const loadTeamMembers = async () => {
+		try {
+			setLoading(true)
+			const response = await getTeamMembersList()
+			const members = response.results || response
+			
+			// Transform backend data to frontend format
+			const transformedMembers = members.map(member => {
+				// Ensure photo URL is absolute
+				let photoUrl = member.photo || '/images/default-avatar.jpg'
+				if (photoUrl && !photoUrl.startsWith('http') && !photoUrl.startsWith('/')) {
+					photoUrl = `http://localhost:8000${photoUrl}`
+				} else if (photoUrl && photoUrl.startsWith('/uploads/')) {
+					photoUrl = `http://localhost:8000${photoUrl}`
+				}
+				
+				console.log('📸 Rasm URL:', photoUrl)
+				
+				return {
+					id: member.id,
+					name: {
+						uz: member.name_uz,
+						ru: member.name_ru,
+						en: member.name_en,
+					},
+					position: {
+						uz: member.position_uz,
+						ru: member.position_ru,
+						en: member.position_en,
+					},
+					bio: {
+						uz: member.bio_uz,
+						ru: member.bio_ru,
+						en: member.bio_en,
+					},
+					photo: photoUrl,
+					email: member.email,
+					phone: member.phone,
+					social: {
+						linkedin: member.linkedin || '',
+						telegram: member.telegram || '',
+					},
+					order: member.order,
+					is_active: member.is_active,
+				}
+			})
+			
+			setTeamMembers(transformedMembers)
+			console.log('✅ Jamoa a\'zolari yuklandi:', transformedMembers.length)
+		} catch (error) {
+			console.error('❌ Ошибка загрузки команды:', error)
+			setTeamMembers([])
+		} finally {
+			setLoading(false)
+		}
+	}
 
 	const departments = [
 		{ id: 'all', name: t('team.departments.all') },
@@ -33,27 +91,18 @@ export default function TeamPage() {
 		const icons = {
 			linkedin: <FaLinkedinIn />,
 			telegram: <FaTelegramPlane />,
-			instagram: <FaInstagram />,
-			github: <FaGithub />
 		}
-		return icons[platform]
+		return icons[platform] || null
 	}
 
 	const getAllMembers = () => {
-		return [
-			...teamData.leadership,
-			...teamData.innovation,
-			...teamData.education,
-			...teamData.media,
-			...teamData.sports
-		]
+		return teamMembers
 	}
 
 	const getFilteredMembers = () => {
-		if (selectedDepartment === 'all') {
-			return getAllMembers()
-		}
-		return teamData[selectedDepartment] || []
+		// For now, return all members since we don't have department filtering in backend
+		// TODO: Add department field to backend model if needed
+		return teamMembers
 	}
 
 	return (
@@ -88,75 +137,6 @@ export default function TeamPage() {
 				</div>
 			</motion.section>
 
-			{/* Stats Section */}
-			<section className='py-10 md:py-16 px-4 md:px-12 bg-white dark:bg-gray-900'>
-				<div className='container mx-auto'>
-					<div className='grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8'>
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							className='text-center p-4 md:p-6 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-xl'
-						>
-							<FaUsers className='text-3xl md:text-4xl text-blue-600 mx-auto mb-2 md:mb-3' />
-							<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-1'>
-								{teamStats.totalMembers}+
-							</div>
-							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
-								{t('team.stats.members')}
-							</div>
-						</motion.div>
-
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ delay: 0.1 }}
-							className='text-center p-4 md:p-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 rounded-xl'
-						>
-							<FaBriefcase className='text-3xl md:text-4xl text-purple-600 mx-auto mb-2 md:mb-3' />
-							<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-1'>
-								{teamStats.departments}
-							</div>
-							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
-								{t('team.stats.departments')}
-							</div>
-						</motion.div>
-
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ delay: 0.2 }}
-							className='text-center p-4 md:p-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950 rounded-xl'
-						>
-							<FaCalendarAlt className='text-3xl md:text-4xl text-green-600 mx-auto mb-2 md:mb-3' />
-							<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-1'>
-								{teamStats.avgAge}
-							</div>
-							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
-								{t('team.stats.avgAge')}
-							</div>
-						</motion.div>
-
-						<motion.div
-							initial={{ opacity: 0, y: 20 }}
-							whileInView={{ opacity: 1, y: 0 }}
-							viewport={{ once: true }}
-							transition={{ delay: 0.3 }}
-							className='text-center p-4 md:p-6 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950 dark:to-amber-950 rounded-xl'
-						>
-							<FaStar className='text-3xl md:text-4xl text-orange-600 mx-auto mb-2 md:mb-3' />
-							<div className='text-3xl sm:text-4xl font-bold text-orange-600 mb-1'>
-								{teamStats.experience}
-							</div>
-							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>
-								{t('team.stats.experience')}
-							</div>
-						</motion.div>
-					</div>
-				</div>
-			</section>
 
 			{/* Department Filter */}
 			<section className='py-6 md:py-8 px-4 md:px-12 bg-gray-50 dark:bg-gray-800'>
@@ -182,9 +162,22 @@ export default function TeamPage() {
 			{/* Team Members */}
 			<section className='py-10 md:py-16 px-4 md:px-12'>
 				<div className='container mx-auto'>
-					<div className='grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8'>
-						{getFilteredMembers().map((member, index) => (
-							<motion.div
+					{loading ? (
+						<div className='flex justify-center items-center py-20'>
+							<div className='animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600'></div>
+						</div>
+					) : teamMembers.length === 0 ? (
+						<div className='text-center py-20'>
+							<FaUsers className='mx-auto text-6xl text-gray-300 mb-4' />
+							<h3 className='text-2xl font-bold text-gray-600 dark:text-gray-400 mb-2'>
+								{t('team.noMembers') || 'Ҳозирча жамоа аъзолари йўқ'}
+							</h3>
+							<p className='text-gray-500'>{t('team.checkBackLater') || 'Кейинроқ текширинг'}</p>
+						</div>
+					) : (
+						<div className='grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8'>
+							{getFilteredMembers().map((member, index) => (
+								<motion.div
 								key={member.id}
 								initial={{ opacity: 0, y: 20 }}
 								whileInView={{ opacity: 1, y: 0 }}
@@ -195,27 +188,32 @@ export default function TeamPage() {
 								{/* Image */}
 								<div className='relative h-56 sm:h-64 overflow-hidden'>
 									<motion.img
-										src={member.image}
+										src={member.photo || '/images/default-avatar.jpg'}
 										alt={member.name[currentLang]}
 										className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
+										onError={(e) => {
+											e.target.src = '/images/default-avatar.jpg'
+										}}
 									/>
 									<div className='absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent' />
 									
 									{/* Social Links Overlay */}
 									<div className='absolute bottom-4 left-0 right-0 flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300'>
 										{member.social &&
-											Object.entries(member.social).map(([platform, url]) => (
-												<a
-													key={platform}
-													href={url}
-													target='_blank'
-													rel='noopener noreferrer'
-													className='bg-white/90 dark:bg-gray-900/90 p-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors'
-													aria-label={platform}
-												>
-													{getSocialIcon(platform)}
-												</a>
-											))}
+											Object.entries(member.social)
+												.filter(([platform, url]) => url && url.trim() !== '')
+												.map(([platform, url]) => (
+													<a
+														key={platform}
+														href={url}
+														target='_blank'
+														rel='noopener noreferrer'
+														className='bg-white/90 dark:bg-gray-900/90 p-2 rounded-full hover:bg-blue-600 hover:text-white transition-colors'
+														aria-label={platform}
+													>
+														{getSocialIcon(platform)}
+													</a>
+												))}
 									</div>
 								</div>
 
@@ -227,9 +225,11 @@ export default function TeamPage() {
 									<p className='text-sm text-blue-600 dark:text-blue-400 font-semibold mb-3'>
 										{member.position[currentLang]}
 									</p>
-									<p className='text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3'>
-										{member.bio[currentLang]}
-									</p>
+									{member.bio && member.bio[currentLang] && (
+										<p className='text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-4 line-clamp-3'>
+											{member.bio[currentLang]}
+										</p>
+									)}
 
 									{/* Contact Info */}
 									<div className='space-y-2'>
@@ -251,9 +251,10 @@ export default function TeamPage() {
 										)}
 									</div>
 								</div>
-							</motion.div>
-						))}
-					</div>
+								</motion.div>
+							))}
+						</div>
+					)}
 				</div>
 			</section>
 

@@ -439,11 +439,92 @@ class AboutPage(BaseModel):
         return super().save(*args, **kwargs)
 
 
+class Article(BaseModel):
+    """Xalqaro va mahalliy maqolalar (foydalanuvchilar tomonidan yuklangan)"""
+    
+    # Foydalanuvchi ma'lumotlari
+    author = models.ForeignKey('users.User', on_delete=models.CASCADE, related_name='articles', verbose_name="Muallif")
+    
+    # Mультиязычные поля
+    title_uz = models.CharField(max_length=500, verbose_name="Sarlavha (UZ)")
+    title_ru = models.CharField(max_length=500, verbose_name="Sarlavha (RU)")
+    title_en = models.CharField(max_length=500, verbose_name="Sarlavha (EN)")
+    
+    abstract_uz = models.TextField(verbose_name="Annotatsiya (UZ)")
+    abstract_ru = models.TextField(verbose_name="Annotatsiya (RU)")
+    abstract_en = models.TextField(verbose_name="Annotatsiya (EN)")
+    
+    content_uz = RichTextField(verbose_name="To'liq matn (UZ)")
+    content_ru = RichTextField(verbose_name="To'liq matn (RU)")
+    content_en = RichTextField(verbose_name="To'liq matn (EN)")
+    
+    # Fayllar
+    pdf_file = models.FileField(upload_to='articles/pdfs/', verbose_name="PDF fayl", blank=True, null=True)
+    cover_image = models.ImageField(upload_to='articles/covers/', verbose_name="Muqova rasmi", blank=True, null=True)
+    
+    # Kategoriyalar
+    CATEGORY_CHOICES = [
+        ('international', 'Xalqaro'),
+        ('local', 'Mahalliy'),
+        ('scientific', 'Ilmiy'),
+        ('analytical', 'Tahliliy'),
+        ('practical', 'Amaliy'),
+    ]
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="Kategoriya")
+    
+    # Qo'shimcha ma'lumotlar
+    keywords_uz = models.CharField(max_length=500, verbose_name="Kalit so'zlar (UZ)", blank=True)
+    keywords_ru = models.CharField(max_length=500, verbose_name="Kalit so'zlar (RU)", blank=True)
+    keywords_en = models.CharField(max_length=500, verbose_name="Kalit so'zlar (EN)", blank=True)
+    
+    doi = models.CharField(max_length=100, verbose_name="DOI", blank=True)
+    publication_date = models.DateField(verbose_name="Nashr sanasi", null=True, blank=True)
+    
+    # Moderatsiya holati
+    STATUS_CHOICES = [
+        ('pending', 'Kutilmoqda'),
+        ('approved', 'Tasdiqlangan'),
+        ('rejected', 'Rad etilgan'),
+        ('revision', 'Qayta ko\'rib chiqish'),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Holati")
+    
+    # Admin izohi
+    admin_comment = models.TextField(verbose_name="Admin izohi", blank=True)
+    approved_by = models.ForeignKey('users.User', on_delete=models.SET_NULL, null=True, blank=True, 
+                                   related_name='approved_articles', verbose_name="Tasdiqlagan")
+    approved_at = models.DateTimeField(null=True, blank=True, verbose_name="Tasdiqlangan vaqt")
+    
+    # Statistika
+    views = models.IntegerField(default=0, verbose_name="Ko'rishlar")
+    downloads = models.IntegerField(default=0, verbose_name="Yuklab olishlar")
+    likes = models.IntegerField(default=0, verbose_name="Yoqishlar")
+    
+    # Nashr qilish
+    is_published = models.BooleanField(default=False, verbose_name="Nashr qilingan")
+    is_featured = models.BooleanField(default=False, verbose_name="Tanlangan")
+    
+    class Meta:
+        db_table = 'content_articles'
+        verbose_name = "Maqola"
+        verbose_name_plural = "Maqolalar"
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status', 'is_published']),
+            models.Index(fields=['category', 'status']),
+            models.Index(fields=['author', 'status']),
+            models.Index(fields=['-created_at']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title_uz or self.title_ru or self.title_en} - {self.get_status_display()}"
+
+
 # Импортируем модель заявок
 from .models_applications import Application
 
 __all__ = [
     'News', 'Grant', 'Scholarship', 'Competition', 'Innovation',
-    'Internship', 'Job', 'TeamMember', 'AboutPage', 'Application'
+    'Internship', 'Job', 'TeamMember', 'AboutPage', 'Application', 'Article'
 ]
 

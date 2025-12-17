@@ -1,4 +1,5 @@
-import { jobsData } from '@/datatest/jobsData'
+import { useState, useEffect } from 'react'
+import { getJobsList } from '@/api/jobs'
 import { motion } from 'framer-motion'
 import { FaBriefcase, FaMapMarkerAlt, FaMoneyBillWave, FaClock, FaUsers, FaCheckCircle } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
@@ -7,6 +8,59 @@ import { useTranslation } from 'react-i18next'
 export default function JobsList() {
 	const { t, i18n } = useTranslation()
 	const currentLang = i18n.language
+	const [jobs, setJobs] = useState([])
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		loadJobs()
+	}, [])
+
+	const loadJobs = async () => {
+		try {
+			setLoading(true)
+			const response = await getJobsList({ status: 'active' })
+			const jobsData = response.results || response
+			
+			// Transform backend data to frontend format
+			const transformedJobs = jobsData.map(job => ({
+				id: job.id,
+				title: {
+					uz: job.title_uz,
+					ru: job.title_ru,
+					en: job.title_en,
+				},
+				shortDescription: {
+					uz: job.short_description_uz,
+					ru: job.short_description_ru,
+					en: job.short_description_en,
+				},
+				content: {
+					uz: job.content_uz,
+					ru: job.content_ru,
+					en: job.content_en,
+				},
+				image: job.image || '/images/default-job.jpg',
+				salary: job.salary,
+				location: job.location,
+				type: job.type,
+				experience: job.experience,
+				deadline: job.deadline,
+				category: job.category,
+				employment_type: job.employment_type,
+				status: job.status,
+				applicants: job.applicants || 0,
+				positions: job.positions || 1,
+			}))
+			
+			setJobs(transformedJobs)
+			console.log('✅ Вакансиялар юкланди:', transformedJobs.length)
+		} catch (error) {
+			console.error('❌ Ошибка загрузки вакансий:', error)
+			setJobs([])
+		} finally {
+			setLoading(false)
+		}
+	}
 
 	return (
 		<div className='w-full overflow-hidden relative z-0'>
@@ -29,19 +83,19 @@ export default function JobsList() {
 				<div className='container mx-auto'>
 					<div className='grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8'>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-2'>{jobsData.filter(j => j.status === 'active').length}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-blue-600 mb-2'>{jobs.filter(j => j.status === 'active').length}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('jobs.activeCount')}</div>
 						</motion.div>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-2'>{jobsData.reduce((sum, j) => sum + j.applicants, 0)}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-green-600 mb-2'>{jobs.reduce((sum, j) => sum + j.applicants, 0)}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('jobs.totalApplicants')}</div>
 						</motion.div>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-2'>{jobsData.reduce((sum, j) => sum + j.positions, 0)}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-purple-600 mb-2'>{jobs.reduce((sum, j) => sum + j.positions, 0)}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('jobs.totalPositions')}</div>
 						</motion.div>
 						<motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.3 }} className='text-center p-4 md:p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md'>
-							<div className='text-3xl sm:text-4xl font-bold text-orange-600 mb-2'>{jobsData.length}</div>
+							<div className='text-3xl sm:text-4xl font-bold text-orange-600 mb-2'>{jobs.length}</div>
 							<div className='text-xs sm:text-sm text-gray-600 dark:text-gray-400'>{t('jobs.totalJobs')}</div>
 						</motion.div>
 					</div>
@@ -50,8 +104,21 @@ export default function JobsList() {
 
 			<section className='py-10 md:py-16 px-4 md:px-12'>
 				<div className='container mx-auto max-w-7xl'>
-					<div className='grid gap-6 md:gap-8'>
-						{jobsData.map((job, index) => (
+					{loading ? (
+						<div className='flex justify-center items-center py-20'>
+							<div className='animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-600'></div>
+						</div>
+					) : jobs.length === 0 ? (
+						<div className='text-center py-20'>
+							<FaBriefcase className='mx-auto text-6xl text-gray-300 mb-4' />
+							<h3 className='text-2xl font-bold text-gray-600 dark:text-gray-400 mb-2'>
+								{t('jobs.noJobsAvailable') || 'Ҳозирча вакансиялар йўқ'}
+							</h3>
+							<p className='text-gray-500'>{t('jobs.checkBackLater') || 'Кейинроқ текширинг'}</p>
+						</div>
+					) : (
+						<div className='grid gap-6 md:gap-8'>
+							{jobs.map((job, index) => (
 							<motion.article key={job.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.1, duration: 0.5 }} className='group bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 shadow-md hover:shadow-2xl transition-all duration-500 hover:-translate-y-1'>
 								<div className='md:flex'>
 									<div className='md:w-2/5 relative h-48 md:h-auto overflow-hidden'>
@@ -117,7 +184,8 @@ export default function JobsList() {
 								</div>
 							</motion.article>
 						))}
-					</div>
+						</div>
+					)}
 				</div>
 			</section>
 

@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { FileText } from 'lucide-react';
+import { toast } from 'sonner';
 import ContentListPage from '../components/common/ContentListPage';
 import GrantForm from '../components/forms/GrantForm';
 import ContentApplicationsModal from '../components/ContentApplicationsModal';
@@ -92,10 +93,34 @@ const Grants = () => {
     },
   ];
 
+  const [stats, setStats] = useState({
+    total: 0,
+    active: 0,
+    totalApplications: 0,
+  });
+
+  const loadStats = async () => {
+    try {
+      const response = await grantsAPI.getList();
+      const grants = response.results;
+      setStats({
+        total: response.count,
+        active: grants.filter(g => g.status === 'active').length,
+        totalApplications: grants.reduce((sum, g) => sum + (g.applicants || 0), 0),
+      });
+    } catch (error) {
+      console.error('Статистика юклашда хатолик:', error);
+    }
+  };
+
+  useEffect(() => {
+    loadStats();
+  }, [refreshKey]);
+
   const statsCards = [
-    { label: 'Жами грантлар', value: '0' },
-    { label: 'Фаол', value: '0', color: 'text-green-600' },
-    { label: 'Жами аризалар', value: '0', color: 'text-blue-600' },
+    { label: 'Жами грантлар', value: stats.total.toString() },
+    { label: 'Фаол', value: stats.active.toString(), color: 'text-green-600' },
+    { label: 'Жами аризалар', value: stats.totalApplications.toString(), color: 'text-blue-600' },
   ];
 
   return (
@@ -118,9 +143,9 @@ const Grants = () => {
             console.log('📰 ЗАГРУЖЕН ПОЛНЫЙ ГРАНТ:', fullGrant);
             setEditingGrant(fullGrant);
             setIsModalOpen(true);
-          } catch (error) {
+          } catch (error: any) {
             console.error('Ошибка загрузки гранта:', error);
-            alert('Ошибка загрузки гранта');
+            toast.error('Грантни юклашда хатолик!');
           }
         }}
         statsCards={statsCards}

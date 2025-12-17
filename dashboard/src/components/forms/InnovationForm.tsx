@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Innovation, innovationsAPI } from '../../api';
@@ -63,7 +64,20 @@ const InnovationForm = ({ innovation, onClose, onSuccess }: InnovationFormProps)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation
+    if (!formData.title_uz || !formData.title_ru || !formData.title_en) {
+      toast.error('Илтимос, барча тилларда сарлавҳа киритинг!');
+      return;
+    }
+
+    if (!formData.date) {
+      toast.error('Илтимос, санани киритинг!');
+      return;
+    }
+
     setLoading(true);
+    const loadingToast = toast.loading(innovation ? 'Сақланмоқда...' : 'Яратилмоқда...');
 
     try {
       const submitData: any = { ...formData };
@@ -82,16 +96,32 @@ const InnovationForm = ({ innovation, onClose, onSuccess }: InnovationFormProps)
 
       if (innovation) {
         await innovationsAPI.update(innovation.id, submitData);
+        toast.success('Инновация муваффақиятли янгиланди! ✅', { id: loadingToast });
       } else {
         const result = await innovationsAPI.create(submitData);
         console.log('✅ ИННОВАЦИЯ СОЗДАНА:', result);
+        toast.success('Инновация муваффақиятли яратилди! 🎉', { id: loadingToast });
       }
       
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка при сохранении инновации:', error);
-      alert('Ошибка при сохранении инновации');
+      
+      // Better error messages
+      if (error.response?.data) {
+        const errors = error.response.data;
+        if (typeof errors === 'object') {
+          const errorMessages = Object.entries(errors)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('\n');
+          toast.error(`Хатолик:\n${errorMessages}`, { id: loadingToast });
+        } else {
+          toast.error(`Хатолик: ${errors}`, { id: loadingToast });
+        }
+      } else {
+        toast.error(`Хатолик: ${error.message}`, { id: loadingToast });
+      }
     } finally {
       setLoading(false);
     }

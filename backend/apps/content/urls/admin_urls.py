@@ -12,6 +12,7 @@ from content.views.admin_views import (
     TeamMemberAdminViewSet,
 )
 from content.views.applications import ApplicationAdminViewSet
+from content.views.articles_admin import ArticleAdminViewSet
 
 # Создаем роутер для admin API
 router = DefaultRouter()
@@ -26,6 +27,7 @@ router.register(r'internships', InternshipAdminViewSet, basename='admin-internsh
 router.register(r'jobs', JobAdminViewSet, basename='admin-jobs')
 router.register(r'team', TeamMemberAdminViewSet, basename='admin-team')
 router.register(r'applications', ApplicationAdminViewSet, basename='admin-applications')
+router.register(r'articles', ArticleAdminViewSet, basename='admin-articles')
 
 urlpatterns = router.urls
 

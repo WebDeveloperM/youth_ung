@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { News, newsAPI } from '../../api';
@@ -65,6 +66,8 @@ const NewsForm = ({ news, onClose, onSuccess }: NewsFormProps) => {
     e.preventDefault();
     setLoading(true);
 
+    const loadingToast = toast.loading(news ? 'Сақланмоқда...' : 'Яратилмоқда...');
+
     try {
       const submitData: any = { ...formData };
       
@@ -84,9 +87,11 @@ const NewsForm = ({ news, onClose, onSuccess }: NewsFormProps) => {
 
       if (news) {
         await newsAPI.update(news.id, submitData);
+        toast.success('Янгилик муваффақиятли янгиланди! ✅', { id: loadingToast });
       } else {
         const result = await newsAPI.create(submitData);
         console.log('✅ РЕЗУЛЬТАТ СОЗДАНИЯ:', result);
+        toast.success('Янгилик муваффақиятли яратилди! 🎉', { id: loadingToast });
       }
       
       onSuccess();
@@ -94,7 +99,7 @@ const NewsForm = ({ news, onClose, onSuccess }: NewsFormProps) => {
     } catch (error: any) {
       console.error('❌ ОШИБКА СОХРАНЕНИЯ:', error);
       console.error('❌ Response data:', error.response?.data);
-      alert(`Хатолик: ${JSON.stringify(error.response?.data) || error.message}`);
+      toast.error(`Хатолик: ${error.response?.data?.detail || error.message}`, { id: loadingToast });
     } finally {
       setLoading(false);
     }

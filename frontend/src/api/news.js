@@ -3,7 +3,7 @@
  */
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://172.20.10.2:8000/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1';
 
 // Создаем экземпляр axios для новостей
 const newsClient = axios.create({

@@ -2,7 +2,7 @@
 export { default as apiClient } from './client';
 export { default as authAPI } from './auth';
 export { default as usersAPI } from './users';
-export { default as contentAPI, newsAPI, grantsAPI, scholarshipsAPI, competitionsAPI, innovationsAPI, internshipsAPI, jobsAPI, teamAPI } from './content';
+export { default as contentAPI, newsAPI, grantsAPI, scholarshipsAPI, competitionsAPI, innovationsAPI, internshipsAPI, jobsAPI, teamAPI, articlesAPI } from './content';
 export { default as commentsAPI } from './comments';
 export { default as analyticsAPI } from './analytics';
 export { applicationsAPI } from './applications';
@@ -20,6 +20,8 @@ export type {
   Internship,
   Job,
   TeamMember,
+  Article,
+  ArticleFormData,
   NewsFormData,
   ListResponse,
   ListParams,

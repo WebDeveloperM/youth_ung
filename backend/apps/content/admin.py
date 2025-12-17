@@ -9,7 +9,7 @@ from django.db.models import Count, Q
 from django.utils.translation import gettext_lazy as _
 from .models import (
     News, Grant, Scholarship, Competition, Innovation,
-    Internship, Job, TeamMember, AboutPage
+    Internship, Job, TeamMember, AboutPage, Article
 )
 
 
@@ -651,4 +651,135 @@ class AboutPageAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Запрещаем удаление
         return False
+
+
+@admin.register(Article)
+class ArticleAdmin(BaseContentAdmin):
+    list_display = ['id', 'title_display', 'author_name', 'category_badge', 'status_badge', 'is_published', 'views_downloads', 'created_at']
+    list_filter = ['status', 'category', 'is_published', 'is_featured', 'created_at']
+    search_fields = ['title_uz', 'title_ru', 'title_en', 'author__username', 'author__email', 'keywords_uz', 'keywords_ru']
+    readonly_fields = ['cover_preview_large', 'author_info', 'approved_by_info', 'stats_display', 'created_at', 'updated_at', 'views', 'downloads', 'likes']
+    list_editable = ['is_published']
+    
+    fieldsets = (
+        ('📄 Основная информация', {
+            'fields': ('author_info', 'category', ('status', 'admin_comment'), ('is_published', 'is_featured'), 'cover_image', 'cover_preview_large', 'pdf_file')
+        }),
+        ('🇺🇿 Узбекский', {
+            'fields': ('title_uz', 'abstract_uz', 'content_uz', 'keywords_uz'),
+            'classes': ('collapse',)
+        }),
+        ('🇷🇺 Русский', {
+            'fields': ('title_ru', 'abstract_ru', 'content_ru', 'keywords_ru'),
+        }),
+        ('🇬🇧 Английский', {
+            'fields': ('title_en', 'abstract_en', 'content_en', 'keywords_en'),
+            'classes': ('collapse',)
+        }),
+        ('📊 Дополнительно', {
+            'fields': ('doi', 'publication_date', 'approved_by_info', 'approved_at'),
+            'classes': ('collapse',)
+        }),
+        ('📈 Статистика', {
+            'fields': ('stats_display', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    actions = ['approve_articles', 'reject_articles', 'publish_articles', 'unpublish_articles']
+    
+    def title_display(self, obj):
+        return (obj.title_ru or obj.title_uz or obj.title_en)[:60]
+    title_display.short_description = 'Sarlavha'
+    
+    def author_name(self, obj):
+        name = f"{obj.author.first_name} {obj.author.last_name}" if obj.author.first_name else obj.author.username
+        return format_html('<span style="color: #3b82f6;">👤 {}</span>', name)
+    author_name.short_description = 'Muallif'
+    author_name.admin_order_field = 'author__username'
+    
+    def author_info(self, obj):
+        if obj.author:
+            info = f"<strong>{obj.author.username}</strong><br/>"
+            if obj.author.first_name:
+                info += f"👤 {obj.author.first_name} {obj.author.last_name}<br/>"
+            info += f"📧 {obj.author.email}"
+            return format_html(info)
+        return '—'
+    author_info.short_description = 'Muallif haqida'
+    
+    def approved_by_info(self, obj):
+        if obj.approved_by:
+            name = f"{obj.approved_by.first_name} {obj.approved_by.last_name}" if obj.approved_by.first_name else obj.approved_by.username
+            return format_html('<span style="color: #10b981;">✓ {}</span>', name)
+        return '—'
+    approved_by_info.short_description = 'Tasdiqlagan'
+    
+    def category_badge(self, obj):
+        colors = {
+            'international': '#3b82f6',
+            'local': '#10b981',
+            'scientific': '#8b5cf6',
+            'analytical': '#f59e0b',
+            'practical': '#ec4899'
+        }
+        color = colors.get(obj.category, '#6b7280')
+        return format_html('<span style="background: {}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px;">{}</span>', 
+                          color, obj.get_category_display())
+    category_badge.short_description = 'Kategoriya'
+    
+    def status_badge(self, obj):
+        colors = {
+            'pending': '#f59e0b',
+            'approved': '#10b981',
+            'rejected': '#ef4444',
+            'revision': '#3b82f6'
+        }
+        color = colors.get(obj.status, '#6b7280')
+        return format_html('<span style="background: {}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 11px;">{}</span>', 
+                          color, obj.get_status_display())
+    status_badge.short_description = 'Holati'
+    
+    def views_downloads(self, obj):
+        return format_html('👁 {} | 📥 {}', obj.views, obj.downloads)
+    views_downloads.short_description = 'Ko\'rishlar / Yuklab olishlar'
+    
+    def stats_display(self, obj):
+        return format_html(
+            '<strong>Ko\'rishlar:</strong> {} | <strong>Yuklab olishlar:</strong> {} | <strong>Yoqishlar:</strong> {}',
+            obj.views, obj.downloads, obj.likes
+        )
+    stats_display.short_description = 'Statistika'
+    
+    def cover_preview_large(self, obj):
+        if obj.cover_image:
+            return format_html('<img src="{}" style="max-width: 400px; border-radius: 8px;" />', obj.cover_image.url)
+        return '—'
+    cover_preview_large.short_description = 'Muqova rasmi'
+    
+    @admin.action(description='✓ Tasdiqlash')
+    def approve_articles(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.filter(status='pending').update(
+            status='approved',
+            is_published=True,
+            approved_by=request.user,
+            approved_at=timezone.now()
+        )
+        self.message_user(request, f'Tasdiqlandi: {updated} ta maqola')
+    
+    @admin.action(description='✗ Rad etish')
+    def reject_articles(self, request, queryset):
+        updated = queryset.update(status='rejected', is_published=False)
+        self.message_user(request, f'Rad etildi: {updated} ta maqola')
+    
+    @admin.action(description='📢 Nashr qilish')
+    def publish_articles(self, request, queryset):
+        updated = queryset.filter(status='approved').update(is_published=True)
+        self.message_user(request, f'Nashr qilindi: {updated} ta maqola')
+    
+    @admin.action(description='📴 Nashrdan olib tashlash')
+    def unpublish_articles(self, request, queryset):
+        updated = queryset.update(is_published=False)
+        self.message_user(request, f'Nashrdan olib tashlandi: {updated} ta maqola')
 

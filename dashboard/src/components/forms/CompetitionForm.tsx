@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Competition, competitionsAPI } from '../../api';
@@ -75,7 +76,25 @@ const CompetitionForm = ({ competition, onClose, onSuccess }: CompetitionFormPro
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validation
+    if (!formData.title_uz || !formData.title_ru || !formData.title_en) {
+      toast.error('Илтимос, барча тилларда сарлавҳа киритинг!');
+      return;
+    }
+
+    if (!formData.short_description_uz || !formData.short_description_ru || !formData.short_description_en) {
+      toast.error('Илтимос, қисқача таъриф киритинг!');
+      return;
+    }
+
+    if (!formData.prize || !formData.start_date || !formData.end_date || !formData.registration_deadline) {
+      toast.error('Илтимос, конкурс маълумотларини тўлдиринг!');
+      return;
+    }
+
     setLoading(true);
+    const loadingToast = toast.loading(competition ? 'Сақланмоқда...' : 'Яратилмоқда...');
 
     try {
       const submitData: any = { ...formData };
@@ -95,16 +114,32 @@ const CompetitionForm = ({ competition, onClose, onSuccess }: CompetitionFormPro
 
       if (competition) {
         await competitionsAPI.update(competition.id, submitData);
+        toast.success('Конкурс муваффақиятли янгиланди! ✅', { id: loadingToast });
       } else {
         const result = await competitionsAPI.create(submitData);
         console.log('✅ КОНКУРС СОЗДАН:', result);
+        toast.success('Конкурс муваффақиятли яратилди! 🎉', { id: loadingToast });
       }
       
       onSuccess();
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Ошибка при сохранении конкурса:', error);
-      alert('Ошибка при сохранении конкурса');
+      
+      // Better error messages
+      if (error.response?.data) {
+        const errors = error.response.data;
+        if (typeof errors === 'object') {
+          const errorMessages = Object.entries(errors)
+            .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+            .join('\n');
+          toast.error(`Хатолик:\n${errorMessages}`, { id: loadingToast });
+        } else {
+          toast.error(`Хатолик: ${errors}`, { id: loadingToast });
+        }
+      } else {
+        toast.error(`Хатолик: ${error.message}`, { id: loadingToast });
+      }
     } finally {
       setLoading(false);
     }
