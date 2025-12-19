@@ -30,7 +30,13 @@ services:
       - POSTGRES_DB=youth_database
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=qwerty1514
+      - POSTGRES_HOST=db
       - POSTGRES_PORT=5432
+      - SECRET_KEY=2m)nb^qin_cohksys)nvvuo@+@0f#rs9@@yxfsugi9!e!6@%*k
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175,http://127.0.0.1:5176
+      - CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:3000
     networks:
       - my_network
     restart: always
@@ -41,13 +47,13 @@ services:
     depends_on:
       - web
     environment:
-      - NGROK_AUTHTOKEN=33mWHZ8eQXnfn1tTsgH96T2I5Ur_51nH23C94sSLo4X1cxpQY
-    command: http web:8000 --domain=sublenticular-steely-kelsi.ngrok-free.dev
+      - NGROK_AUTHTOKEN=373ujIpNeSorWddIOcBMZyjMbwx_7aJapwY8E7ud3vdJJ2W1p
+    # Используем случайный URL без фиксированного домена
+    # Добавляем --log=stdout чтобы видеть логи
+    command: http web:8000 --log=stdout
     networks:
       - my_network
-    restart: unless-stopped
-    profiles:
-      - production  # Запускается только с профилем production
+    restart: "no"
 
 volumes:
   postgres_data:

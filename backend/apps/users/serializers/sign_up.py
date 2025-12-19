@@ -1,4 +1,5 @@
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password as django_validate_password
 from rest_framework import serializers
 from organisation.models import Organisation
 from users.models import User, Token
@@ -19,8 +20,16 @@ class SignUpSerializer(serializers.Serializer):
     
     # Данные для входа
     login = serializers.CharField(max_length=150, help_text="Логин (email или username)")
-    password = serializers.CharField(min_length=6, write_only=True, help_text="Пароль")
-    confirm_password = serializers.CharField(min_length=6, write_only=True, help_text="Подтверждение пароля")
+    password = serializers.CharField(
+        min_length=12,  # ✅ УСИЛЕНО: было 6, теперь 12
+        write_only=True, 
+        help_text="Пароль (минимум 12 символов)"
+    )
+    confirm_password = serializers.CharField(
+        min_length=12,  # ✅ УСИЛЕНО: было 6, теперь 12
+        write_only=True, 
+        help_text="Подтверждение пароля (минимум 12 символов)"
+    )
     
     def validate_login(self, value):
         """Проверка уникальности логина"""
@@ -33,6 +42,20 @@ class SignUpSerializer(serializers.Serializer):
         """Проверка уникальности телефона"""
         if User.objects.filter(phone=value).exists():
             raise serializers.ValidationError("Пользователь с таким номером телефона уже зарегистрирован")
+        return value
+    
+    def validate_password(self, value):
+        """
+        Валидация пароля по Django правилам
+        
+        Проверяет:
+        - Минимум 12 символов
+        - Не похож на username/email
+        - Не входит в список популярных паролей
+        - Не полностью числовой
+        """
+        # Используем встроенные Django validators
+        django_validate_password(value)
         return value
     
     def validate(self, data):

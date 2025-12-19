@@ -4,6 +4,7 @@ import { FaEye, FaHeart } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { getNewsDetail, likeNews } from '@/api/news'
+import { sanitizeHTML } from '../../utils/sanitize'
 
 export default function NewsDetail() {
 	const { t, i18n } = useTranslation()
@@ -102,7 +103,7 @@ export default function NewsDetail() {
 			</div>
 			<div
 				className='prose max-w-none prose-img:rounded-lg prose-img:shadow-md prose-blockquote:border-blue-500 prose-blockquote:italic'
-				dangerouslySetInnerHTML={{ __html: content }}
+				dangerouslySetInnerHTML={{ __html: sanitizeHTML(content) }}
 			/>
 			<Comments contentType="news" objectId={news.id} />
 		</section>

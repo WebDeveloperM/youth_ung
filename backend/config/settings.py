@@ -12,35 +12,40 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 import sys
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# ✅ БЕЗОПАСНОСТЬ: Загружаем переменные окружения из .env файла (если dotenv установлен)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(os.path.join(BASE_DIR, '.env'))
+except ImportError:
+    # dotenv не установлен (например, в старом Docker контейнере)
+    pass
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-*7j5a2ua9e3wpwh%_=7(toz=b9y2h*q%92dx!ac+zb72ff3mjd'
+# SECRET_KEY должен быть установлен в .env файле для production
+# Для Docker используем значение из docker-compose.yml environment или hardcoded
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or os.environ.get('SECRET_KEY', '2m)nb^qin_cohksys)nvvuo@+@0f#rs9@@yxfsugi9!e!6@%*k')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', False)
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-TESTING = ('test' == sys.argv[1]) if sys.argv else False
+TESTING = (len(sys.argv) > 1 and sys.argv[1] == 'test')
 
 APPS_DIR = os.path.join(BASE_DIR, 'apps')
 if APPS_DIR not in sys.path:
     sys.path.insert(0, APPS_DIR)
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '.ngrok.io',
-    '.ngrok-free.app',
-    '172.20.10.2',  # Local network IP
-    '*',  # Allow all for development (remove in production)
-    os.environ.get('ALLOWED_HOSTS', '')
-]
+# ALLOWED_HOSTS - SECURITY CRITICAL
+# Должен содержать только реальные домены в production
+ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS_ENV.split(',') if host.strip()]
 
 # Application definition
 INSTALLED_APPS = [
@@ -77,32 +82,20 @@ MIDDLEWARE = [
     'analytics.middleware.AnalyticsMiddleware',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # Временно для разработки!
+# CORS SETTINGS - SECURITY CRITICAL
+# НИКОГДА не используйте CORS_ALLOW_ALL_ORIGINS = True в production!
+CORS_ALLOW_ALL_ORIGINS = False  # ✅ ИСПРАВЛЕНО: was True
 
-CORS_ALLOWED_ORIGINS = [
-    "https://sublenticular-steely-kelsi.ngrok-free.dev",
-    "https://sublenticular-steely-kelsi.ngrok-free.app",
-    "http://localhost:3000",
-    "http://localhost:5173",  # Vite default port
-    "http://localhost:5174",  # Frontend alternative port
-    "http://127.0.0.1:5173",
-    "http://127.0.0.1:5174",
-    "http://127.0.0.1:8000",
-    "http://172.20.10.2:5173",  # Local network IP
-    "http://172.20.10.2:5174",  # Frontend alternative port
-    "http://172.20.10.2:8000",  # Backend local network IP
-    "http://172.20.10.2:3000",  # Dashboard alternative port
-]
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://.*\.ngrok-free\.app$",
-    r"^https://.*\.ngrok-free\.dev$",
-]
+# Получаем разрешенные origins из environment
+CORS_ORIGINS_ENV = os.environ.get('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://localhost:3000')
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in CORS_ORIGINS_ENV.split(',') if origin.strip()]
+
+# Credentials должны быть разрешены для токенов в cookies
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://sublenticular-steely-kelsi.ngrok-free.dev",
-    "https://sublenticular-steely-kelsi.ngrok-free.app",
-]
+# CSRF Trusted Origins
+CSRF_ORIGINS_ENV = os.environ.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:5173,http://localhost:3000')
+CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in CSRF_ORIGINS_ENV.split(',') if origin.strip()]
 
 
 ROOT_URLCONF = 'config.urls'
@@ -144,10 +137,21 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 12,  # ✅ УСИЛЕНО: было 8 или меньше, теперь 12
+        }
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
 ]
 
 # Internationalization
@@ -454,6 +458,35 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
+# =============================================================================
+# SECURITY SETTINGS FOR PRODUCTION
+# =============================================================================
+if not DEBUG:
+    # HTTPS/SSL Settings
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
+    # HSTS (HTTP Strict Transport Security)
+    SECURE_HSTS_SECONDS = 31536000  # 1 год
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    
+    # Security Headers
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SECURE_BROWSER_XSS_FILTER = True
+    X_FRAME_OPTIONS = 'DENY'
+    
+    # Session Security
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = 'Strict'
+    CSRF_COOKIE_HTTPONLY = True
+    CSRF_COOKIE_SAMESITE = 'Strict'
+
+# =============================================================================
+# Load development settings if available
+# =============================================================================
 try:
     from .settings_dev import *
 except ImportError:
