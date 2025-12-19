@@ -13,6 +13,7 @@ import NewsList from './pages/NewsList'
 import InnovationsList from './pages/innovationsList'
 import InnovationDetail from './pages/innovationDetail'
 import TechnologiesList from './pages/technologiesList'
+import TechnologyDetail from './pages/technologyDetail'
 import AboutPage from './pages/about'
 import CompetitionsList from './pages/competitionsList'
 import CompetitionDetail from './pages/competitionDetail'
@@ -30,10 +31,12 @@ import ProjectDetail from './pages/projectDetail'
 import ResearchList from './pages/researchList'
 import ResearchDetail from './pages/researchDetail'
 import ResultsList from './pages/resultsList'
+import ResultDetail from './pages/resultDetail'
 import ProfilePage from './pages/profile'
 import ArticlesList from './pages/articlesList'
 import ArticleDetail from './pages/articleDetail'
 import SubmitArticle from './pages/submitArticle'
+import AppealsPage from './pages/appeals'
 function AppContent() {
 	const location = useLocation()
 
@@ -49,12 +52,14 @@ function AppContent() {
 			<Route path='/' element={<HomePage />} />
 			<Route path='/login' element={<LoginPage />} />
 			<Route path='/testauth' element={<TestAuthPage />} />
-			<Route path='/profile' element={<ProfilePage />} />
-			<Route path='/news' element={<NewsList />} />
+		<Route path='/profile' element={<ProfilePage />} />
+		<Route path='/appeals' element={<AppealsPage />} />
+		<Route path='/news' element={<NewsList />} />
 			<Route path='/news/:id' element={<NewsDetail />} />
 			<Route path='/innovations' element={<InnovationsList />} />
 			<Route path='/innovations/:id' element={<InnovationDetail />} />
 			<Route path='/technologies' element={<TechnologiesList />} />
+			<Route path='/technologies/:id' element={<TechnologyDetail />} />
 			<Route path='/about' element={<AboutPage />} />
 			<Route path='/competitions' element={<CompetitionsList />} />
 			<Route path='/competitions/:id' element={<CompetitionDetail />} />
@@ -72,6 +77,7 @@ function AppContent() {
 			<Route path='/research' element={<ResearchList />} />
 			<Route path='/research/:id' element={<ResearchDetail />} />
 			<Route path='/results' element={<ResultsList />} />
+			<Route path='/results/:id' element={<ResultDetail />} />
 			<Route path='/articles' element={<ArticlesList />} />
 			<Route path='/articles/:id' element={<ArticleDetail />} />
 			<Route path='/submit-article' element={<SubmitArticle />} />

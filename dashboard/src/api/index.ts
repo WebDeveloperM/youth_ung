@@ -1,7 +1,7 @@
 // Экспортируем все API модули
 export { default as apiClient } from './client';
 export { default as authAPI } from './auth';
-export { default as usersAPI } from './users';
+export { getAllUsers, getUserById, getUserStatistics } from './users';
 export { default as contentAPI, newsAPI, grantsAPI, scholarshipsAPI, competitionsAPI, innovationsAPI, internshipsAPI, jobsAPI, teamAPI, articlesAPI } from './content';
 export { default as commentsAPI } from './comments';
 export { default as analyticsAPI } from './analytics';
@@ -10,7 +10,7 @@ export { adminsAPI } from './admins';
 
 // Экспортируем типы
 export type { LoginCredentials, AdminUser as AuthUser, LoginResponse } from './auth';
-export type { User, UsersListResponse, CreateUserData } from './users';
+export type { User, UserStatistics } from './users';
 export type {
   News,
   Grant,

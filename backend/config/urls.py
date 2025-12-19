@@ -8,6 +8,8 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 from analytics import views_admin as analytics_admin_views
+from content.views.statistics import YouthStatisticsView, YouthStatisticsHistoryView
+from content.views.statistics_pdf import YouthStatisticsPDFView
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -40,10 +42,20 @@ urlpatterns = [
         path('jobs/', include('content.urls.jobs')),  # Публичный API вакансий для frontend
         path('team/', include('content.urls.team')),  # Публичный API команды для frontend
         path('applications/', include('content.urls.applications')),  # Подача заявок
+        path('appeals/', include('content.urls.appeals')),  # Обращения пользователей
         path('articles/', include('content.urls.articles')),  # API maqolalar uchun
+        path('technologies/', include('content.urls.technologies')),  # Публичный API технологий для frontend
+        path('projects/', include('content.urls.projects')),  # Публичный API проектов для frontend
+        path('research/', include('content.urls.research')),  # Публичный API исследований для frontend
+        path('results/', include('content.urls.results')),  # Публичный API результатов для frontend
+        path('organisations/', include('organisation.urls')),  # API организаций (админ + публичный)
+        path('statistics/', YouthStatisticsView.as_view(), name='youth-statistics'),  # Статистика молодежи
+        path('statistics/history/', YouthStatisticsHistoryView.as_view(), name='youth-statistics-history'),  # История статистики
+        path('statistics/export/pdf/', YouthStatisticsPDFView.as_view(), name='youth-statistics-pdf'),  # Экспорт в PDF
         path('admin/', include([
             path('', include('content.urls.admin_urls')),
             path('admins/', include('users.urls_admin')),  # Управление администраторами
+            path('all-users/', include('users.urls_all_users')),  # Все зарегистрированные пользователи
             path('analytics/', include([
                 path('dashboard/', analytics_admin_views.admin_dashboard_stats),
                 path('visitors/', analytics_admin_views.admin_visitors_stats),

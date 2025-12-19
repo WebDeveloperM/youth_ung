@@ -1,15 +1,39 @@
+import { useState, useEffect } from 'react'
 import Comments from '@/components/comments'
-import { projectsData } from '@/datatest/projectsData'
 import { motion } from 'framer-motion'
 import { FaArrowLeft, FaCalendarAlt, FaDollarSign, FaMapMarkerAlt, FaShare, FaUsers, FaChartLine, FaRocket } from 'react-icons/fa'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getProjectDetail } from '@/api/projects'
 
 export default function ProjectDetail() {
 	const { t, i18n } = useTranslation()
 	const { id } = useParams()
 	const currentLang = i18n.language
-	const project = projectsData.find(item => item.id === Number(id))
+	const [project, setProject] = useState(null)
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		const loadProject = async () => {
+			try {
+				const data = await getProjectDetail(id)
+				setProject(data)
+			} catch (error) {
+				console.error('Error loading project:', error)
+			} finally {
+				setLoading(false)
+			}
+		}
+		loadProject()
+	}, [id])
+
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center min-h-screen">
+				<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+			</div>
+		)
+	}
 
 	if (!project) {
 		return (
@@ -27,7 +51,11 @@ export default function ProjectDetail() {
 
 	const handleShare = () => {
 		if (navigator.share) {
-			navigator.share({ title: project.title[currentLang], text: t('projects.shareText'), url: window.location.href }).catch(err => console.log('Error sharing:', err))
+			navigator.share({ 
+				title: project[`title_${currentLang}`] || project.title_ru, 
+				text: t('projects.shareText'), 
+				url: window.location.href 
+			}).catch(err => console.log('Error sharing:', err))
 		} else {
 			navigator.clipboard.writeText(window.location.href)
 			alert(t('projects.linkCopied'))
@@ -51,7 +79,7 @@ export default function ProjectDetail() {
 			</motion.div>
 
 			<motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className='text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-600 bg-clip-text text-transparent mb-4 md:mb-6 leading-tight'>
-				{project.title[currentLang]}
+				{project[`title_${currentLang}`] || project.title_ru}
 			</motion.h1>
 
 			<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 md:mb-8 pb-6 border-b border-gray-200 dark:border-gray-700'>
@@ -59,7 +87,7 @@ export default function ProjectDetail() {
 					<FaDollarSign size={24} className='text-green-600 flex-shrink-0' />
 					<div>
 						<span className='text-xs text-gray-600 dark:text-gray-400 block'>{t('projects.budget')}</span>
-						<span className='text-sm font-semibold text-gray-800 dark:text-gray-200'>{project.budget}</span>
+						<span className='text-sm font-semibold text-gray-800 dark:text-gray-200'>${project.budget}</span>
 					</div>
 				</div>
 				<div className='flex items-center gap-3 p-3 md:p-4 bg-blue-50 dark:bg-blue-950/30 rounded-xl'>
@@ -73,7 +101,7 @@ export default function ProjectDetail() {
 					<FaUsers size={24} className='text-purple-600 flex-shrink-0' />
 					<div>
 						<span className='text-xs text-gray-600 dark:text-gray-400 block'>{t('projects.team')}</span>
-						<span className='text-sm font-semibold text-gray-800 dark:text-gray-200'>{project.team} {t('projects.people')}</span>
+						<span className='text-sm font-semibold text-gray-800 dark:text-gray-200'>{project.team_size} {t('projects.people')}</span>
 					</div>
 				</div>
 				<div className='flex items-center gap-3 p-3 md:p-4 bg-red-50 dark:bg-red-950/30 rounded-xl'>
@@ -105,11 +133,11 @@ export default function ProjectDetail() {
 			</motion.div>
 
 			<motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.6 }} className='relative rounded-2xl overflow-hidden mb-6 md:mb-8 shadow-2xl'>
-				<img src={project.image} alt={project.title[currentLang]} className='w-full max-h-[400px] md:max-h-[600px] object-cover' />
+				<img src={project.image} alt={project[`title_${currentLang}`] || project.title_ru} className='w-full max-h-[400px] md:max-h-[600px] object-cover' />
 				<div className='absolute inset-0 bg-gradient-to-t from-black/30 to-transparent' />
 			</motion.div>
 
-			<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className='prose prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:text-gray-800 dark:prose-headings:text-gray-200 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-purple-500 prose-blockquote:bg-purple-50 dark:prose-blockquote:bg-purple-950/30 prose-blockquote:rounded-r-lg prose-blockquote:py-2 prose-a:text-purple-600 hover:prose-a:text-purple-700 mb-8 md:mb-12' dangerouslySetInnerHTML={{ __html: project.content[currentLang] }} />
+			<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }} className='prose prose-sm sm:prose-base md:prose-lg max-w-none prose-headings:text-gray-800 dark:prose-headings:text-gray-200 prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-gray-100 prose-li:text-gray-700 dark:prose-li:text-gray-300 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-purple-500 prose-blockquote:bg-purple-50 dark:prose-blockquote:bg-purple-950/30 prose-blockquote:rounded-r-lg prose-blockquote:py-2 prose-a:text-purple-600 hover:prose-a:text-purple-700 mb-8 md:mb-12' dangerouslySetInnerHTML={{ __html: project[`content_${currentLang}`] || project.content_ru }} />
 
 			{project.status === 'active' && (
 				<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className='bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-6 md:p-8 text-white mb-8 md:mb-12'>
@@ -122,7 +150,7 @@ export default function ProjectDetail() {
 			)}
 
 			<motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }} className='mt-8 md:mt-12'>
-				<Comments contentType="project" objectId={project.id} />
+				{project?.id && <Comments contentType="project" objectId={project.id} />}
 			</motion.div>
 		</motion.section>
 	)

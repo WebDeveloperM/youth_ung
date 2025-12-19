@@ -4,12 +4,15 @@ from django.contrib import admin
 from .admin_comments import CommentAdmin
 # Import Application admin
 from .admin_applications import ApplicationAdmin
+# Import Appeal admin
+from .admin_appeals import AppealAdmin
 from django.utils.html import format_html
 from django.db.models import Count, Q
 from django.utils.translation import gettext_lazy as _
 from .models import (
     News, Grant, Scholarship, Competition, Innovation,
-    Internship, Job, TeamMember, AboutPage, Article
+    Internship, Job, TeamMember, AboutPage, Article,
+    Technology, Project, Research, Result, YouthStatistics,
 )
 
 
@@ -538,15 +541,15 @@ class JobAdmin(BaseContentAdmin):
 
 @admin.register(TeamMember)
 class TeamMemberAdmin(BaseContentAdmin):
-    list_display = ['id', 'photo_preview', 'name_display', 'position_display', 'contacts', 'is_active', 'order']
-    list_filter = ['is_active', 'created_at']
+    list_display = ['id', 'photo_preview', 'name_display', 'position_display', 'category', 'contacts', 'is_active', 'order']
+    list_filter = ['is_active', 'category', 'created_at']
     search_fields = ['name_uz', 'name_ru', 'name_en', 'position_uz', 'position_ru', 'email']
     readonly_fields = ['photo_preview_large', 'created_at', 'updated_at']
     list_editable = ['order', 'is_active']
     
     fieldsets = (
         ('👤 Основная информация', {
-            'fields': ('photo', 'photo_preview_large', 'order', 'is_active')
+            'fields': ('photo', 'photo_preview_large', 'category', 'order', 'is_active')
         }),
         ('🇺🇿 Узбекский', {
             'fields': ('name_uz', 'position_uz', 'bio_uz'),
@@ -596,6 +599,160 @@ class TeamMemberAdmin(BaseContentAdmin):
             parts.append(format_html('📱 {}', obj.phone))
         return format_html('<br/>'.join(parts)) if parts else '—'
     contacts.short_description = 'Контакты'
+
+
+@admin.register(Technology)
+class TechnologyAdmin(BaseContentAdmin):
+    list_display = ['id', 'title_display', 'category', 'date', 'views', 'likes', 'is_published', 'is_featured']
+    list_filter = ['is_published', 'is_featured', 'category', 'date', 'created_at']
+    search_fields = ['title_uz', 'title_ru', 'title_en', 'short_description_uz', 'short_description_ru', 'short_description_en']
+    readonly_fields = ['created_at', 'updated_at', 'views', 'likes']
+    list_editable = ['is_published', 'is_featured']
+    
+    fieldsets = (
+        ('🔬 Основная информация', {
+            'fields': ('date', 'category', 'image', ('is_published', 'is_featured'))
+        }),
+        ('🇺🇿 Узбекский', {
+            'fields': ('title_uz', 'short_description_uz', 'content_uz'),
+            'classes': ('collapse',)
+        }),
+        ('🇷🇺 Русский', {
+            'fields': ('title_ru', 'short_description_ru', 'content_ru'),
+        }),
+        ('🇬🇧 Английский', {
+            'fields': ('title_en', 'short_description_en', 'content_en'),
+            'classes': ('collapse',)
+        }),
+        ('📊 Статистика', {
+            'fields': ('views', 'likes', 'created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def title_display(self, obj):
+        return obj.title_ru or obj.title_uz
+    title_display.short_description = 'Название'
+
+
+@admin.register(Project)
+class ProjectAdmin(BaseContentAdmin):
+    list_display = ['id', 'title_display', 'category', 'status', 'progress', 'start_date', 'is_published', 'is_featured']
+    list_filter = ['is_published', 'is_featured', 'category', 'status', 'start_date', 'created_at']
+    search_fields = ['title_uz', 'title_ru', 'title_en', 'short_description_uz', 'short_description_ru', 'location_uz', 'location_ru']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_published', 'is_featured']
+    
+    fieldsets = (
+        ('📁 Основная информация', {
+            'fields': ('category', 'image', ('is_published', 'is_featured'))
+        }),
+        ('📋 Детали проекта', {
+            'fields': (('budget', 'duration'), ('status', 'progress'), 'team_size', ('start_date', 'end_date'))
+        }),
+        ('📍 Местоположение', {
+            'fields': ('location_uz', 'location_ru', 'location_en'),
+        }),
+        ('🇺🇿 Узбекский', {
+            'fields': ('title_uz', 'short_description_uz', 'content_uz'),
+            'classes': ('collapse',)
+        }),
+        ('🇷🇺 Русский', {
+            'fields': ('title_ru', 'short_description_ru', 'content_ru'),
+        }),
+        ('🇬🇧 Английский', {
+            'fields': ('title_en', 'short_description_en', 'content_en'),
+            'classes': ('collapse',)
+        }),
+        ('📊 Статистика', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def title_display(self, obj):
+        return obj.title_ru or obj.title_uz
+    title_display.short_description = 'Название'
+
+
+@admin.register(Research)
+class ResearchAdmin(BaseContentAdmin):
+    list_display = ['id', 'title_display', 'category', 'status', 'publications', 'citations', 'start_date', 'is_published', 'is_featured']
+    list_filter = ['is_published', 'is_featured', 'category', 'status', 'start_date', 'created_at']
+    search_fields = ['title_uz', 'title_ru', 'title_en', 'short_description_uz', 'authors', 'department_uz', 'department_ru']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_published', 'is_featured']
+    
+    fieldsets = (
+        ('🔬 Основная информация', {
+            'fields': ('category', 'image', ('is_published', 'is_featured'))
+        }),
+        ('📋 Детали исследования', {
+            'fields': ('authors', ('start_date', 'end_date'), 'status', ('publications', 'citations'), 'budget')
+        }),
+        ('🏢 Отдел', {
+            'fields': ('department_uz', 'department_ru', 'department_en'),
+        }),
+        ('🇺🇿 Узбекский', {
+            'fields': ('title_uz', 'short_description_uz', 'content_uz'),
+            'classes': ('collapse',)
+        }),
+        ('🇷🇺 Русский', {
+            'fields': ('title_ru', 'short_description_ru', 'content_ru'),
+        }),
+        ('🇬🇧 Английский', {
+            'fields': ('title_en', 'short_description_en', 'content_en'),
+            'classes': ('collapse',)
+        }),
+        ('📊 Статистика', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def title_display(self, obj):
+        return obj.title_ru or obj.title_uz
+    title_display.short_description = 'Название'
+
+
+@admin.register(Result)
+class ResultAdmin(BaseContentAdmin):
+    list_display = ['id', 'title_display', 'category', 'status', 'year', 'is_published', 'is_featured']
+    list_filter = ['is_published', 'is_featured', 'category', 'status', 'year', 'created_at']
+    search_fields = ['title_uz', 'title_ru', 'title_en', 'short_description_uz']
+    readonly_fields = ['created_at', 'updated_at']
+    list_editable = ['is_published', 'is_featured']
+    
+    fieldsets = (
+        ('🏆 Основная информация', {
+            'fields': ('category', 'year', 'status', 'image', ('is_published', 'is_featured'))
+        }),
+        ('📊 Метрики', {
+            'fields': ('metrics_uz', 'metrics_ru', 'metrics_en')
+        }),
+        ('🏅 Достижения', {
+            'fields': ('achievements_uz', 'achievements_ru', 'achievements_en')
+        }),
+        ('🇺🇿 Узбекский', {
+            'fields': ('title_uz', 'short_description_uz', 'content_uz'),
+            'classes': ('collapse',)
+        }),
+        ('🇷🇺 Русский', {
+            'fields': ('title_ru', 'short_description_ru', 'content_ru'),
+        }),
+        ('🇬🇧 Английский', {
+            'fields': ('title_en', 'short_description_en', 'content_en'),
+            'classes': ('collapse',)
+        }),
+        ('📊 Статистика', {
+            'fields': ('created_at', 'updated_at'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def title_display(self, obj):
+        return obj.title_ru or obj.title_uz
+    title_display.short_description = 'Название'
 
 
 @admin.register(AboutPage)
@@ -782,4 +939,92 @@ class ArticleAdmin(BaseContentAdmin):
     def unpublish_articles(self, request, queryset):
         updated = queryset.update(is_published=False)
         self.message_user(request, f'Nashrdan olib tashlandi: {updated} ta maqola')
+
+
+@admin.register(YouthStatistics)
+class YouthStatisticsAdmin(admin.ModelAdmin):
+    """Админка для статистики молодежи"""
+    
+    list_display = ['id', 'total_youth', 'last_updated_display', 'updated_by_display']
+    readonly_fields = ['last_updated', 'updated_by']
+    
+    fieldsets = (
+        ('👥 Основная статистика', {
+            'fields': ('total_youth', 'male_count', 'female_count')
+        }),
+        ('🎓 Образование', {
+            'fields': (
+                'higher_education',
+                'secondary_education',
+                'foreign_graduates',
+                'top300_graduates',
+                'top500_graduates',
+            )
+        }),
+        ('💼 Сотрудники', {
+            'fields': ('technical_staff', 'service_staff', 'promoted_youth')
+        }),
+        ('🌐 Языковые сертификаты', {
+            'fields': (
+                'language_cert_total',
+                ('ielts_count', 'cefr_count', 'topik_count'),
+            )
+        }),
+        ('📚 Научные степени', {
+            'fields': (
+                'scientific_degree_total',
+                ('phd_count', 'dsc_count', 'candidate_count'),
+            )
+        }),
+        ('👑 Молодые лидеры', {
+            'fields': (
+                'young_leaders_total',
+                ('directors_count', 'heads_count', 'managers_count'),
+            )
+        }),
+        ('🏆 Государственные награды', {
+            'fields': (
+                'state_awards_total',
+                ('orders_count', 'medals_count', 'honorary_count'),
+            )
+        }),
+        ('ℹ️ Метаданные', {
+            'fields': ('last_updated', 'updated_by'),
+            'classes': ('collapse',)
+        }),
+    )
+    
+    def has_add_permission(self, request):
+        """Запретить создание новых записей (должна быть только одна)"""
+        return not YouthStatistics.objects.exists()
+    
+    def has_delete_permission(self, request, obj=None):
+        """Запретить удаление"""
+        return False
+    
+    def last_updated_display(self, obj):
+        """Отображение последнего обновления"""
+        if obj.last_updated:
+            return format_html(
+                '<span style="color: #059669;">{}</span>',
+                obj.last_updated.strftime('%d.%m.%Y %H:%M')
+            )
+        return '-'
+    last_updated_display.short_description = 'Последнее обновление'
+    
+    def updated_by_display(self, obj):
+        """Отображение кем обновлено"""
+        if obj.updated_by:
+            name = f"{obj.updated_by.first_name} {obj.updated_by.last_name}".strip()
+            return format_html(
+                '<span style="color: #0891b2;">👤 {}</span>',
+                name or obj.updated_by.username
+            )
+        return '-'
+    updated_by_display.short_description = 'Кем обновлено'
+    
+    def save_model(self, request, obj, form, change):
+        """Сохранить информацию о пользователе при обновлении"""
+        obj.updated_by = request.user
+        super().save_model(request, obj, form, change)
 

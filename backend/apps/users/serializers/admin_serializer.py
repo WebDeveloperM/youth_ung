@@ -42,10 +42,19 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
         ]
     
     def validate_role(self, value):
-        """Можно создавать только Admin или Moderator"""
-        if value not in [User.ADMIN, User.MODERATOR]:
-            raise serializers.ValidationError("Можно создавать только администраторов или модераторов")
+        """Можно создавать только Admin, Moderator или Coordinator"""
+        if value not in [User.ADMIN, User.MODERATOR, User.COORDINATOR]:
+            raise serializers.ValidationError("Можно создавать только администраторов, модераторов или координаторов")
         return value
+    
+    def validate(self, data):
+        """Дополнительная валидация"""
+        # Для координаторов организация обязательна
+        if data.get('role') == User.COORDINATOR and not data.get('organization'):
+            raise serializers.ValidationError({
+                "organization": "Для координатора необходимо указать организацию"
+            })
+        return data
     
     def create(self, validated_data):
         password = validated_data.pop('password')
@@ -110,4 +119,5 @@ class AdminUserDetailSerializer(serializers.ModelSerializer):
             'last_login',
         ]
         read_only_fields = ['date_joined', 'last_login']
+
 

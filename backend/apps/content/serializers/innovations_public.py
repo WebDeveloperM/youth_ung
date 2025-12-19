@@ -39,3 +39,4 @@ class InnovationDetailSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
+

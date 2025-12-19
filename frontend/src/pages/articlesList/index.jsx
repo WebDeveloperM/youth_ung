@@ -39,12 +39,12 @@ export default function ArticlesList() {
 	}
 
 	const categories = [
-		{ value: 'all', label: 'Barchasi' },
-		{ value: 'international', label: 'Xalqaro' },
-		{ value: 'local', label: 'Mahalliy' },
-		{ value: 'scientific', label: 'Ilmiy' },
-		{ value: 'analytical', label: 'Tahliliy' },
-		{ value: 'practical', label: 'Amaliy' },
+		{ value: 'all', label: t('articles.allCategories') },
+		{ value: 'international', label: t('articles.category.international') },
+		{ value: 'local', label: t('articles.category.local') },
+		{ value: 'scientific', label: t('articles.category.scientific') },
+		{ value: 'analytical', label: t('articles.category.analytical') },
+		{ value: 'practical', label: t('articles.category.practical') },
 	]
 
 	if (loading) {
@@ -52,7 +52,7 @@ export default function ArticlesList() {
 			<section className='overflow-hidden py-6 px-4 md:px-12'>
 				<div className='mx-auto mb-12 text-center text-[var(--navy-blue)]'>
 					<h2 className='text-3xl md:text-4xl font-bold'>
-						Xalqaro va mahalliy maqolalar
+						{t('articles.title')}
 					</h2>
 				</div>
 				<div className='text-center py-10'>
@@ -67,10 +67,10 @@ export default function ArticlesList() {
 			{/* Header */}
 			<div className='mx-auto mb-12 text-center text-[var(--navy-blue)]'>
 				<h2 id='articles-title' className='text-3xl md:text-4xl font-bold'>
-					Xalqaro va mahalliy maqolalar
+					{t('articles.title')}
 				</h2>
 				<p className='mt-4 text-gray-600'>
-					Ilmiy va amaliy maqolalar bilan tanishing
+					{t('articles.description')}
 				</p>
 			</div>
 
@@ -97,7 +97,7 @@ export default function ArticlesList() {
 			<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 container mx-auto py-4 px-4'>
 				{articles.length === 0 ? (
 					<div className='col-span-full text-center py-12'>
-						<p className='text-gray-500 text-lg'>Hozircha maqolalar mavjud emas</p>
+						<p className='text-gray-500 text-lg'>{t('articles.noArticles')}</p>
 					</div>
 				) : (
 					articles.map((article, index) => {
@@ -128,7 +128,7 @@ export default function ArticlesList() {
 									)}
 									{article.is_featured && (
 										<div className='absolute top-4 right-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold'>
-											⭐ Tanlangan
+											⭐ {t('articles.featured')}
 										</div>
 									)}
 								</div>
@@ -155,7 +155,7 @@ export default function ArticlesList() {
 									{/* Author */}
 									{article.author && (
 										<div className='mb-4 text-sm text-gray-500'>
-											<span className='font-semibold'>Muallif:</span>{' '}
+											<span className='font-semibold'>{t('articles.author')}:</span>{' '}
 											{article.author.first_name && article.author.last_name
 												? `${article.author.first_name} ${article.author.last_name}`
 												: article.author.username}
@@ -185,7 +185,7 @@ export default function ArticlesList() {
 										to={`/articles/${article.id}`}
 										className='block w-full text-center bg-[#0078c2] text-white py-2 px-4 rounded-lg hover:bg-[#005a94] transition-colors duration-300'
 									>
-										Batafsil o'qish
+										{t('articles.readMore')}
 									</Link>
 								</div>
 							</motion.article>
@@ -198,16 +198,16 @@ export default function ArticlesList() {
 			<div className='container mx-auto mt-12 text-center'>
 				<div className='bg-gradient-to-r from-blue-50 to-blue-100 p-8 rounded-2xl'>
 					<h3 className='text-2xl font-bold text-gray-800 mb-4'>
-						O'z maqolangizni joylashtiring!
+						{t('articles.submit.cta.title')}
 					</h3>
 					<p className='text-gray-600 mb-6'>
-						Ilmiy yoki amaliy maqolangizni platformaga yuklang va boshqalar bilan baham ko'ring
+						{t('articles.submit.cta.description')}
 					</p>
 					<Link
 						to='/submit-article'
 						className='inline-block bg-[#0078c2] text-white px-8 py-3 rounded-lg hover:bg-[#005a94] transition-colors duration-300 font-semibold'
 					>
-						Maqola yuborish
+						{t('articles.submit.submitButton')}
 					</Link>
 				</div>
 			</div>

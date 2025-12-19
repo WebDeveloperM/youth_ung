@@ -1,91 +1,173 @@
-import apiClient from './client';
+import { apiClient } from './client';
 
 export interface User {
-  id: string | number;
+  id: number;
+  username: string;
+  email: string;
   first_name: string;
   last_name: string;
-  email: string;
-  phone: string;
-  organization: string;
-  position: string;
-  role: 'Admin' | 'Moderator' | 'User';
-  status: 'active' | 'inactive';
-  date_of_birth?: string;
-  gender?: string;
-  address?: string;
-  avatar?: string;
-  createdAt: string;
-}
-
-export interface UsersListResponse {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: User[];
-}
-
-export interface CreateUserData {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  organization: number;
-  position: string;
+  phone?: string;
   role: string;
-  password: string;
-  date_of_birth?: string;
-  gender?: string;
-  address?: string;
+  is_active: boolean;
+  date_joined: string;
+  last_login?: string;
+  avatar_url?: string;
+  organization?: {
+    id: number;
+    name: string;
+  };
+  organization_name?: string;
+  position?: string | null;
+  date_of_birth?: string | null;
+  address?: string | null;
+  gender?: string | null;
+  avatar?: string | null;
+  // Образование
+  education_level?: string | null;
+  is_foreign_graduate?: boolean;
+  is_top300_graduate?: boolean;
+  is_top500_graduate?: boolean;
+  // Тип сотрудника
+  staff_type?: string | null;
+  is_promoted?: boolean;
+  // Языковые сертификаты
+  has_ielts?: boolean;
+  has_cefr?: boolean;
+  has_topik?: boolean;
+  // Научные степени
+  scientific_degree?: string | null;
+  // Лидерские позиции
+  leadership_position?: string | null;
+  // Государственные награды
+  state_award_type?: string | null;
 }
 
-export const usersAPI = {
-  // Получить список пользователей
-  getUsers: async (params?: {
-    page?: number;
-    page_size?: number;
-    search?: string;
-    role?: string;
-    status?: string;
-  }): Promise<UsersListResponse> => {
-    const response = await apiClient.get('/admin/users/', { params });
-    return response.data;
-  },
+export interface UpdateUserData {
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  position?: string;
+  date_of_birth?: string;
+  address?: string;
+  gender?: string;
+  avatar?: File | null;
+  // Образование
+  education_level?: string;
+  is_foreign_graduate?: boolean;
+  is_top300_graduate?: boolean;
+  is_top500_graduate?: boolean;
+  // Тип сотрудника
+  staff_type?: string;
+  is_promoted?: boolean;
+  // Языковые сертификаты
+  has_ielts?: boolean;
+  has_cefr?: boolean;
+  has_topik?: boolean;
+  // Научные степени
+  scientific_degree?: string;
+  // Лидерские позиции
+  leadership_position?: string;
+  // Государственные награды
+  state_award_type?: string;
+}
 
-  // Получить одного пользователя
-  getUser: async (id: string | number): Promise<User> => {
-    const response = await apiClient.get(`/admin/users/${id}/`);
-    return response.data;
-  },
+export interface DetailedStatistics {
+  total_youth: number;
+  male_count: number;
+  female_count: number;
+  higher_education: number;
+  secondary_education: number;
+  foreign_graduates: number;
+  top300_graduates: number;
+  top500_graduates: number;
+  technical_staff: number;
+  service_staff: number;
+  promoted_youth: number;
+  language_cert_total: number;
+  ielts_count: number;
+  cefr_count: number;
+  topik_count: number;
+  scientific_degree_total: number;
+  phd_count: number;
+  dsc_count: number;
+  candidate_count: number;
+  young_leaders_total: number;
+  directors_count: number;
+  heads_count: number;
+  managers_count: number;
+  state_awards_total: number;
+  orders_count: number;
+  medals_count: number;
+  honorary_count: number;
+}
 
-  // Создать пользователя
-  createUser: async (data: CreateUserData): Promise<User> => {
-    const response = await apiClient.post('/admin/users/', data);
-    return response.data;
-  },
+export interface UserStatistics {
+  total: number;
+  active: number;
+  inactive: number;
+  admins: number;
+  moderators: number;
+  users: number;
+}
 
-  // Обновить пользователя
-  updateUser: async (id: string | number, data: Partial<CreateUserData>): Promise<User> => {
-    const response = await apiClient.patch(`/admin/users/${id}/`, data);
-    return response.data;
-  },
-
-  // Удалить пользователя
-  deleteUser: async (id: string | number): Promise<void> => {
-    await apiClient.delete(`/admin/users/${id}/`);
-  },
-
-  // Изменить роль
-  changeRole: async (id: string | number, role: string): Promise<User> => {
-    const response = await apiClient.post(`/admin/users/${id}/change-role/`, { role });
-    return response.data;
-  },
-
-  // Сбросить пароль
-  resetPassword: async (id: string | number): Promise<{ message: string }> => {
-    const response = await apiClient.post(`/admin/users/${id}/reset-password/`);
-    return response.data;
-  },
+/**
+ * Получить список всех пользователей
+ */
+export const getAllUsers = async (params?: {
+  role?: string;
+  is_active?: boolean;
+  search?: string;
+  ordering?: string;
+  page?: number;
+}): Promise<{ results: User[]; count: number }> => {
+  const response = await apiClient.get('/admin/all-users/', { params });
+  return response.data;
 };
 
-export default usersAPI;
+/**
+ * Получить детальную информацию о пользователе
+ */
+export const getUserById = async (id: number): Promise<User> => {
+  const response = await apiClient.get(`/admin/all-users/${id}/`);
+  return response.data;
+};
 
+/**
+ * Получить статистику по пользователям
+ */
+export const getUserStatistics = async (): Promise<UserStatistics> => {
+  const response = await apiClient.get('/admin/all-users/statistics/');
+  return response.data;
+};
+
+/**
+ * Обновить пользователя
+ */
+export const updateUser = async (id: number, data: UpdateUserData): Promise<User> => {
+  const formData = new FormData();
+  
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      if (key === 'avatar' && value instanceof File) {
+        formData.append(key, value);
+      } else if (!(value instanceof File)) {
+        formData.append(key, value.toString());
+      }
+    }
+  });
+  
+  const response = await apiClient.patch(`/admin/all-users/${id}/`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+/**
+ * Получить детальную статистику из реальных данных
+ */
+export const getDetailedStatistics = async (): Promise<DetailedStatistics> => {
+  const response = await apiClient.get('/admin/all-users/detailed_statistics/');
+  return response.data;
+};

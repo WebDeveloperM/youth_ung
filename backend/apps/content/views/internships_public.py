@@ -49,3 +49,4 @@ class InternshipDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     lookup_field = 'id'
 
+

@@ -47,3 +47,4 @@ class InternshipDetailSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
+

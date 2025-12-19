@@ -6,3 +6,4 @@ urlpatterns = [
     path('<int:id>/', InternshipDetailView.as_view(), name='internship-detail'),
 ]
 
+

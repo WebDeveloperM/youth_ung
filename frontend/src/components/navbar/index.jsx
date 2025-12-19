@@ -135,7 +135,7 @@ export default function Navbar() {
 			],
 		},
 		{
-			title: 'Xalqaro va mahalliy maqolalar',
+			title: t('articles.title'),
 			url: '/articles',
 			icon: <FileText size={24} />
 		},

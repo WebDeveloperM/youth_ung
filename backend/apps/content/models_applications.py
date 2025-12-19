@@ -119,3 +119,4 @@ class Application(models.Model):
             return self.content_object.title_ru
         return str(self.content_object)
 
+

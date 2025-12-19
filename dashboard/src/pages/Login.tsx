@@ -26,7 +26,26 @@ const Login = () => {
       window.location.reload(); // Обновляем чтобы загрузить данные
     } catch (err: any) {
       console.error('❌ Ошибка входа:', err);
-      setError(err.response?.data?.message || 'Логин ёки парол хато!');
+      console.error('❌ Детали ошибки:', err.response?.data);
+      
+      // Извлекаем сообщение об ошибке
+      let errorMessage = 'Логин ёки парол хато!';
+      
+      if (err.response?.data) {
+        const data = err.response.data;
+        // Проверяем различные форматы ошибок
+        if (data.non_field_errors && Array.isArray(data.non_field_errors)) {
+          errorMessage = data.non_field_errors[0];
+        } else if (data.message) {
+          errorMessage = data.message;
+        } else if (data.detail) {
+          errorMessage = data.detail;
+        } else if (typeof data === 'string') {
+          errorMessage = data;
+        }
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

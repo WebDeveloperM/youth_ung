@@ -41,3 +41,4 @@ class CompetitionDetailSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
+

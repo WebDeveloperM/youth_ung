@@ -49,7 +49,7 @@ export default function ArticleDetail() {
 			}
 		} catch (error) {
 			console.error('PDF yuklashda xatolik:', error)
-			alert('PDF fayl mavjud emas')
+			alert(t('articles.pdfNotAvailable'))
 		}
 	}
 
@@ -78,14 +78,7 @@ export default function ArticleDetail() {
 	}
 
 	const getCategoryLabel = (category) => {
-		const categories = {
-			'international': 'Xalqaro',
-			'local': 'Mahalliy',
-			'scientific': 'Ilmiy',
-			'analytical': 'Tahliliy',
-			'practical': 'Amaliy',
-		}
-		return categories[category] || category
+		return t(`articles.category.${category}`) || category
 	}
 
 	if (loading) {
@@ -100,9 +93,9 @@ export default function ArticleDetail() {
 		return (
 			<div className='min-h-screen flex items-center justify-center'>
 				<div className='text-center'>
-					<h2 className='text-2xl font-bold text-gray-800 mb-4'>Maqola topilmadi</h2>
+					<h2 className='text-2xl font-bold text-gray-800 mb-4'>{t('articles.notFound')}</h2>
 					<Link to='/articles' className='text-[#0078c2] hover:underline'>
-						Maqolalar ro'yxatiga qaytish
+						{t('articles.backToList')}
 					</Link>
 				</div>
 			</div>
@@ -118,7 +111,7 @@ export default function ArticleDetail() {
 					className='flex items-center gap-2 text-[#0078c2] hover:text-[#005a94] mb-6 transition-colors'
 				>
 					<FaArrowLeft />
-					<span>Orqaga qaytish</span>
+					<span>{t('articles.submit.backButton')}</span>
 				</button>
 
 				{/* Article Card */}
@@ -138,7 +131,7 @@ export default function ArticleDetail() {
 							/>
 							{article.is_featured && (
 								<div className='absolute top-4 right-4 bg-yellow-500 text-white px-4 py-2 rounded-full font-semibold'>
-									⭐ Tanlangan maqola
+									⭐ {t('articles.featured')}
 								</div>
 							)}
 						</div>
@@ -184,15 +177,15 @@ export default function ArticleDetail() {
 							<div className='flex items-center gap-6 text-gray-600'>
 								<span className='flex items-center gap-2'>
 									<FaEye className='text-blue-500' />
-									{article.views} ko'rishlar
+									{article.views} {t('articles.views')}
 								</span>
 								<span className='flex items-center gap-2'>
 									<FaDownload className='text-green-500' />
-									{article.downloads} yuklab olishlar
+									{article.downloads} {t('articles.downloads')}
 								</span>
 								<span className='flex items-center gap-2'>
 									<FaHeart className={liked ? 'text-red-500' : 'text-gray-400'} />
-									{article.likes} yoqishlar
+									{article.likes} {t('articles.likes')}
 								</span>
 							</div>
 
@@ -207,7 +200,7 @@ export default function ArticleDetail() {
 									}`}
 								>
 									<FaHeart />
-									{liked ? 'Yoqtirdingiz' : 'Yoqtirish'}
+									{liked ? t('articles.liked') : t('articles.like')}
 								</button>
 								{article.pdf_file && (
 									<button
@@ -215,7 +208,7 @@ export default function ArticleDetail() {
 										className='flex items-center gap-2 px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors'
 									>
 										<FaDownload />
-										PDF yuklash
+										{t('articles.downloadPDF')}
 									</button>
 								)}
 							</div>
@@ -223,7 +216,7 @@ export default function ArticleDetail() {
 
 						{/* Abstract */}
 						<div className='mb-8'>
-							<h2 className='text-2xl font-bold text-gray-900 mb-4'>Annotatsiya</h2>
+							<h2 className='text-2xl font-bold text-gray-900 mb-4'>{t('articles.abstract')}</h2>
 							<p className='text-gray-700 leading-relaxed text-lg'>
 								{getAbstract()}
 							</p>
@@ -231,7 +224,7 @@ export default function ArticleDetail() {
 
 						{/* Full Content */}
 						<div className='mb-8'>
-							<h2 className='text-2xl font-bold text-gray-900 mb-4'>To'liq matn</h2>
+							<h2 className='text-2xl font-bold text-gray-900 mb-4'>{t('articles.fullText')}</h2>
 							<div
 								className='prose prose-lg max-w-none text-gray-700 leading-relaxed'
 								dangerouslySetInnerHTML={{ __html: getContent() }}
@@ -241,7 +234,7 @@ export default function ArticleDetail() {
 						{/* Keywords */}
 						{getKeywords() && (
 							<div className='mb-8'>
-								<h3 className='text-xl font-semibold text-gray-900 mb-3'>Kalit so'zlar</h3>
+								<h3 className='text-xl font-semibold text-gray-900 mb-3'>{t('articles.keywords')}</h3>
 								<div className='flex flex-wrap gap-2'>
 									{getKeywords().split(',').map((keyword, index) => (
 										<span
@@ -271,7 +264,7 @@ export default function ArticleDetail() {
 						to='/articles'
 						className='inline-block bg-[#0078c2] text-white px-8 py-3 rounded-lg hover:bg-[#005a94] transition-colors duration-300 font-semibold'
 					>
-						Boshqa maqolalarni ko'rish
+						{t('articles.viewOthers')}
 					</Link>
 				</div>
 			</div>

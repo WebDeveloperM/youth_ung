@@ -14,8 +14,8 @@ class SignUpSerializer(serializers.Serializer):
     residential_address = serializers.CharField(max_length=500, help_text="Адрес проживания")
     
     # Рабочая информация
-    place_of_work = serializers.CharField(max_length=200, help_text="Место работы")
-    position = serializers.CharField(max_length=100, help_text="Должность")
+    place_of_work = serializers.IntegerField(required=False, allow_null=True, help_text="ID организации")
+    position = serializers.CharField(max_length=100, required=False, allow_blank=True, help_text="Должность")
     
     # Данные для входа
     login = serializers.CharField(max_length=150, help_text="Логин (email или username)")
@@ -63,17 +63,14 @@ class SignUpSerializer(serializers.Serializer):
             email = f"{login}@youth.uz"  # Создаем email из username
             username = login
         
-        # Получаем или создаем организацию
-        place_of_work = validated_data.get('place_of_work', 'Самозанятый')
-        organization, _ = Organisation.objects.get_or_create(
-            name=place_of_work,
-            defaults={
-                'name': place_of_work,
-                'email': f"{place_of_work.lower().replace(' ', '_')}@organization.uz",
-                'address': '',
-                'phone': None
-            }
-        )
+        # Получаем организацию по ID (если указан)
+        organization_id = validated_data.get('place_of_work')
+        organization = None
+        if organization_id:
+            try:
+                organization = Organisation.objects.get(id=organization_id)
+            except Organisation.DoesNotExist:
+                raise serializers.ValidationError({"place_of_work": "Организация не найдена"})
         
         # Создаем пользователя
         user = User.objects.create(

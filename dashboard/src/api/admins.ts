@@ -6,7 +6,7 @@ export interface AdminUser {
   username: string;
   first_name: string;
   last_name: string;
-  role: 'Admin' | 'Moderator';
+  role: 'Admin' | 'Moderator' | 'Coordinator';
   allowed_menus: string[];
   is_active: boolean;
   phone?: string;
@@ -28,10 +28,10 @@ export interface CreateAdminData {
   first_name: string;
   last_name: string;
   password: string;
-  role: 'Admin' | 'Moderator';
+  role: 'Admin' | 'Moderator' | 'Coordinator';
   allowed_menus: string[];
   phone: string;
-  organization: number;
+  organization: number | null;
   position: string;
 }
 
@@ -41,11 +41,11 @@ export interface UpdateAdminData {
   first_name?: string;
   last_name?: string;
   password?: string;
-  role?: 'Admin' | 'Moderator';
+  role?: 'Admin' | 'Moderator' | 'Coordinator';
   allowed_menus?: string[];
   is_active?: boolean;
   phone?: string;
-  organization?: number;
+  organization?: number | null;
   position?: string;
 }
 
@@ -55,7 +55,13 @@ export const adminsAPI = {
    */
   async getAll(): Promise<AdminUser[]> {
     const response = await apiClient.get('/admin/admins/');
-    return response.data;
+    // API может вернуть либо массив, либо объект с пагинацией {count, results}
+    const data = response.data;
+    if (Array.isArray(data)) {
+      return data;
+    }
+    // Если пришел объект с пагинацией, возвращаем массив results
+    return data.results || [];
   },
 
   /**
@@ -103,4 +109,5 @@ export const adminsAPI = {
     return response.data;
   },
 };
+
 

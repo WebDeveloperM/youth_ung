@@ -16,16 +16,18 @@ class User(AbstractUser):
     MODERATOR = 'Moderator'
     USER = 'User'
     ADMIN = 'Admin'
+    COORDINATOR = 'Coordinator'
 
     ROLE = (
-        (MODERATOR, 'Модератор'),
-        (USER, 'Пользователь'),
         (ADMIN, 'Администратор'),
+        (MODERATOR, 'Модератор'),
+        (COORDINATOR, 'Координатор'),
+        (USER, 'Пользователь'),
     )
 
-    username = models.CharField(unique=False)
-    organization=models.ForeignKey(Organisation, on_delete=models.CASCADE)
-    position=models.CharField(max_length=100)
+    username = models.CharField(max_length=150, unique=False)
+    organization = models.ForeignKey(Organisation, on_delete=models.SET_NULL, null=True, blank=True)
+    position = models.CharField(max_length=100, null=True, blank=True)
     first_name = models.CharField(unique=False, max_length=50)
     last_name = models.CharField(unique=False, max_length=50)
     date_of_birth = models.DateField(null=True, blank=True)
@@ -36,6 +38,48 @@ class User(AbstractUser):
     phone = models.CharField(max_length=15, validators=[PHONE_VALIDATOR])
     role = models.CharField(max_length=255, choices=ROLE, default=USER)
     allowed_menus = models.JSONField(default=list, blank=True, help_text="Список разрешенных меню для администратора")
+    
+    # Образование
+    education_level = models.CharField(max_length=50, null=True, blank=True, choices=[
+        ('secondary', 'Среднее образование'),
+        ('higher', 'Высшее образование'),
+    ])
+    is_foreign_graduate = models.BooleanField(default=False, verbose_name="Выпускник зарубежного вуза")
+    is_top300_graduate = models.BooleanField(default=False, verbose_name="Выпускник TOP 300")
+    is_top500_graduate = models.BooleanField(default=False, verbose_name="Выпускник TOP 500")
+    
+    # Тип сотрудника
+    staff_type = models.CharField(max_length=50, null=True, blank=True, choices=[
+        ('technical', 'Технический сотрудник'),
+        ('service', 'Обслуживающий персонал'),
+    ])
+    is_promoted = models.BooleanField(default=False, verbose_name="Повышен в должности")
+    
+    # Языковые сертификаты
+    has_ielts = models.BooleanField(default=False, verbose_name="Имеет IELTS")
+    has_cefr = models.BooleanField(default=False, verbose_name="Имеет CEFR")
+    has_topik = models.BooleanField(default=False, verbose_name="Имеет TOPIK")
+    
+    # Научные степени
+    scientific_degree = models.CharField(max_length=50, null=True, blank=True, choices=[
+        ('phd', 'PhD'),
+        ('dsc', 'DSc'),
+        ('candidate', 'Соискатель'),
+    ])
+    
+    # Лидерские позиции
+    leadership_position = models.CharField(max_length=50, null=True, blank=True, choices=[
+        ('director', 'Директор'),
+        ('head', 'Начальник'),
+        ('manager', 'Менеджер'),
+    ])
+    
+    # Государственные награды
+    state_award_type = models.CharField(max_length=50, null=True, blank=True, choices=[
+        ('order', 'Орден'),
+        ('medal', 'Медаль'),
+        ('honorary', 'Почетное звание'),
+    ])
 
     objects = UsersManager()
 

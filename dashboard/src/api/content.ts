@@ -179,6 +179,7 @@ export interface TeamMember extends BaseContent {
   bio_uz: string;
   bio_ru: string;
   bio_en: string;
+  category: 'leadership' | 'innovation' | 'education' | 'media' | 'sports';
   photo: string;
   email: string;
   phone: string;
@@ -386,6 +387,58 @@ export const articlesAPI = {
   },
 };
 
+// ТЕХНОЛОГИИ API
+const technologiesAPI = {
+  getList: () => apiClient.get('/admin/technologies/'),
+  getOne: (id: number) => apiClient.get(`/admin/technologies/${id}/`),
+  create: (data: any) => apiClient.post('/admin/technologies/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id: number, data: any) => apiClient.patch(`/admin/technologies/${id}/`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  delete: (id: number) => apiClient.delete(`/admin/technologies/${id}/`),
+};
+
+// ПРОЕКТЫ API
+const projectsAPI = {
+  getList: () => apiClient.get('/admin/projects/'),
+  getOne: (id: number) => apiClient.get(`/admin/projects/${id}/`),
+  create: (data: any) => apiClient.post('/admin/projects/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id: number, data: any) => apiClient.patch(`/admin/projects/${id}/`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  delete: (id: number) => apiClient.delete(`/admin/projects/${id}/`),
+};
+
+// ИССЛЕДОВАНИЯ API
+const researchAPI = {
+  getList: () => apiClient.get('/admin/research/'),
+  getOne: (id: number) => apiClient.get(`/admin/research/${id}/`),
+  create: (data: any) => apiClient.post('/admin/research/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id: number, data: any) => apiClient.patch(`/admin/research/${id}/`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  delete: (id: number) => apiClient.delete(`/admin/research/${id}/`),
+};
+
+// РЕЗУЛЬТАТЫ API
+const resultsAPI = {
+  getList: () => apiClient.get('/admin/results/'),
+  getOne: (id: number) => apiClient.get(`/admin/results/${id}/`),
+  create: (data: any) => apiClient.post('/admin/results/', data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  update: (id: number, data: any) => apiClient.patch(`/admin/results/${id}/`, data, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  }),
+  delete: (id: number) => apiClient.delete(`/admin/results/${id}/`),
+};
+
 // Экспортируем все вместе
 export const contentAPI = {
   news: newsAPI,
@@ -396,6 +449,10 @@ export const contentAPI = {
   internships: internshipsAPI,
   jobs: jobsAPI,
   team: teamAPI,
+  technologies: technologiesAPI,
+  projects: projectsAPI,
+  research: researchAPI,
+  results: resultsAPI,
 };
 
 export default contentAPI;

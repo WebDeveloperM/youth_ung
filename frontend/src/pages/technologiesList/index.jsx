@@ -1,17 +1,48 @@
-import { technologiesData } from '@/datatest/technologiesData'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { FaEye, FaHeart, FaCog } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
+import { getTechnologiesList } from '@/api/technologies'
 
 export default function TechnologiesList() {
 	const { t, i18n } = useTranslation()
 	const currentLang = i18n.language
+	const [technologies, setTechnologies] = useState([])
+	const [loading, setLoading] = useState(true)
+
+	useEffect(() => {
+		const loadTechnologies = async () => {
+			try {
+				console.log('🔄 Загружаем технологии...')
+				const data = await getTechnologiesList({ is_published: true })
+				console.log('✅ Данные получены:', data)
+				console.log('📊 Количество:', data?.length || 0)
+				setTechnologies(data || [])
+			} catch (error) {
+				console.error('❌ Error loading technologies:', error)
+			} finally {
+				setLoading(false)
+			}
+		}
+		loadTechnologies()
+	}, [])
 
 	// Сортировка по дате (новые сначала)
-	const sortedTechnologies = [...technologiesData].sort(
+	const sortedTechnologies = [...technologies].sort(
 		(a, b) => new Date(b.date) - new Date(a.date)
 	)
+	
+	console.log('🔢 Technologies:', technologies)
+	console.log('📋 Sorted:', sortedTechnologies)
+
+	if (loading) {
+		return (
+			<div className="flex items-center justify-center min-h-screen">
+				<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600"></div>
+			</div>
+		)
+	}
 
 	return (
 		<section
@@ -56,15 +87,15 @@ export default function TechnologiesList() {
 							{/* Image */}
 							<div className='relative h-56 overflow-hidden'>
 								<motion.img
-									src={technology.image}
-									alt={technology.title[currentLang]}
+									src={technology.image || '/images/default.jpg'}
+									alt={technology[`title_${currentLang}`] || technology.title_ru}
 									className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
 								/>
 								<div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent group-hover:from-cyan-600/40 transition-all duration-500' />
 								
 								{/* Category Badge */}
 								<div className='absolute top-4 left-4 bg-cyan-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase'>
-									{t(`technologies.categories.${technology.category}`)}
+									{t(`technologies.categories.${technology.category}`) || technology.category}
 								</div>
 							</div>
 
@@ -72,10 +103,10 @@ export default function TechnologiesList() {
 							<div className='p-6 flex flex-col justify-between'>
 								<div className='flex flex-col gap-3'>
 									<h3 className='text-xl font-bold mb-2 text-gray-800 dark:text-gray-200 group-hover:text-cyan-600 dark:group-hover:text-cyan-400 transition-colors duration-300 line-clamp-2'>
-										{technology.title[currentLang]}
+										{technology[`title_${currentLang}`] || technology.title_ru}
 									</h3>
 									<p className='text-muted-foreground text-sm mb-4 flex-1 leading-relaxed line-clamp-3'>
-										{technology.shortDescription[currentLang]}
+										{technology[`short_description_${currentLang}`] || technology.short_description_ru}
 									</p>
 								</div>
 

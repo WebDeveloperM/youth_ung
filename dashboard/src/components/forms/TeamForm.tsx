@@ -24,6 +24,7 @@ const TeamForm = ({ member, onClose, onSuccess }: TeamFormProps) => {
     bio_uz: '',
     bio_ru: '',
     bio_en: '',
+    category: 'leadership',
     photo: null as File | null,
     email: '',
     phone: '',
@@ -48,6 +49,7 @@ const TeamForm = ({ member, onClose, onSuccess }: TeamFormProps) => {
         bio_uz: member.bio_uz || '',
         bio_ru: member.bio_ru || '',
         bio_en: member.bio_en || '',
+        category: member.category || 'leadership',
         photo: null,
         email: member.email || '',
         phone: member.phone || '',
@@ -340,6 +342,25 @@ const TeamForm = ({ member, onClose, onSuccess }: TeamFormProps) => {
             {photoPreview && (
               <img src={photoPreview} alt="Preview" className="mt-4 w-32 h-32 rounded-full object-cover" />
             )}
+          </div>
+
+          {/* Category Selection */}
+          <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Категория *
+            </label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+              required
+            >
+              <option value="leadership">Руководство</option>
+              <option value="innovation">Инновации</option>
+              <option value="education">Образование</option>
+              <option value="media">Медиа</option>
+              <option value="sports">Спорт</option>
+            </select>
           </div>
 
           {/* Contact Information */}

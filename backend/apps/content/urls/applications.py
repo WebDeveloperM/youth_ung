@@ -8,3 +8,4 @@ urlpatterns = [
     path('apply/', ApplicationCreateView.as_view(), name='application-create'),
 ]
 
+

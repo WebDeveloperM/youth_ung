@@ -14,24 +14,28 @@ from users.serializers.admin_serializer import (
 from users.utils.authentication import CustomTokenAuthentication
 
 
-class IsAdminOrModerator(IsAuthenticated):
-    """Проверка что пользователь Admin или Moderator"""
+class IsAdminOrModeratorOrCoordinator(IsAuthenticated):
+    """Проверка что пользователь Admin, Moderator или Coordinator"""
     
     def has_permission(self, request, view):
         if not super().has_permission(request, view):
             return False
-        return request.user.role in ['Admin', 'Moderator']
+        return request.user.role in ['Admin', 'Moderator', 'Coordinator']
+
+
+# Алиас для обратной совместимости
+IsAdminOrModerator = IsAdminOrModeratorOrCoordinator
 
 
 class AdminUserViewSet(viewsets.ModelViewSet):
     """ViewSet для управления администраторами"""
     authentication_classes = [CustomTokenAuthentication]
-    permission_classes = [IsAdminOrModerator]
+    permission_classes = [IsAdminOrModeratorOrCoordinator]
     
     def get_queryset(self):
-        """Возвращаем только администраторов и модераторов"""
+        """Возвращаем администраторов, модераторов и координаторов"""
         return User.objects.filter(
-            Q(role=User.ADMIN) | Q(role=User.MODERATOR)
+            Q(role=User.ADMIN) | Q(role=User.MODERATOR) | Q(role=User.COORDINATOR)
         ).select_related('organization').order_by('-date_joined')
     
     def get_serializer_class(self):
@@ -119,4 +123,5 @@ class AdminUserViewSet(viewsets.ModelViewSet):
             {'key': 'admins', 'label': 'Администраторы'},
         ]
         return Response(menus)
+
 

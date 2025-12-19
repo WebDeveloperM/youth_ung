@@ -43,3 +43,4 @@ class GrantDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     queryset = Grant.objects.all()
 
+

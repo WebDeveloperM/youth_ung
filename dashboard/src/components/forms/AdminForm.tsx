@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { adminsAPI, AdminUserType, MenuItem } from '../../api';
+import { getOrganisationsList } from '../../api/organisations';
 
 interface AdminFormProps {
   admin?: AdminUserType | null;
@@ -12,6 +13,7 @@ interface AdminFormProps {
 const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
   const [loading, setLoading] = useState(false);
   const [menuOptions, setMenuOptions] = useState<MenuItem[]>([]);
+  const [organisations, setOrganisations] = useState<any[]>([]);
   
   const [formData, setFormData] = useState({
     email: '',
@@ -19,26 +21,33 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
     first_name: '',
     last_name: '',
     password: '',
-    role: 'Moderator' as 'Admin' | 'Moderator',
+    role: 'Moderator' as 'Admin' | 'Moderator' | 'Coordinator',
     allowed_menus: [] as string[],
     phone: '',
-    organization: 1,
+    organization: null as number | null,
     position: '',
     is_active: true,
   });
 
-  // Загрузка списка доступных меню
+  // Загрузка списка доступных меню и организаций
   useEffect(() => {
-    const loadMenuOptions = async () => {
+    const loadData = async () => {
       try {
-        const menus = await adminsAPI.getMenuOptions();
+        console.log('🔄 Загрузка меню и организаций...');
+        const [menus, orgs] = await Promise.all([
+          adminsAPI.getMenuOptions(),
+          getOrganisationsList()
+        ]);
         setMenuOptions(menus);
+        const orgList = orgs.results || orgs;
+        setOrganisations(orgList);
+        console.log('✅ Меню:', menus.length, 'Организаций:', orgList.length);
       } catch (error) {
-        console.error('Ошибка загрузки меню:', error);
+        console.error('❌ Ошибка загрузки данных:', error);
       }
     };
 
-    loadMenuOptions();
+    loadData();
   }, []);
 
   // Заполнение формы при редактировании
@@ -98,8 +107,15 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
       return;
     }
 
-    if (formData.allowed_menus.length === 0) {
+    // Для админа и модератора меню обязательны
+    if (formData.role !== 'Coordinator' && formData.allowed_menus.length === 0) {
       toast.error('Камида битта менюни танланг!');
+      return;
+    }
+
+    // Для координатора организация обязательна
+    if (formData.role === 'Coordinator' && !formData.organization) {
+      toast.error('Координатор учун ташкилот танланг!');
       return;
     }
 
@@ -262,19 +278,61 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
             />
           </div>
 
-          {/* Role */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-              Роль *
-            </label>
-            <select
-              value={formData.role}
-              onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-            >
-              <option value="Moderator">Модератор</option>
-              <option value="Admin">Администратор</option>
-            </select>
+          {/* Role and Organization */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Роль *
+              </label>
+              <select
+                value={formData.role}
+                onChange={(e) => {
+                  const newRole = e.target.value as any;
+                  setFormData({ 
+                    ...formData, 
+                    role: newRole,
+                    // Для координатора очищаем меню, для других очищаем организацию
+                    allowed_menus: newRole === 'Coordinator' ? [] : formData.allowed_menus,
+                    organization: newRole !== 'Coordinator' ? null : formData.organization
+                  });
+                }}
+                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              >
+                <option value="Admin">Администратор</option>
+                <option value="Moderator">Модератор</option>
+                <option value="Coordinator">Координатор</option>
+              </select>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                {formData.role === 'Admin' && '• Полный доступ ко всем функциям'}
+                {formData.role === 'Moderator' && '• Доступ к выбранным разделам'}
+                {formData.role === 'Coordinator' && '• Доступ только к пользователям своей организации'}
+              </p>
+            </div>
+
+            {/* Organization - обязательно для Coordinator */}
+            {formData.role === 'Coordinator' && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Организация * <span className="text-red-500">(обязательно)</span>
+                </label>
+                <select
+                  value={formData.organization || ''}
+                  onChange={(e) => setFormData({ ...formData, organization: e.target.value ? Number(e.target.value) : null })}
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  required
+                >
+                  <option value="">Выберите организацию...</option>
+                  {organisations.map(org => (
+                    <option key={org.id} value={org.id}>
+                      {org.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Координатор будет видеть только пользователей этой организации
+                </p>
+              </div>
+            )}
           </div>
 
           {/* Active Status */}
@@ -293,55 +351,67 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
             </div>
           )}
 
-          {/* Allowed Menus */}
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Доступ к меню * (выберите минимум 1)
-              </label>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleSelectAll}
-                  className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
-                >
-                  Выбрать все
-                </button>
-                <span className="text-gray-400">|</span>
-                <button
-                  type="button"
-                  onClick={handleDeselectAll}
-                  className="text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400"
-                >
-                  Снять все
-                </button>
+          {/* Allowed Menus - только для Admin и Moderator */}
+          {formData.role !== 'Coordinator' && (
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  Доступ к меню * (выберите минимум 1)
+                </label>
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSelectAll}
+                    className="text-sm text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+                  >
+                    Выбрать все
+                  </button>
+                  <span className="text-gray-400">|</span>
+                  <button
+                    type="button"
+                    onClick={handleDeselectAll}
+                    className="text-sm text-gray-600 hover:text-gray-700 dark:text-gray-400"
+                  >
+                    Снять все
+                  </button>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                {menuOptions.map((menu) => (
+                  <div key={menu.key} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id={`menu-${menu.key}`}
+                      checked={formData.allowed_menus.includes(menu.key)}
+                      onChange={() => handleMenuToggle(menu.key)}
+                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                    />
+                    <label
+                      htmlFor={`menu-${menu.key}`}
+                      className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                    >
+                      {menu.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                Выбрано: {formData.allowed_menus.length} из {menuOptions.length}
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-              {menuOptions.map((menu) => (
-                <div key={menu.key} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id={`menu-${menu.key}`}
-                    checked={formData.allowed_menus.includes(menu.key)}
-                    onChange={() => handleMenuToggle(menu.key)}
-                    className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                  />
-                  <label
-                    htmlFor={`menu-${menu.key}`}
-                    className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
-                  >
-                    {menu.label}
-                  </label>
-                </div>
-              ))}
+          )}
+
+          {/* Info для координаторов */}
+          {formData.role === 'Coordinator' && (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <p className="text-sm text-blue-800 dark:text-blue-300">
+                <strong>ℹ️ Координатор:</strong> Автоматически получает доступ к просмотру всех пользователей своей организации.
+                Настройка меню не требуется.
+              </p>
             </div>
-            
-            <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-              Выбрано: {formData.allowed_menus.length} из {menuOptions.length}
-            </div>
-          </div>
+          )}
         </form>
 
         {/* Buttons */}
@@ -372,4 +442,5 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
 };
 
 export default AdminForm;
+
 

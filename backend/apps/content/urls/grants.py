@@ -12,3 +12,4 @@ urlpatterns = [
     path('<int:pk>/', GrantDetailView.as_view(), name='grant-detail'),
 ]
 
+

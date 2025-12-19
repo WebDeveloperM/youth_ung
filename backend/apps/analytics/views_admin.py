@@ -19,7 +19,7 @@ def admin_dashboard_stats(request):
     """Статистика для главной страницы админки"""
     
     # Проверка роли
-    if request.user.role not in ['Admin', 'Moderator']:
+    if request.user.role not in ['Admin', 'Moderator', 'Coordinator']:
         return Response({'error': 'Permission denied'}, status=403)
     
     # Подсчет контента
@@ -66,7 +66,7 @@ def admin_dashboard_stats(request):
 def admin_visitors_stats(request):
     """Статистика посетителей"""
     
-    if request.user.role not in ['Admin', 'Moderator']:
+    if request.user.role not in ['Admin', 'Moderator', 'Coordinator']:
         return Response({'error': 'Permission denied'}, status=403)
     
     # Период (по умолчанию месяц)
@@ -122,7 +122,7 @@ def admin_visitors_stats(request):
 def admin_pages_analytics(request):
     """Аналитика страниц"""
     
-    if request.user.role not in ['Admin', 'Moderator']:
+    if request.user.role not in ['Admin', 'Moderator', 'Coordinator']:
         return Response({'error': 'Permission denied'}, status=403)
     
     # Топ страниц по просмотрам
@@ -142,4 +142,5 @@ def admin_pages_analytics(request):
         })
     
     return Response(result)
+
 

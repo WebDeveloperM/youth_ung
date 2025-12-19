@@ -14,3 +14,4 @@ urlpatterns = [
     path('<int:pk>/like/', NewsIncrementLikeView.as_view(), name='news-like'),
 ]
 
+

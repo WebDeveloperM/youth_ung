@@ -31,6 +31,14 @@ const Team = () => {
     loadStats();
   }, [refreshKey]);
 
+  const categoryLabels: Record<string, string> = {
+    'leadership': 'Руководство',
+    'innovation': 'Инновации',
+    'education': 'Образование',
+    'media': 'Медиа',
+    'sports': 'Спорт',
+  };
+
   const columns = [
     { key: 'order', label: 'Тартиб', render: (item: TeamMember) => <span className="font-bold">{item.order}</span> },
     {
@@ -53,6 +61,15 @@ const Team = () => {
           <div className="font-medium">{item.name_ru}</div>
           <div className="text-sm text-gray-500">{item.position_ru}</div>
         </div>
+      ),
+    },
+    {
+      key: 'category',
+      label: 'Категория',
+      render: (item: TeamMember) => (
+        <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+          {categoryLabels[item.category] || item.category}
+        </span>
       ),
     },
     { key: 'email', label: 'Email' },
@@ -122,4 +139,5 @@ const Team = () => {
 };
 
 export default Team;
+
 

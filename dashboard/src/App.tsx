@@ -18,6 +18,13 @@ import Analytics from './pages/Analytics';
 import Applications from './pages/Applications';
 import Administrators from './pages/Administrators';
 import Articles from './pages/Articles';
+import Technologies from './pages/Technologies';
+import Projects from './pages/Projects';
+import Research from './pages/Research';
+import Results from './pages/Results';
+import StatisticsEditor from './pages/StatisticsEditor';
+import Appeals from './pages/Appeals';
+import Organisations from './pages/Organisations';
 
 // Protected Route Component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -66,6 +73,13 @@ function App() {
           <Route path="analytics" element={<Analytics />} />
           <Route path="administrators" element={<Administrators />} />
           <Route path="articles" element={<Articles />} />
+          <Route path="technologies" element={<Technologies />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="research" element={<Research />} />
+          <Route path="results" element={<Results />} />
+          <Route path="statistics" element={<StatisticsEditor />} />
+          <Route path="appeals" element={<Appeals />} />
+          <Route path="organisations" element={<Organisations />} />
         </Route>
       </Routes>
     </Router>

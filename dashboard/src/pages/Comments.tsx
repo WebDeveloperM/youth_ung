@@ -268,13 +268,13 @@ const Comments = () => {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
-                        {comment.author.first_name[0]}{comment.author.last_name[0]}
+                        {(comment.author?.first_name?.[0] || '?').toUpperCase()}{(comment.author?.last_name?.[0] || '?').toUpperCase()}
                       </div>
                       <div className="ml-3">
                         <div className="text-sm font-medium text-gray-900">
-                          {comment.author.first_name} {comment.author.last_name}
+                          {comment.author?.first_name || comment.author?.username || 'Unknown'} {comment.author?.last_name || ''}
                         </div>
-                        <div className="text-sm text-gray-500">{comment.author.email}</div>
+                        <div className="text-sm text-gray-500">{comment.author?.email || 'N/A'}</div>
                       </div>
                     </div>
                   </td>
@@ -368,4 +368,5 @@ const Comments = () => {
 };
 
 export default Comments;
+
 

@@ -1,7 +1,7 @@
 import { Icon } from '@iconify/react'
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from 'framer-motion'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
 	FaBriefcase,
 	FaBuilding,
@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { LanguageSelector } from '@/components/langSelector'
 import { authAPI } from '@/api/auth'
+import { getOrganisationsList } from '@/api/organisations'
 import './Auth.css'
 
 const Auth = () => {
@@ -24,6 +25,7 @@ const Auth = () => {
 
 	const [isLogin, setIsLogin] = useState(true)
 	const [showSuccess, setShowSuccess] = useState(false)
+	const [organisations, setOrganisations] = useState([])
 	const [formData, setFormData] = useState({
 		fullName: '',
 		dateOfBirth: '',
@@ -37,6 +39,25 @@ const Auth = () => {
 	})
 	const [errors, setErrors] = useState({})
 	const [touched, setTouched] = useState({})
+
+	// Загрузка списка организаций при монтировании
+	useEffect(() => {
+		const loadOrganisations = async () => {
+			try {
+				console.log('🔄 Загрузка организаций...')
+				const data = await getOrganisationsList()
+				console.log('📦 Получены организации:', data)
+				const orgList = data.results || data
+				console.log('📋 Список организаций:', orgList)
+				setOrganisations(orgList)
+				console.log('✅ Организаций загружено:', orgList.length)
+			} catch (error) {
+				console.error('❌ Ошибка загрузки организаций:', error)
+				console.error('❌ Детали:', error.response?.data || error.message)
+			}
+		}
+		loadOrganisations()
+	}, [])
 
 	// Валидация полей
 	const validateField = (name, value) => {
@@ -227,6 +248,58 @@ const Auth = () => {
 		</div>
 	)
 
+	// Рендер select поля
+	const renderSelect = (name, icon, options) => {
+		console.log(`🎨 Рендер select для ${name}, опций:`, options?.length || 0)
+		return (
+			<div className='form-group'>
+				<label htmlFor={name} className='form-label'>
+					{t(name)}
+				</label>
+				<select
+					id={name}
+					name={name}
+					className={`form-control ${
+						errors[name] && touched[name] ? 'is-invalid' : ''
+					} ${
+						touched[name] && !errors[name] && formData[name] ? 'is-valid' : ''
+					}`}
+					value={formData[name]}
+					onChange={handleChange}
+					onBlur={handleBlur}
+					aria-invalid={errors[name] && touched[name] ? 'true' : 'false'}
+					aria-describedby={errors[name] ? `${name}-error` : undefined}
+				>
+					<option value="">{t('selectOrganisation')}</option>
+					{options && options.length > 0 ? (
+						options.map(option => (
+							<option key={option.id} value={option.id}>
+								{option.name}
+							</option>
+						))
+					) : (
+						<option disabled>Загрузка организаций...</option>
+					)}
+				</select>
+				<AnimatePresence>
+					{errors[name] && touched[name] && (
+						<motion.div
+							id={`${name}-error`}
+							role='alert'
+							className='error-message'
+							initial={{ opacity: 0, height: 0, y: -10 }}
+							animate={{ opacity: 1, height: 'auto', y: 0 }}
+							exit={{ opacity: 0, height: 0, y: -10 }}
+							transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+						>
+							{errors[name]}
+						</motion.div>
+					)}
+				</AnimatePresence>
+			</div>
+		)
+	}
+
 	return (
 		<div className='auth-container'>
 			{/* Фоновые фигуры */}
@@ -364,7 +437,7 @@ const Auth = () => {
 									)}
 								</div>
 								<div className='form-row double'>
-									{renderInput('placeOfWork', <FaBuilding />, 'text')}
+									{renderSelect('placeOfWork', <FaBuilding />, organisations)}
 									{renderInput('position', <FaBriefcase />, 'text')}
 								</div>
 								<div className='form-row single'>

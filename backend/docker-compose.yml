@@ -42,10 +42,12 @@ services:
       - web
     environment:
       - NGROK_AUTHTOKEN=33mWHZ8eQXnfn1tTsgH96T2I5Ur_51nH23C94sSLo4X1cxpQY
-    command: http web:8000
+    command: http web:8000 --domain=sublenticular-steely-kelsi.ngrok-free.dev
     networks:
       - my_network
-    restart: always
+    restart: unless-stopped
+    profiles:
+      - production  # Запускается только с профилем production
 
 volumes:
   postgres_data:

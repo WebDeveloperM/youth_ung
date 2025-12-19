@@ -65,3 +65,4 @@ class ApplicationAdmin(admin.ModelAdmin):
         )
     status_badge.short_description = 'Статус'
 
+

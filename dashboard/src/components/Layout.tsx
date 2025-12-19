@@ -18,9 +18,16 @@ import {
   Target,
   UsersRound,
   MessageCircle,
+  MessageSquare,
   FileText,
   Shield,
-  BookOpen
+  BookOpen,
+  Cpu,
+  FolderKanban,
+  Microscope,
+  TrendingUp,
+  Edit3,
+  Building2
 } from 'lucide-react';
 import { authAPI } from '../api';
 
@@ -56,6 +63,7 @@ const Layout = () => {
 
   const allNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, key: 'dashboard' },
+    { name: 'Statistika', href: '/statistics', icon: Edit3, key: 'statistics' },
     { name: 'Yangiliklar', href: '/news', icon: Newspaper, key: 'news' },
     { name: 'Grantlar', href: '/grants', icon: Award, key: 'grants' },
     { name: 'Stipendiyalar', href: '/scholarships', icon: GraduationCap, key: 'scholarships' },
@@ -65,9 +73,15 @@ const Layout = () => {
     { name: 'Vakansiyalar', href: '/jobs', icon: Briefcase, key: 'jobs' },
     { name: 'Jamoa', href: '/team', icon: UsersRound, key: 'team' },
     { name: 'Maqolalar', href: '/articles', icon: BookOpen, key: 'articles' },
+    { name: 'Texnologiyalar', href: '/technologies', icon: Cpu, key: 'technologies' },
+    { name: 'Loyihalar', href: '/projects', icon: FolderKanban, key: 'projects' },
+    { name: 'Tadqiqotlar', href: '/research', icon: Microscope, key: 'research' },
+    { name: 'Natijalar', href: '/results', icon: TrendingUp, key: 'results' },
     { name: 'Foydalanuvchilar', href: '/users', icon: Users, key: 'users' },
+    { name: 'Tashkilotlar', href: '/organisations', icon: Building2, key: 'organisations' },
     { name: 'Kommentariyalar', href: '/comments', icon: MessageCircle, key: 'comments' },
     { name: 'Arizalar', href: '/applications', icon: FileText, key: 'applications' },
+    { name: 'Murojaatlar', href: '/appeals', icon: MessageSquare, key: 'appeals' },
     { name: 'Analitika', href: '/analytics', icon: BarChart3, key: 'analytics' },
     { name: 'Administratorlar', href: '/administrators', icon: Shield, key: 'admins' },
   ];
@@ -93,7 +107,20 @@ const Layout = () => {
   const navigation = showAllMenus
     ? allNavigation // Показываем все меню
     : allNavigation.filter(item => {
-        const hasAccess = currentUser?.allowed_menus?.includes(item.key) || item.key === 'dashboard';
+        // Dashboard доступен всем
+        if (item.key === 'dashboard') {
+          console.log(`🔍 Меню "${item.name}" (${item.key}): ✅ (dashboard всегда доступен)`);
+          return true;
+        }
+        
+      // Coordinator ТОЛЬКО "Foydalanuvchilar" (БЕЗ администраторов!)
+      if (currentUser?.role === 'Coordinator' && item.key === 'users') {
+        console.log(`🔍 Меню "${item.name}" (${item.key}): ✅ (доступно для Coordinator)`);
+        return true;
+      }
+        
+        // Остальные проверяем по allowed_menus
+        const hasAccess = currentUser?.allowed_menus?.includes(item.key);
         console.log(`🔍 Меню "${item.name}" (${item.key}): ${hasAccess ? '✅' : '❌'}`);
         return hasAccess;
       });
@@ -111,7 +138,7 @@ const Layout = () => {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } bg-white border-r border-gray-200 w-64`}
       >
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col overflow-hidden">
           {/* Logo */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <div className="flex items-center space-x-3">
@@ -129,7 +156,7 @@ const Layout = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-2">
+          <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
             {navigation.map((item) => {
               const Icon = item.icon;
               return (

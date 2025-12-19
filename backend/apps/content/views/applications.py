@@ -34,12 +34,12 @@ class ApplicationCreateView(generics.CreateAPIView):
 
 
 class IsAdminOrModerator(IsAuthenticated):
-    """Проверка что пользователь Admin или Moderator"""
+    """Проверка что пользователь Admin, Moderator или Coordinator"""
     
     def has_permission(self, request, view):
         if not super().has_permission(request, view):
             return False
-        return request.user.role in ['Admin', 'Moderator']
+        return request.user.role in ['Admin', 'Moderator', 'Coordinator']
 
 
 class ApplicationAdminViewSet(viewsets.ModelViewSet):
@@ -103,4 +103,5 @@ class ApplicationAdminViewSet(viewsets.ModelViewSet):
             'updated': updated_count,
             'status': new_status,
         })
+
 

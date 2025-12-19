@@ -56,3 +56,4 @@ class ScholarshipDetailSerializer(serializers.ModelSerializer):
             'updated_at',
         ]
 
+

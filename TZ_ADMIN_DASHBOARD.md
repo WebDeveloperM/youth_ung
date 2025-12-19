@@ -1096,3 +1096,4 @@ dashboard/
 **Автор:** AI Assistant (Claude)  
 **Проект:** UNG Youth Platform
 
+

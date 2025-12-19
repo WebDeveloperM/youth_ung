@@ -64,3 +64,4 @@ class InnovationDetailView(generics.RetrieveAPIView):
 # Импорт Response для метода retrieve
 from rest_framework.response import Response
 
+

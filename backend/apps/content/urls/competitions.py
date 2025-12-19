@@ -6,3 +6,4 @@ urlpatterns = [
     path('<int:id>/', CompetitionDetailView.as_view(), name='competition-detail'),
 ]
 
+

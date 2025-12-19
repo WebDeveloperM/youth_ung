@@ -3,13 +3,34 @@ from content.models_comments import Comment
 from django.contrib.contenttypes.models import ContentType
 
 
+class CommentAuthorSerializer(serializers.Serializer):
+    """Сериализатор для автора комментария"""
+    id = serializers.IntegerField()
+    username = serializers.CharField()
+    email = serializers.EmailField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    avatar = serializers.SerializerMethodField()
+    
+    def get_avatar(self, obj):
+        """URL аватара"""
+        if hasattr(obj, 'avatar') and obj.avatar:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.avatar.url)
+            return obj.avatar.url
+        return None
+
+
 class CommentSerializer(serializers.ModelSerializer):
     """
     Serializer для комментариев
     """
+    author = CommentAuthorSerializer(read_only=True)
     author_name = serializers.CharField(source='author.username', read_only=True)
     author_full_name = serializers.SerializerMethodField()
     author_avatar = serializers.SerializerMethodField()
+    content_type_display = serializers.SerializerMethodField()
     
     # Поля для создания комментария
     content_type_name = serializers.CharField(write_only=True, required=False)
@@ -30,16 +51,25 @@ class CommentSerializer(serializers.ModelSerializer):
             'content',
             'content_type',
             'content_type_name',
+            'content_type_display',
             'object_id',
             'likes',
             'dislikes',
+            'is_moderated',
+            'is_deleted',
             'is_liked_by_me',
             'is_disliked_by_me',
             'can_delete',
             'created_at',
             'updated_at',
         ]
-        read_only_fields = ['id', 'author', 'likes', 'dislikes', 'created_at', 'updated_at', 'content_type']
+        read_only_fields = ['id', 'likes', 'dislikes', 'created_at', 'updated_at', 'content_type']
+    
+    def get_content_type_display(self, obj):
+        """Название типа контента"""
+        if obj.content_type:
+            return obj.content_type.model
+        return None
     
     def get_author_full_name(self, obj):
         """Полное имя автора"""
@@ -126,7 +156,7 @@ class CommentCreateSerializer(serializers.Serializer):
     
     def validate_content_type(self, value):
         """Валидация типа контента"""
-        allowed_types = ['news', 'innovation', 'grant', 'scholarship', 'competition', 'internship', 'job', 'project', 'research']
+        allowed_types = ['news', 'innovation', 'grant', 'scholarship', 'competition', 'internship', 'job', 'project', 'research', 'technology', 'result']
         value_lower = value.lower()
         if value_lower not in allowed_types:
             raise serializers.ValidationError(f'Недопустимый тип контента. Разрешены: {", ".join(allowed_types)}')

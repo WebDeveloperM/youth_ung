@@ -20,6 +20,7 @@ import {
 	UserCircle,
 	X,
 	CheckCircle,
+	MessageSquare,
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { createPortal } from 'react-dom'
@@ -27,6 +28,7 @@ import { Button } from '../ui/button'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { authAPI } from '@/api/auth'
+import { getOrganisationsList } from '@/api/organisations'
 
 export function Useravatar() {
 	const { t } = useTranslation()
@@ -38,6 +40,7 @@ export function Useravatar() {
 	const [currentUser, setCurrentUser] = useState(null)
 	const [showSuccess, setShowSuccess] = useState(false)
 	const [successMessage, setSuccessMessage] = useState('')
+	const [organisations, setOrganisations] = useState([])
 	const [formData, setFormData] = useState({
 		fullName: '',
 		dateOfBirth: '',
@@ -51,6 +54,23 @@ export function Useravatar() {
 	})
 	const [errors, setErrors] = useState({})
 	const [touched, setTouched] = useState({})
+
+	// Загрузка организаций при монтировании
+	useEffect(() => {
+		const loadOrganisations = async () => {
+			try {
+				console.log('🔄 [UserAvatar] Загрузка организаций...')
+				const data = await getOrganisationsList()
+				console.log('📦 [UserAvatar] Получены организации:', data)
+				const orgList = data.results || data
+				setOrganisations(orgList)
+				console.log('✅ [UserAvatar] Организаций загружено:', orgList.length)
+			} catch (error) {
+				console.error('❌ [UserAvatar] Ошибка загрузки организаций:', error)
+			}
+		}
+		loadOrganisations()
+	}, [])
 
 	// Проверяем авторизацию при загрузке
 	useEffect(() => {
@@ -547,20 +567,29 @@ export function Useravatar() {
 													>
 														{t('placeOfWork')}
 													</Label>
-													<Input
+													<select
 														id='placeOfWork'
 														name='placeOfWork'
-														type='text'
-														placeholder={t('placeOfWork')}
 														value={formData.placeOfWork}
 														onChange={handleChange}
 														onBlur={handleBlur}
-														className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+														className={`mt-2 w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border rounded-md ${
 															errors.placeOfWork && touched.placeOfWork
 																? 'border-red-500 focus:ring-red-500'
 																: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-														} focus:ring-2`}
-													/>
+														} focus:ring-2 focus:outline-none`}
+													>
+														<option value="">{t('selectOrganisation')}</option>
+														{organisations && organisations.length > 0 ? (
+															organisations.map(option => (
+																<option key={option.id} value={option.id}>
+																	{option.name}
+																</option>
+															))
+														) : (
+															<option disabled>Загрузка...</option>
+														)}
+													</select>
 													{errors.placeOfWork && touched.placeOfWork && (
 														<p className='text-red-500 text-sm mt-1'>
 															{errors.placeOfWork}
@@ -797,11 +826,18 @@ export function Useravatar() {
 							<User className='w-[1.2rem] h-[1.2rem] mr-2' />
 							{t('userMenu.profile')}
 						</DropdownMenuItem>
-						<DropdownMenuItem className='cursor-pointer'>
-							<Settings className='w-[1.2rem] h-[1.2rem] mr-2' />
-							{t('userMenu.settings')}
-						</DropdownMenuItem>
-						<DropdownMenuSeparator />
+					<DropdownMenuItem className='cursor-pointer'>
+						<Settings className='w-[1.2rem] h-[1.2rem] mr-2' />
+						{t('userMenu.settings')}
+					</DropdownMenuItem>
+					<DropdownMenuItem 
+						className='cursor-pointer'
+						onClick={() => navigate('/appeals')}
+					>
+						<MessageSquare className='w-[1.2rem] h-[1.2rem] mr-2' />
+						{t('userMenu.appeals')}
+					</DropdownMenuItem>
+					<DropdownMenuSeparator />
 						<DropdownMenuItem 
 							variant='destructive' 
 							className='cursor-pointer text-red-600'

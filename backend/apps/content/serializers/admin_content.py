@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from content.models import (
     Grant, Scholarship, Competition, Innovation,
-    Internship, Job, TeamMember
+    Internship, Job, TeamMember,
+    Technology, Project, Research, Result,
 )
 
 
@@ -59,4 +60,37 @@ class TeamMemberAdminSerializer(serializers.ModelSerializer):
         model = TeamMember
         fields = '__all__'
         read_only_fields = ['id', 'created_at', 'updated_at', 'created_by', 'updated_by']
+
+
+# ТЕХНОЛОГИИ
+class TechnologyAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Technology
+        fields = '__all__'
+        read_only_fields = ['id', 'views', 'likes', 'created_at', 'updated_at', 'created_by', 'updated_by']
+
+
+# ПРОЕКТЫ
+class ProjectAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = '__all__'
+        read_only_fields = ['id', 'views', 'likes', 'created_at', 'updated_at', 'created_by', 'updated_by']
+
+
+# ИССЛЕДОВАНИЯ
+class ResearchAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Research
+        fields = '__all__'
+        read_only_fields = ['id', 'views', 'likes', 'created_at', 'updated_at', 'created_by', 'updated_by']
+
+
+# РЕЗУЛЬТАТЫ
+class ResultAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Result
+        fields = '__all__'
+        read_only_fields = ['id', 'views', 'likes', 'created_at', 'updated_at', 'created_by', 'updated_by']
+
 

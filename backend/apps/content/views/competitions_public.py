@@ -49,3 +49,4 @@ class CompetitionDetailView(generics.RetrieveAPIView):
     permission_classes = [AllowAny]
     lookup_field = 'id'
 
+

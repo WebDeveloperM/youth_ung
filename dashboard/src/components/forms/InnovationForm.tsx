@@ -339,3 +339,4 @@ const InnovationForm = ({ innovation, onClose, onSuccess }: InnovationFormProps)
 
 export default InnovationForm;
 
+

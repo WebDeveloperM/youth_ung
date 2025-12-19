@@ -419,3 +419,4 @@ const CompetitionForm = ({ competition, onClose, onSuccess }: CompetitionFormPro
 
 export default CompetitionForm;
 
+

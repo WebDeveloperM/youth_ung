@@ -9,3 +9,4 @@ urlpatterns = [
     path('<int:pk>/', ScholarshipDetailView.as_view(), name='scholarship-detail'),
 ]
 
+

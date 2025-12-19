@@ -56,6 +56,7 @@ export default function TeamPage() {
 						ru: member.bio_ru,
 						en: member.bio_en,
 					},
+					category: member.category || 'leadership',
 					photo: photoUrl,
 					email: member.email,
 					phone: member.phone,
@@ -70,6 +71,7 @@ export default function TeamPage() {
 			
 			setTeamMembers(transformedMembers)
 			console.log('✅ Jamoa a\'zolari yuklandi:', transformedMembers.length)
+			console.log('📊 Категории членов команды:', transformedMembers.map(m => ({ name: m.name.ru, category: m.category })))
 		} catch (error) {
 			console.error('❌ Ошибка загрузки команды:', error)
 			setTeamMembers([])
@@ -100,9 +102,20 @@ export default function TeamPage() {
 	}
 
 	const getFilteredMembers = () => {
-		// For now, return all members since we don't have department filtering in backend
-		// TODO: Add department field to backend model if needed
-		return teamMembers
+		console.log('🔍 Выбранная категория:', selectedDepartment)
+		console.log('👥 Всего членов:', teamMembers.length)
+		
+		if (selectedDepartment === 'all') {
+			return teamMembers
+		}
+		
+		const filtered = teamMembers.filter(member => {
+			console.log(`Член ${member.name.ru}: category = ${member.category}`)
+			return member.category === selectedDepartment
+		})
+		
+		console.log('✅ Отфильтровано:', filtered.length)
+		return filtered
 	}
 
 	return (

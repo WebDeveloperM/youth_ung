@@ -13,7 +13,7 @@ class TeamMemberListView(generics.ListAPIView):
     serializer_class = TeamMemberPublicSerializer
     permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
-    filterset_fields = ['is_active']
+    filterset_fields = ['is_active', 'category']
     search_fields = ['name_uz', 'name_ru', 'name_en', 'position_uz', 'position_ru', 'position_en']
     ordering_fields = ['order', 'created_at']
     ordering = ['order', 'name_ru']

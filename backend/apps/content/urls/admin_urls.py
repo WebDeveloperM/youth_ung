@@ -10,6 +10,11 @@ from content.views.admin_views import (
     InternshipAdminViewSet,
     JobAdminViewSet,
     TeamMemberAdminViewSet,
+    CommentAdminViewSet,
+    TechnologyAdminViewSet,
+    ProjectAdminViewSet,
+    ResearchAdminViewSet,
+    ResultAdminViewSet,
 )
 from content.views.applications import ApplicationAdminViewSet
 from content.views.articles_admin import ArticleAdminViewSet
@@ -28,6 +33,11 @@ router.register(r'jobs', JobAdminViewSet, basename='admin-jobs')
 router.register(r'team', TeamMemberAdminViewSet, basename='admin-team')
 router.register(r'applications', ApplicationAdminViewSet, basename='admin-applications')
 router.register(r'articles', ArticleAdminViewSet, basename='admin-articles')
+router.register(r'comments', CommentAdminViewSet, basename='admin-comments')
+router.register(r'technologies', TechnologyAdminViewSet, basename='admin-technologies')
+router.register(r'projects', ProjectAdminViewSet, basename='admin-projects')
+router.register(r'research', ResearchAdminViewSet, basename='admin-research')
+router.register(r'results', ResultAdminViewSet, basename='admin-results')
 
 urlpatterns = router.urls
 
