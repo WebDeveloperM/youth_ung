@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import ReactQuill from 'react-quill';
@@ -10,6 +10,18 @@ interface GrantFormProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+
+// ✅ ВЫНЕСЛИ quillModules НАРУЖУ - не пересоздается при каждом рендере
+const quillModules = {
+  toolbar: [
+    [{ header: [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike'],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    [{ color: [] }, { background: [] }],
+    ['link', 'image'],
+    ['clean'],
+  ],
+};
 
 const GrantForm = ({ grant, onClose, onSuccess }: GrantFormProps) => {
   const [loading, setLoading] = useState(false);
@@ -142,16 +154,15 @@ const GrantForm = ({ grant, onClose, onSuccess }: GrantFormProps) => {
     }
   };
 
-  const quillModules = {
-    toolbar: [
-      [{ header: [1, 2, 3, false] }],
-      ['bold', 'italic', 'underline', 'strike'],
-      [{ list: 'ordered' }, { list: 'bullet' }],
-      [{ color: [] }, { background: [] }],
-      ['link', 'image'],
-      ['clean'],
-    ],
-  };
+  // ✅ ИСПОЛЬЗУЕМ useCallback для onChange handlers - не пересоздаются при каждом рендере
+  const handleContentChange = useCallback((field: 'content_uz' | 'content_ru' | 'content_en') => {
+    return (value: string) => {
+      setFormData(prev => ({ ...prev, [field]: value }));
+    };
+  }, []);
+
+  // ✅ Мемоизируем key для editors - меняется ТОЛЬКО при смене grant.id
+  const editorKey = useMemo(() => grant?.id || 'new', [grant?.id]);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -330,36 +341,37 @@ const GrantForm = ({ grant, onClose, onSuccess }: GrantFormProps) => {
               </label>
               
               {/* Отдельный ReactQuill для каждого языка */}
+              {/* ✅ ИСПРАВЛЕНО: Отдельный ReactQuill для каждого языка */}
               <div style={{ display: activeTab === 'uz' ? 'block' : 'none' }}>
                 <ReactQuill
-                  key={`editor-uz-${grant?.id || 'new'}-${formData.content_uz.substring(0, 10)}`}
+                  key={`editor-uz-${editorKey}`}
                   theme="snow"
                   value={formData.content_uz}
-                  onChange={(value) => setFormData(prev => ({ ...prev, content_uz: value }))}
+                  onChange={handleContentChange('content_uz')}
                   modules={quillModules}
                   className="bg-white rounded-lg"
                   style={{ height: '300px', marginBottom: '50px' }}
                 />
               </div>
-              
+
               <div style={{ display: activeTab === 'ru' ? 'block' : 'none' }}>
                 <ReactQuill
-                  key={`editor-ru-${grant?.id || 'new'}-${formData.content_ru.substring(0, 10)}`}
+                  key={`editor-ru-${editorKey}`}
                   theme="snow"
                   value={formData.content_ru}
-                  onChange={(value) => setFormData(prev => ({ ...prev, content_ru: value }))}
+                  onChange={handleContentChange('content_ru')}
                   modules={quillModules}
                   className="bg-white rounded-lg"
                   style={{ height: '300px', marginBottom: '50px' }}
                 />
               </div>
-              
+
               <div style={{ display: activeTab === 'en' ? 'block' : 'none' }}>
                 <ReactQuill
-                  key={`editor-en-${grant?.id || 'new'}-${formData.content_en.substring(0, 10)}`}
+                  key={`editor-en-${editorKey}`}
                   theme="snow"
                   value={formData.content_en}
-                  onChange={(value) => setFormData(prev => ({ ...prev, content_en: value }))}
+                  onChange={handleContentChange('content_en')}
                   modules={quillModules}
                   className="bg-white rounded-lg"
                   style={{ height: '300px', marginBottom: '50px' }}
