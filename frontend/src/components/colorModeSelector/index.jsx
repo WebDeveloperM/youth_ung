@@ -36,7 +36,7 @@ export default function ColorModeToggle() {
 				fontSize: '16px',
 				cursor: 'pointer',
 				backgroundColor: 'transparent',
-				color: 'var(--text-navy-blue)',
+
 				transition: 'all 0.3s ease',
 			}}
 		>

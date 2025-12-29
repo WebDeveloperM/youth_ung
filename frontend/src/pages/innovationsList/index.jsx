@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { getInnovationsList } from '@/api/innovations'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaEye, FaHeart, FaLightbulb } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { getInnovationsList } from '@/api/innovations'
 
 export default function InnovationsList() {
 	const { t, i18n } = useTranslation()
@@ -32,13 +32,25 @@ export default function InnovationsList() {
 	}, [])
 
 	// Функция для получения заголовка на текущем языке
-	const getTitle = (innovation) => {
-		return innovation[`title_${currentLang}`] || innovation.title_ru || innovation.title_uz || innovation.title_en || ''
+	const getTitle = innovation => {
+		return (
+			innovation[`title_${currentLang}`] ||
+			innovation.title_ru ||
+			innovation.title_uz ||
+			innovation.title_en ||
+			''
+		)
 	}
 
 	// Функция для получения контента на текущем языке
-	const getContent = (innovation) => {
-		return innovation[`content_${currentLang}`] || innovation.content_ru || innovation.content_uz || innovation.content_en || ''
+	const getContent = innovation => {
+		return (
+			innovation[`content_${currentLang}`] ||
+			innovation.content_ru ||
+			innovation.content_uz ||
+			innovation.content_en ||
+			''
+		)
 	}
 
 	// Сортировка по дате (новые сначала)
@@ -102,7 +114,7 @@ export default function InnovationsList() {
 									className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
 								/>
 								<div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent group-hover:from-blue-600/40 transition-all duration-500' />
-								
+
 								{/* Category Badge */}
 								<div className='absolute top-4 left-4 bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase'>
 									{t(`innovations.categories.${innovation.category}`)}
@@ -166,7 +178,7 @@ export default function InnovationsList() {
 						{t('innovations.cta.description')}
 					</p>
 					<Link
-						to='/login'
+						to='/about'
 						className='inline-block px-8 py-3 bg-white text-blue-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg'
 					>
 						{t('innovations.cta.button')} →
@@ -176,4 +188,3 @@ export default function InnovationsList() {
 		</section>
 	)
 }
-

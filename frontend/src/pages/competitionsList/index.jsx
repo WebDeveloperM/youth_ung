@@ -1,17 +1,17 @@
-import { useState, useEffect } from 'react'
+import { getCompetitionsList } from '@/api/competitions'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
 	FaCalendarAlt,
+	FaCheckCircle,
 	FaClock,
+	FaHourglassHalf,
+	FaTimesCircle,
 	FaTrophy,
 	FaUsers,
-	FaCheckCircle,
-	FaHourglassHalf,
-	FaTimesCircle
 } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { getCompetitionsList } from '@/api/competitions'
 
 export default function CompetitionsList() {
 	const { t, i18n } = useTranslation()
@@ -40,13 +40,25 @@ export default function CompetitionsList() {
 	}, [])
 
 	// Функция для получения заголовка на текущем языке
-	const getTitle = (competition) => {
-		return competition[`title_${currentLang}`] || competition.title_ru || competition.title_uz || competition.title_en || ''
+	const getTitle = competition => {
+		return (
+			competition[`title_${currentLang}`] ||
+			competition.title_ru ||
+			competition.title_uz ||
+			competition.title_en ||
+			''
+		)
 	}
 
 	// Функция для получения краткого описания на текущем языке
-	const getShortDescription = (competition) => {
-		return competition[`short_description_${currentLang}`] || competition.short_description_ru || competition.short_description_uz || competition.short_description_en || ''
+	const getShortDescription = competition => {
+		return (
+			competition[`short_description_${currentLang}`] ||
+			competition.short_description_ru ||
+			competition.short_description_uz ||
+			competition.short_description_en ||
+			''
+		)
 	}
 
 	// Сортировка: активные, предстоящие, завершенные
@@ -78,9 +90,11 @@ export default function CompetitionsList() {
 
 	const getStatusBadge = status => {
 		const badges = {
-			active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-			upcoming: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-			closed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200'
+			active:
+				'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+			upcoming:
+				'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+			closed: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
 		}
 		return badges[status] || ''
 	}
@@ -205,7 +219,7 @@ export default function CompetitionsList() {
 											className='w-full h-full object-cover transition-transform duration-500 group-hover:scale-110'
 										/>
 										<div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent' />
-										
+
 										{/* Status Badge */}
 										<div className='absolute top-4 left-4'>
 											<span
@@ -264,7 +278,8 @@ export default function CompetitionsList() {
 														<span className='font-semibold block text-gray-800 dark:text-gray-200'>
 															{t('competitions.participants')}
 														</span>
-														{competition.participants} {t('competitions.people')}
+														{competition.participants}{' '}
+														{t('competitions.people')}
 													</div>
 												</div>
 
@@ -317,7 +332,7 @@ export default function CompetitionsList() {
 						{t('competitions.cta.description')}
 					</p>
 					<Link
-						to='/login'
+						to='/about'
 						className='inline-block px-6 md:px-8 py-3 md:py-4 bg-white text-purple-600 font-semibold rounded-full hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg text-sm sm:text-base'
 					>
 						{t('competitions.cta.button')} →
@@ -327,4 +342,3 @@ export default function CompetitionsList() {
 		</div>
 	)
 }
-

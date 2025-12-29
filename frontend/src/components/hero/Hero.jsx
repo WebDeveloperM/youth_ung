@@ -1,4 +1,4 @@
-import logo from '@/assets/logo.png'
+import logo from '/white.png'
 // eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion'
 import CountUp from 'react-countup'

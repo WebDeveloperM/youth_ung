@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
+import { getNewsList } from '@/api/news'
 import { motion } from 'framer-motion'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { FaEye } from 'react-icons/fa'
 import { Link } from 'react-router-dom'
-import { useTranslation } from 'react-i18next'
-import { getNewsList } from '@/api/news'
 
 export default function NewsListMainpage() {
 	const { t, i18n } = useTranslation()
@@ -27,16 +27,21 @@ export default function NewsListMainpage() {
 	}
 
 	// Получаем заголовок и контент в зависимости от языка
-	const getTitle = (news) => {
+	const getTitle = news => {
 		// Нормализуем язык (берем первые 2 символа: 'uz-UZ' -> 'uz')
 		const lang = i18n.language.split('-')[0].toLowerCase()
 		return news[`title_${lang}`] || news.title_ru || news.title_en || ''
 	}
 
-	const getContent = (news) => {
+	const getContent = news => {
 		// Нормализуем язык (берем первые 2 символа: 'uz-UZ' -> 'uz')
 		const lang = i18n.language.split('-')[0].toLowerCase()
-		return news[`content_${lang}`] || news.content_ru || news.content_en || '<p>Контент отсутствует</p>'
+		return (
+			news[`content_${lang}`] ||
+			news.content_ru ||
+			news.content_en ||
+			'<p>Контент отсутствует</p>'
+		)
 	}
 
 	if (loading) {
@@ -60,7 +65,10 @@ export default function NewsListMainpage() {
 			aria-labelledby='news-title'
 		>
 			<div className='max-w-6xl mx-auto mb-12 text-center'>
-				<h2 id='news-title' className='text-3xl md:text-4xl font-extrabold'>
+				<h2
+					id='news-title'
+					className='text-3xl md:text-4xl text-[var(--navy-blue)] font-extrabold'
+				>
 					{t('news.latestNews')}
 				</h2>
 			</div>
@@ -69,7 +77,7 @@ export default function NewsListMainpage() {
 				{latestNews.map((news, index) => {
 					const title = getTitle(news)
 					const content = getContent(news)
-					
+
 					return (
 						<motion.article
 							key={news.id}

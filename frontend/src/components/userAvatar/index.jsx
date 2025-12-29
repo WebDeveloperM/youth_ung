@@ -10,25 +10,25 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 // eslint-disable-next-line no-unused-vars
+import { authAPI } from '@/api/auth'
+import { getOrganisationsList } from '@/api/organisations'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
+	CheckCircle,
 	Eye,
 	EyeOff,
 	LogOut,
+	MessageSquare,
 	Settings,
 	User,
 	UserCircle,
 	X,
-	CheckCircle,
-	MessageSquare,
 } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { Button } from '../ui/button'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
-import { authAPI } from '@/api/auth'
-import { getOrganisationsList } from '@/api/organisations'
+import { Button } from '../ui/button'
 
 export function Useravatar() {
 	const { t } = useTranslation()
@@ -80,7 +80,7 @@ export function Useravatar() {
 			if (localUser) {
 				console.log('📦 Пользователь из localStorage:', localUser)
 				setCurrentUser(localUser)
-				
+
 				// Затем загружаем актуальные данные с сервера
 				const profileResult = await authAPI.getProfile()
 				if (profileResult.success) {
@@ -165,7 +165,7 @@ export function Useravatar() {
 
 	const handleSubmit = async e => {
 		e.preventDefault()
-		
+
 		if (!validateForm()) {
 			return
 		}
@@ -176,13 +176,13 @@ export function Useravatar() {
 
 		try {
 			let result
-			
+
 			if (isLogin) {
 				// ВХОД
 				console.log('🔑 Отправляем запрос на вход...')
 				result = await authAPI.signIn({
 					login: formData.email,
-					password: formData.password
+					password: formData.password,
 				})
 			} else {
 				// РЕГИСТРАЦИЯ
@@ -196,7 +196,7 @@ export function Useravatar() {
 					position: formData.position,
 					login: formData.email,
 					password: formData.password,
-					confirmPassword: formData.confirmPassword
+					confirmPassword: formData.confirmPassword,
 				})
 			}
 
@@ -204,12 +204,15 @@ export function Useravatar() {
 
 			if (result.success) {
 				console.log('✅ УСПЕХ!', result.data)
-				
+
 				// Загружаем актуальные данные профиля с сервера
 				const profileResult = await authAPI.getProfile()
 				if (profileResult.success) {
 					console.log('✅ Профиль обновлен:', profileResult.data)
-					console.log('🖼️ Avatar URL после входа:', profileResult.data.avatar_url)
+					console.log(
+						'🖼️ Avatar URL после входа:',
+						profileResult.data.avatar_url
+					)
 					setCurrentUser(profileResult.data)
 					// Обновляем localStorage актуальными данными
 					localStorage.setItem('user', JSON.stringify(profileResult.data))
@@ -217,15 +220,17 @@ export function Useravatar() {
 					// Если не удалось загрузить профиль, используем данные из результата входа
 					setCurrentUser(result.data)
 				}
-				
+
 				// Показываем сообщение об успехе
-				const message = result.data.message || (isLogin ? 'Вход выполнен успешно!' : 'Регистрация прошла успешно!')
+				const message =
+					result.data.message ||
+					(isLogin ? 'Вход выполнен успешно!' : 'Регистрация прошла успешно!')
 				setSuccessMessage(message)
 				setShowSuccess(true)
-				
+
 				// Закрываем модальное окно
 				setIsOpen(false)
-				
+
 				// Очищаем форму
 				setFormData({
 					fullName: '',
@@ -240,14 +245,14 @@ export function Useravatar() {
 				})
 				setErrors({})
 				setTouched({})
-				
+
 				// Скрываем уведомление через 5 секунд
 				setTimeout(() => {
 					setShowSuccess(false)
 				}, 5000)
 			} else {
 				console.error('❌ Ошибка:', result.error)
-				
+
 				// Показываем ошибку
 				if (typeof result.error === 'string') {
 					alert('Ошибка: ' + result.error)
@@ -289,27 +294,28 @@ export function Useravatar() {
 	return (
 		<>
 			{/* УВЕДОМЛЕНИЕ ОБ УСПЕХЕ */}
-			{showSuccess && createPortal(
-				<motion.div
-					initial={{ opacity: 0, y: -50 }}
-					animate={{ opacity: 1, y: 0 }}
-					exit={{ opacity: 0, y: -50 }}
-					className='fixed top-4 right-4 z-[10000] bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 max-w-md'
-				>
-					<CheckCircle size={24} className='flex-shrink-0' />
-					<div className='flex-1'>
-						<p className='font-semibold text-lg'>{t('success')}</p>
-						<p className='text-sm'>{successMessage}</p>
-					</div>
-					<button 
-						onClick={() => setShowSuccess(false)}
-						className='text-white hover:text-gray-200 transition'
+			{showSuccess &&
+				createPortal(
+					<motion.div
+						initial={{ opacity: 0, y: -50 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -50 }}
+						className='fixed top-4 right-4 z-[10000] bg-green-500 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 max-w-md'
 					>
-						<X size={20} />
-					</button>
-				</motion.div>,
-				document.body
-			)}
+						<CheckCircle size={24} className='flex-shrink-0' />
+						<div className='flex-1'>
+							<p className='font-semibold text-lg'>{t('success')}</p>
+							<p className='text-sm'>{successMessage}</p>
+						</div>
+						<button
+							onClick={() => setShowSuccess(false)}
+							className='text-white hover:text-gray-200 transition'
+						>
+							<X size={20} />
+						</button>
+					</motion.div>,
+					document.body
+				)}
 
 			{/* Если НЕ авторизован - показываем кнопку "Войти" */}
 			{!currentUser && (
@@ -344,422 +350,432 @@ export function Useravatar() {
 										isLogin ? 'w-full md:w-[420px]' : 'w-full md:w-[680px]'
 									}`}
 								>
-							<Button
-								variant='ghost'
-								onClick={() => setIsOpen(false)}
-								className='absolute top-4 right-4 z-10 cursor-pointer text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition'
-							>
-								<X size={28} />
-							</Button>
-
-							<h2 className='text-2xl font-semibold text-center mb-2 text-gray-900 dark:text-white'>
-								{isLogin ? t('login') : t('register')}
-							</h2>
-							<p className='text-center text-gray-500 dark:text-gray-400 mb-6'>
-								{isLogin ? t('signInToContinue') : t('createAccount')}
-							</p>
-
-							<form onSubmit={handleSubmit} className='space-y-4'>
-								<AnimatePresence mode='wait'>
-									{isLogin ? (
-										<motion.div
-											key='login-form'
-											initial={{ opacity: 0, scale: 0.95 }}
-											animate={{ opacity: 1, scale: 1 }}
-											exit={{ opacity: 0, scale: 0.95 }}
-											transition={{ duration: 0.3 }}
-											className='space-y-4'
-										>
-											<div>
-												<Label
-													htmlFor='email'
-													className='text-sm font-medium text-gray-700 dark:text-gray-300'
-												>
-													{t('userMenu.email')}
-												</Label>
-												<Input
-													id='email'
-													name='email'
-													type='email'
-													placeholder={t('userMenu.email')}
-													value={formData.email}
-													onChange={handleChange}
-													onBlur={handleBlur}
-													className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-														errors.email && touched.email
-															? 'border-red-500 focus:ring-red-500'
-															: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-													} focus:ring-2`}
-												/>
-												{errors.email && touched.email && (
-													<p className='text-red-500 text-sm mt-1'>
-														{errors.email}
-													</p>
-												)}
-											</div>
-
-											<div className='relative'>
-												<Label
-													htmlFor='password'
-													className='text-sm font-medium text-gray-700 dark:text-gray-300'
-												>
-													{t('password')}
-												</Label>
-												<Input
-													id='password'
-													name='password'
-													type={showPassword ? 'text' : 'password'}
-													placeholder={t('password')}
-													value={formData.password}
-													onChange={handleChange}
-													onBlur={handleBlur}
-													className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-														errors.password && touched.password
-															? 'border-red-500 focus:ring-red-500'
-															: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-													} pr-10 focus:ring-2`}
-												/>
-												<button
-													type='button'
-													onClick={() => setShowPassword(!showPassword)}
-													className='absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-												>
-													{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-												</button>
-												{errors.password && touched.password && (
-													<p className='text-red-500 text-sm mt-1'>
-														{errors.password}
-													</p>
-												)}
-											</div>
-										</motion.div>
-									) : (
-										<motion.div
-											key='register-form'
-											initial={{ opacity: 0, scale: 0.95 }}
-											animate={{ opacity: 1, scale: 1 }}
-											exit={{ opacity: 0, scale: 0.95 }}
-											transition={{ duration: 0.3 }}
-											className='space-y-4'
-										>
-											{/* Full Name */}
-											<div>
-												<Label
-													htmlFor='fullName'
-													className='text-sm font-medium text-gray-700 dark:text-gray-300'
-												>
-													{t('fullName')}
-												</Label>
-												<Input
-													id='fullName'
-													name='fullName'
-													type='text'
-													placeholder={t('fullName')}
-													value={formData.fullName}
-													onChange={handleChange}
-													onBlur={handleBlur}
-													className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-														errors.fullName && touched.fullName
-															? 'border-red-500 focus:ring-red-500'
-															: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-													} focus:ring-2`}
-												/>
-												{errors.fullName && touched.fullName && (
-													<p className='text-red-500 text-sm mt-1'>
-														{errors.fullName}
-													</p>
-												)}
-											</div>
-
-											{/* Date of Birth & Phone Number */}
-											<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-												<div>
-													<Label
-														htmlFor='dateOfBirth'
-														className='text-sm font-medium text-gray-700 dark:text-gray-300'
-													>
-														{t('dateOfBirth')}
-													</Label>
-													<Input
-														id='dateOfBirth'
-														name='dateOfBirth'
-														type='date'
-														value={formData.dateOfBirth}
-														onChange={handleChange}
-														onBlur={handleBlur}
-														className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-															errors.dateOfBirth && touched.dateOfBirth
-																? 'border-red-500 focus:ring-red-500'
-																: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-														} focus:ring-2`}
-													/>
-													{errors.dateOfBirth && touched.dateOfBirth && (
-														<p className='text-red-500 text-sm mt-1'>
-															{errors.dateOfBirth}
-														</p>
-													)}
-												</div>
-
-												<div>
-													<Label
-														htmlFor='phoneNumber'
-														className='text-sm font-medium text-gray-700 dark:text-gray-300'
-													>
-														{t('phoneNumber')}
-													</Label>
-													<Input
-														id='phoneNumber'
-														name='phoneNumber'
-														type='tel'
-														placeholder='+998 XX XXX XX XX'
-														value={formData.phoneNumber}
-														onChange={handleChange}
-														onBlur={handleBlur}
-														className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-															errors.phoneNumber && touched.phoneNumber
-																? 'border-red-500 focus:ring-red-500'
-																: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-														} focus:ring-2`}
-													/>
-													{errors.phoneNumber && touched.phoneNumber && (
-														<p className='text-red-500 text-sm mt-1'>
-															{errors.phoneNumber}
-														</p>
-													)}
-												</div>
-											</div>
-
-											{/* Residential Address */}
-											<div>
-												<Label
-													htmlFor='residentialAddress'
-													className='text-sm font-medium text-gray-700 dark:text-gray-300'
-												>
-													{t('residentialAddress')}
-												</Label>
-												<Input
-													id='residentialAddress'
-													name='residentialAddress'
-													type='text'
-													placeholder={t('residentialAddress')}
-													value={formData.residentialAddress}
-													onChange={handleChange}
-													onBlur={handleBlur}
-													className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-														errors.residentialAddress && touched.residentialAddress
-															? 'border-red-500 focus:ring-red-500'
-															: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-													} focus:ring-2`}
-												/>
-												{errors.residentialAddress && touched.residentialAddress && (
-													<p className='text-red-500 text-sm mt-1'>
-														{errors.residentialAddress}
-													</p>
-												)}
-											</div>
-
-											{/* Place of Work & Position */}
-											<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-												<div>
-													<Label
-														htmlFor='placeOfWork'
-														className='text-sm font-medium text-gray-700 dark:text-gray-300'
-													>
-														{t('placeOfWork')}
-													</Label>
-													<select
-														id='placeOfWork'
-														name='placeOfWork'
-														value={formData.placeOfWork}
-														onChange={handleChange}
-														onBlur={handleBlur}
-														className={`mt-2 w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border rounded-md ${
-															errors.placeOfWork && touched.placeOfWork
-																? 'border-red-500 focus:ring-red-500'
-																: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-														} focus:ring-2 focus:outline-none`}
-													>
-														<option value="">{t('selectOrganisation')}</option>
-														{organisations && organisations.length > 0 ? (
-															organisations.map(option => (
-																<option key={option.id} value={option.id}>
-																	{option.name}
-																</option>
-															))
-														) : (
-															<option disabled>Загрузка...</option>
-														)}
-													</select>
-													{errors.placeOfWork && touched.placeOfWork && (
-														<p className='text-red-500 text-sm mt-1'>
-															{errors.placeOfWork}
-														</p>
-													)}
-												</div>
-
-												<div>
-													<Label
-														htmlFor='position'
-														className='text-sm font-medium text-gray-700 dark:text-gray-300'
-													>
-														{t('position')}
-													</Label>
-													<Input
-														id='position'
-														name='position'
-														type='text'
-														placeholder={t('position')}
-														value={formData.position}
-														onChange={handleChange}
-														onBlur={handleBlur}
-														className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-															errors.position && touched.position
-																? 'border-red-500 focus:ring-red-500'
-																: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-														} focus:ring-2`}
-													/>
-													{errors.position && touched.position && (
-														<p className='text-red-500 text-sm mt-1'>
-															{errors.position}
-														</p>
-													)}
-												</div>
-											</div>
-
-											{/* Email */}
-											<div>
-												<Label
-													htmlFor='email'
-													className='text-sm font-medium text-gray-700 dark:text-gray-300'
-												>
-													{t('userMenu.email')}
-												</Label>
-												<Input
-													id='email'
-													name='email'
-													type='email'
-													placeholder={t('userMenu.email')}
-													value={formData.email}
-													onChange={handleChange}
-													onBlur={handleBlur}
-													className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-														errors.email && touched.email
-															? 'border-red-500 focus:ring-red-500'
-															: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-													} focus:ring-2`}
-												/>
-												{errors.email && touched.email && (
-													<p className='text-red-500 text-sm mt-1'>
-														{errors.email}
-													</p>
-												)}
-											</div>
-
-											{/* Password & Confirm Password */}
-											<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-												<div className='relative'>
-													<Label
-														htmlFor='password'
-														className='text-sm font-medium text-gray-700 dark:text-gray-300'
-													>
-														{t('password')}
-													</Label>
-													<Input
-														id='password'
-														name='password'
-														type={showPassword ? 'text' : 'password'}
-														placeholder={t('password')}
-														value={formData.password}
-														onChange={handleChange}
-														onBlur={handleBlur}
-														className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-															errors.password && touched.password
-																? 'border-red-500 focus:ring-red-500'
-																: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-														} pr-10 focus:ring-2`}
-													/>
-													<button
-														type='button'
-														onClick={() => setShowPassword(!showPassword)}
-														className='absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-													>
-														{showPassword ? (
-															<EyeOff size={18} />
-														) : (
-															<Eye size={18} />
-														)}
-													</button>
-													{errors.password && touched.password && (
-														<p className='text-red-500 text-sm mt-1'>
-															{errors.password}
-														</p>
-													)}
-												</div>
-
-												<div className='relative'>
-													<Label
-														htmlFor='confirmPassword'
-														className='text-sm font-medium text-gray-700 dark:text-gray-300'
-													>
-														{t('confirmPassword')}
-													</Label>
-													<Input
-														id='confirmPassword'
-														name='confirmPassword'
-														type={showConfirmPassword ? 'text' : 'password'}
-														placeholder={t('confirmPassword')}
-														value={formData.confirmPassword}
-														onChange={handleChange}
-														onBlur={handleBlur}
-														className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
-															errors.confirmPassword && touched.confirmPassword
-																? 'border-red-500 focus:ring-red-500'
-																: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
-														} pr-10 focus:ring-2`}
-													/>
-													<button
-														type='button'
-														onClick={() =>
-															setShowConfirmPassword(!showConfirmPassword)
-														}
-														className='absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
-													>
-														{showConfirmPassword ? (
-															<EyeOff size={18} />
-														) : (
-															<Eye size={18} />
-														)}
-													</button>
-													{errors.confirmPassword && touched.confirmPassword && (
-														<p className='text-red-500 text-sm mt-1'>
-															{errors.confirmPassword}
-														</p>
-													)}
-												</div>
-											</div>
-										</motion.div>
-									)}
-								</AnimatePresence>
-
-								<Button
-									type='submit'
-									className='w-full text-md text-white font-semibold hover:scale-[1.02] transition-transform'
-								>
-									{isLogin ? t('login') : t('register')}
-								</Button>
-
-								{/* Switch Mode Button */}
-								<div className='text-center text-sm text-gray-600 dark:text-gray-400'>
-									{isLogin ? t('switchToRegister') : t('switchToLogin')}{' '}
-									<button
-										type='button'
-										onClick={switchMode}
-										className='text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold'
+									<Button
+										variant='ghost'
+										onClick={() => setIsOpen(false)}
+										className='absolute top-4 right-4 z-10 cursor-pointer text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition'
 									>
-										{isLogin ? t('register') : t('login')}
-									</button>
-								</div>
-							</form>
+										<X size={28} />
+									</Button>
+
+									<h2 className='text-2xl font-semibold text-center mb-2 text-gray-900 dark:text-white'>
+										{isLogin ? t('login') : t('register')}
+									</h2>
+									<p className='text-center text-gray-500 dark:text-gray-400 mb-6'>
+										{isLogin ? t('signInToContinue') : t('createAccount')}
+									</p>
+
+									<form onSubmit={handleSubmit} className='space-y-4'>
+										<AnimatePresence mode='wait'>
+											{isLogin ? (
+												<motion.div
+													key='login-form'
+													initial={{ opacity: 0, scale: 0.95 }}
+													animate={{ opacity: 1, scale: 1 }}
+													exit={{ opacity: 0, scale: 0.95 }}
+													transition={{ duration: 0.3 }}
+													className='space-y-4'
+												>
+													<div>
+														<Label
+															htmlFor='email'
+															className='text-sm font-medium text-gray-700 dark:text-gray-300'
+														>
+															{t('userMenu.email')}
+														</Label>
+														<Input
+															id='email'
+															name='email'
+															type='email'
+															placeholder={t('userMenu.email')}
+															value={formData.email}
+															onChange={handleChange}
+															onBlur={handleBlur}
+															className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																errors.email && touched.email
+																	? 'border-red-500 focus:ring-red-500'
+																	: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+															} focus:ring-2`}
+														/>
+														{errors.email && touched.email && (
+															<p className='text-red-500 text-sm mt-1'>
+																{errors.email}
+															</p>
+														)}
+													</div>
+
+													<div className='relative'>
+														<Label
+															htmlFor='password'
+															className='text-sm font-medium text-gray-700 dark:text-gray-300'
+														>
+															{t('password')}
+														</Label>
+														<Input
+															id='password'
+															name='password'
+															type={showPassword ? 'text' : 'password'}
+															placeholder={t('password')}
+															value={formData.password}
+															onChange={handleChange}
+															onBlur={handleBlur}
+															className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																errors.password && touched.password
+																	? 'border-red-500 focus:ring-red-500'
+																	: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+															} pr-10 focus:ring-2`}
+														/>
+														<button
+															type='button'
+															onClick={() => setShowPassword(!showPassword)}
+															className='absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+														>
+															{showPassword ? (
+																<EyeOff size={18} />
+															) : (
+																<Eye size={18} />
+															)}
+														</button>
+														{errors.password && touched.password && (
+															<p className='text-red-500 text-sm mt-1'>
+																{errors.password}
+															</p>
+														)}
+													</div>
+												</motion.div>
+											) : (
+												<motion.div
+													key='register-form'
+													initial={{ opacity: 0, scale: 0.95 }}
+													animate={{ opacity: 1, scale: 1 }}
+													exit={{ opacity: 0, scale: 0.95 }}
+													transition={{ duration: 0.3 }}
+													className='space-y-4'
+												>
+													{/* Full Name */}
+													<div>
+														<Label
+															htmlFor='fullName'
+															className='text-sm font-medium text-gray-700 dark:text-gray-300'
+														>
+															{t('fullName')}
+														</Label>
+														<Input
+															id='fullName'
+															name='fullName'
+															type='text'
+															placeholder={t('fullName')}
+															value={formData.fullName}
+															onChange={handleChange}
+															onBlur={handleBlur}
+															className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																errors.fullName && touched.fullName
+																	? 'border-red-500 focus:ring-red-500'
+																	: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+															} focus:ring-2`}
+														/>
+														{errors.fullName && touched.fullName && (
+															<p className='text-red-500 text-sm mt-1'>
+																{errors.fullName}
+															</p>
+														)}
+													</div>
+
+													{/* Date of Birth & Phone Number */}
+													<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+														<div>
+															<Label
+																htmlFor='dateOfBirth'
+																className='text-sm font-medium text-gray-700 dark:text-gray-300'
+															>
+																{t('dateOfBirth')}
+															</Label>
+															<Input
+																id='dateOfBirth'
+																name='dateOfBirth'
+																type='date'
+																value={formData.dateOfBirth}
+																onChange={handleChange}
+																onBlur={handleBlur}
+																className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																	errors.dateOfBirth && touched.dateOfBirth
+																		? 'border-red-500 focus:ring-red-500'
+																		: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+																} focus:ring-2`}
+															/>
+															{errors.dateOfBirth && touched.dateOfBirth && (
+																<p className='text-red-500 text-sm mt-1'>
+																	{errors.dateOfBirth}
+																</p>
+															)}
+														</div>
+
+														<div>
+															<Label
+																htmlFor='phoneNumber'
+																className='text-sm font-medium text-gray-700 dark:text-gray-300'
+															>
+																{t('phoneNumber')}
+															</Label>
+															<Input
+																id='phoneNumber'
+																name='phoneNumber'
+																type='tel'
+																placeholder='+998 XX XXX XX XX'
+																value={formData.phoneNumber}
+																onChange={handleChange}
+																onBlur={handleBlur}
+																className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																	errors.phoneNumber && touched.phoneNumber
+																		? 'border-red-500 focus:ring-red-500'
+																		: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+																} focus:ring-2`}
+															/>
+															{errors.phoneNumber && touched.phoneNumber && (
+																<p className='text-red-500 text-sm mt-1'>
+																	{errors.phoneNumber}
+																</p>
+															)}
+														</div>
+													</div>
+
+													{/* Residential Address */}
+													<div>
+														<Label
+															htmlFor='residentialAddress'
+															className='text-sm font-medium text-gray-700 dark:text-gray-300'
+														>
+															{t('residentialAddress')}
+														</Label>
+														<Input
+															id='residentialAddress'
+															name='residentialAddress'
+															type='text'
+															placeholder={t('residentialAddress')}
+															value={formData.residentialAddress}
+															onChange={handleChange}
+															onBlur={handleBlur}
+															className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																errors.residentialAddress &&
+																touched.residentialAddress
+																	? 'border-red-500 focus:ring-red-500'
+																	: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+															} focus:ring-2`}
+														/>
+														{errors.residentialAddress &&
+															touched.residentialAddress && (
+																<p className='text-red-500 text-sm mt-1'>
+																	{errors.residentialAddress}
+																</p>
+															)}
+													</div>
+
+													{/* Place of Work & Position */}
+													<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+														<div>
+															<Label
+																htmlFor='placeOfWork'
+																className='text-sm font-medium text-gray-700 dark:text-gray-300'
+															>
+																{t('placeOfWork')}
+															</Label>
+															<select
+																id='placeOfWork'
+																name='placeOfWork'
+																value={formData.placeOfWork}
+																onChange={handleChange}
+																onBlur={handleBlur}
+																className={`mt-2 w-full px-3 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border rounded-md ${
+																	errors.placeOfWork && touched.placeOfWork
+																		? 'border-red-500 focus:ring-red-500'
+																		: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+																} focus:ring-2 focus:outline-none`}
+															>
+																<option value=''>
+																	{t('selectOrganisation')}
+																</option>
+																{organisations && organisations.length > 0 ? (
+																	organisations.map(option => (
+																		<option key={option.id} value={option.id}>
+																			{option.name}
+																		</option>
+																	))
+																) : (
+																	<option disabled>Загрузка...</option>
+																)}
+															</select>
+															{errors.placeOfWork && touched.placeOfWork && (
+																<p className='text-red-500 text-sm mt-1'>
+																	{errors.placeOfWork}
+																</p>
+															)}
+														</div>
+
+														<div>
+															<Label
+																htmlFor='position'
+																className='text-sm font-medium text-gray-700 dark:text-gray-300'
+															>
+																{t('position')}
+															</Label>
+															<Input
+																id='position'
+																name='position'
+																type='text'
+																placeholder={t('position')}
+																value={formData.position}
+																onChange={handleChange}
+																onBlur={handleBlur}
+																className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																	errors.position && touched.position
+																		? 'border-red-500 focus:ring-red-500'
+																		: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+																} focus:ring-2`}
+															/>
+															{errors.position && touched.position && (
+																<p className='text-red-500 text-sm mt-1'>
+																	{errors.position}
+																</p>
+															)}
+														</div>
+													</div>
+
+													{/* Email */}
+													<div>
+														<Label
+															htmlFor='email'
+															className='text-sm font-medium text-gray-700 dark:text-gray-300'
+														>
+															{t('userMenu.email')}
+														</Label>
+														<Input
+															id='email'
+															name='email'
+															type='email'
+															placeholder={t('userMenu.email')}
+															value={formData.email}
+															onChange={handleChange}
+															onBlur={handleBlur}
+															className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																errors.email && touched.email
+																	? 'border-red-500 focus:ring-red-500'
+																	: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+															} focus:ring-2`}
+														/>
+														{errors.email && touched.email && (
+															<p className='text-red-500 text-sm mt-1'>
+																{errors.email}
+															</p>
+														)}
+													</div>
+
+													{/* Password & Confirm Password */}
+													<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+														<div className='relative'>
+															<Label
+																htmlFor='password'
+																className='text-sm font-medium text-gray-700 dark:text-gray-300'
+															>
+																{t('password')}
+															</Label>
+															<Input
+																id='password'
+																name='password'
+																type={showPassword ? 'text' : 'password'}
+																placeholder={t('password')}
+																value={formData.password}
+																onChange={handleChange}
+																onBlur={handleBlur}
+																className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																	errors.password && touched.password
+																		? 'border-red-500 focus:ring-red-500'
+																		: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+																} pr-10 focus:ring-2`}
+															/>
+															<button
+																type='button'
+																onClick={() => setShowPassword(!showPassword)}
+																className='absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+															>
+																{showPassword ? (
+																	<EyeOff size={18} />
+																) : (
+																	<Eye size={18} />
+																)}
+															</button>
+															{errors.password && touched.password && (
+																<p className='text-red-500 text-sm mt-1'>
+																	{errors.password}
+																</p>
+															)}
+														</div>
+
+														<div className='relative'>
+															<Label
+																htmlFor='confirmPassword'
+																className='text-sm font-medium text-gray-700 dark:text-gray-300'
+															>
+																{t('confirmPassword')}
+															</Label>
+															<Input
+																id='confirmPassword'
+																name='confirmPassword'
+																type={showConfirmPassword ? 'text' : 'password'}
+																placeholder={t('confirmPassword')}
+																value={formData.confirmPassword}
+																onChange={handleChange}
+																onBlur={handleBlur}
+																className={`mt-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 border ${
+																	errors.confirmPassword &&
+																	touched.confirmPassword
+																		? 'border-red-500 focus:ring-red-500'
+																		: 'border-gray-300 dark:border-gray-600 focus:ring-blue-500'
+																} pr-10 focus:ring-2`}
+															/>
+															<button
+																type='button'
+																onClick={() =>
+																	setShowConfirmPassword(!showConfirmPassword)
+																}
+																className='absolute right-3 top-9 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+															>
+																{showConfirmPassword ? (
+																	<EyeOff size={18} />
+																) : (
+																	<Eye size={18} />
+																)}
+															</button>
+															{errors.confirmPassword &&
+																touched.confirmPassword && (
+																	<p className='text-red-500 text-sm mt-1'>
+																		{errors.confirmPassword}
+																	</p>
+																)}
+														</div>
+													</div>
+												</motion.div>
+											)}
+										</AnimatePresence>
+
+										<Button
+											type='submit'
+											className='w-full text-md text-white font-semibold hover:scale-[1.02] transition-transform'
+										>
+											{isLogin ? t('login') : t('register')}
+										</Button>
+
+										{/* Switch Mode Button */}
+										<div className='text-center text-sm text-gray-600 dark:text-gray-400'>
+											{isLogin ? t('switchToRegister') : t('switchToLogin')}{' '}
+											<button
+												type='button'
+												onClick={switchMode}
+												className='text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-semibold'
+											>
+												{isLogin ? t('register') : t('login')}
+											</button>
+										</div>
+									</form>
 								</motion.div>
 							</div>
 						</motion.div>
@@ -776,13 +792,15 @@ export function Useravatar() {
 								// Получаем URL аватара
 								const avatarUrl = currentUser.avatar_url || currentUser.avatar
 								console.log('🖼️ Отображение аватара:', avatarUrl)
-								
+
 								return avatarUrl ? (
-									<img 
+									<img
 										src={avatarUrl}
-										alt={`${currentUser.first_name || ''} ${currentUser.last_name || ''}`}
+										alt={`${currentUser.first_name || ''} ${
+											currentUser.last_name || ''
+										}`}
 										className='w-full h-full object-cover'
-										onError={(e) => {
+										onError={e => {
 											console.error('❌ Ошибка загрузки аватара:', avatarUrl)
 											e.target.style.display = 'none'
 											e.target.parentElement.innerHTML = `
@@ -796,50 +814,52 @@ export function Useravatar() {
 										}}
 									/>
 								) : (
-									<div className='w-full h-full bg-gradient-to-br from-primary/30 to-primary/60 flex items-center justify-center'>
-										<UserCircle className='w-9 h-9 text-white' />
+									<div className='w-full h-full bg-transparent flex items-center justify-center'>
+										<UserCircle className='w-9 h-9 text-muted-foreground' />
 									</div>
 								)
 							})()}
 						</Avatar>
 						<div className='hidden md:block text-left'>
-							<p className='text-sm font-semibold text-white'>
+							<p className='text-sm font-semibold'>
 								{currentUser.first_name} {currentUser.last_name}
 							</p>
-							<p className='text-xs text-gray-300'>
-								{currentUser.email}
-							</p>
+							<p className='text-xs'>{currentUser.email}</p>
 						</div>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
 						<DropdownMenuLabel>
 							<div>
-								<p className='font-semibold'>{currentUser.first_name} {currentUser.last_name}</p>
-								<p className='text-xs text-gray-500 font-normal'>{currentUser.email}</p>
+								<p className='font-semibold'>
+									{currentUser.first_name} {currentUser.last_name}
+								</p>
+								<p className='text-xs text-gray-500 font-normal'>
+									{currentUser.email}
+								</p>
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem 
+						<DropdownMenuItem
 							className='cursor-pointer'
 							onClick={() => navigate('/profile')}
 						>
 							<User className='w-[1.2rem] h-[1.2rem] mr-2' />
 							{t('userMenu.profile')}
 						</DropdownMenuItem>
-					<DropdownMenuItem className='cursor-pointer'>
-						<Settings className='w-[1.2rem] h-[1.2rem] mr-2' />
-						{t('userMenu.settings')}
-					</DropdownMenuItem>
-					<DropdownMenuItem 
-						className='cursor-pointer'
-						onClick={() => navigate('/appeals')}
-					>
-						<MessageSquare className='w-[1.2rem] h-[1.2rem] mr-2' />
-						{t('userMenu.appeals')}
-					</DropdownMenuItem>
-					<DropdownMenuSeparator />
-						<DropdownMenuItem 
-							variant='destructive' 
+						<DropdownMenuItem className='cursor-pointer'>
+							<Settings className='w-[1.2rem] h-[1.2rem] mr-2' />
+							{t('userMenu.settings')}
+						</DropdownMenuItem>
+						<DropdownMenuItem
+							className='cursor-pointer'
+							onClick={() => navigate('/appeals')}
+						>
+							<MessageSquare className='w-[1.2rem] h-[1.2rem] mr-2' />
+							{t('userMenu.appeals')}
+						</DropdownMenuItem>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem
+							variant='destructive'
 							className='cursor-pointer text-red-600'
 							onClick={handleLogout}
 						>
