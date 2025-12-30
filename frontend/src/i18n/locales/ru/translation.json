@@ -24,6 +24,12 @@
 	"success": "Успешно!",
 	"useful_resources": "Полезные ресурсы",
 
+	"brand": {
+		"part1": "UNG",
+		"part2": "Молодежь",
+		"subtitle": "Единый портал"
+	},
+
 	"menu": {
 		"about": "О нас",
 		"news": "Новости",

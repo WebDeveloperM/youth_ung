@@ -7,19 +7,8 @@ export default {
 		extend: {
 			fontFamily: {
 				Ubuntu: ['Ubuntu', 'sans-serif'],
-				sans: [
-					'-apple-system',
-					'BlinkMacSystemFont',
-					'Segoe UI',
-					'Roboto',
-					'Oxygen',
-					'Ubuntu',
-					'Cantarell',
-					'Fira Sans',
-					'Droid Sans',
-					'Helvetica Neue',
-					'sans-serif',
-				],
+				sans: ['Inter', 'sans-serif'],
+				montserrat: ['"Montserrat"', 'sans-serif'],
 			},
 			colors: {
 				primary: {

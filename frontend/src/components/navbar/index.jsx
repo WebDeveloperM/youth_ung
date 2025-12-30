@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button'
 import {
 	NavigationMenu,
 	NavigationMenuContent,
@@ -6,26 +7,13 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu'
-// eslint-disable-next-line no-unused-vars
-import { AnimatePresence, motion } from 'framer-motion'
-
-import { Link } from 'react-router-dom'
-
 import {
 	Sheet,
 	SheetContent,
-	SheetTitle,
+	SheetFooter,
+	SheetHeader,
 	SheetTrigger,
 } from '@/components/ui/sheet'
-
-import { Button } from '@/components/ui/button'
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { MdElectricBolt } from 'react-icons/md'
-import ColorModeToggle from '../colorModeSelector'
-import { LanguageSelector } from '../langSelector'
-import { Useravatar } from '../userAvatar'
-//Menu data
 import {
 	BarChart,
 	Briefcase,
@@ -34,6 +22,7 @@ import {
 	FileText,
 	Globe,
 	GraduationCap,
+	Info,
 	Lightbulb,
 	MenuIcon,
 	Microscope,
@@ -41,43 +30,49 @@ import {
 	Settings,
 	Trophy,
 	Users,
+	X,
 } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
+import ColorModeToggle from '../colorModeSelector'
+import { LanguageSelector } from '../langSelector'
+import { Useravatar } from '../userAvatar'
 
 export default function Navbar() {
 	const { t } = useTranslation()
 	const [isScrolled, setIsScrolled] = useState(false)
+	const [isOpen, setIsOpen] = useState(false)
+
+	const navHeight = 64
 
 	useEffect(() => {
 		const handleScroll = () => {
 			setIsScrolled(window.scrollY > 20)
 		}
-
 		window.addEventListener('scroll', handleScroll)
 		return () => window.removeEventListener('scroll', handleScroll)
 	}, [])
 
 	const menuItems = [
-		{
-			title: t('menu.about'),
-			url: '/about',
-		},
+		{ title: t('menu.about'), url: '/about', icon: <Info size={18} /> },
 		{
 			title: t('menu.news'),
 			subMenu: [
 				{
 					title: t('menu.sub.latestNews'),
 					url: '/news',
-					icon: <Globe size={24} />,
+					icon: <Globe size={18} />,
 				},
 				{
 					title: t('menu.sub.technologies'),
 					url: '/technologies',
-					icon: <Settings size={24} />,
+					icon: <Settings size={18} />,
 				},
 				{
 					title: t('menu.sub.innovations'),
 					url: '/innovations',
-					icon: <Lightbulb size={24} />,
+					icon: <Lightbulb size={18} />,
 				},
 			],
 		},
@@ -87,17 +82,17 @@ export default function Navbar() {
 				{
 					title: t('menu.sub.newProjects'),
 					url: '/projects',
-					icon: <Rocket size={24} />,
+					icon: <Rocket size={18} />,
 				},
 				{
 					title: t('menu.sub.research'),
 					url: '/research',
-					icon: <Microscope size={24} />,
+					icon: <Microscope size={18} />,
 				},
 				{
 					title: t('menu.sub.results'),
 					url: '/results',
-					icon: <BarChart size={24} />,
+					icon: <BarChart size={18} />,
 				},
 			],
 		},
@@ -107,14 +102,14 @@ export default function Navbar() {
 				{
 					title: t('menu.sub.jobs'),
 					url: '/jobs',
-					icon: <Briefcase size={24} />,
+					icon: <Briefcase size={18} />,
 				},
 				{
 					title: t('menu.sub.internship'),
 					url: '/internships',
-					icon: <GraduationCap size={24} />,
+					icon: <GraduationCap size={18} />,
 				},
-				{ title: t('menu.sub.team'), url: '/team', icon: <Users size={24} /> },
+				{ title: t('menu.sub.team'), url: '/team', icon: <Users size={18} /> },
 			],
 		},
 		{
@@ -123,70 +118,81 @@ export default function Navbar() {
 				{
 					title: t('menu.sub.scholarships'),
 					url: '/scholarships',
-					icon: <Coins size={24} />,
+					icon: <Coins size={18} />,
 				},
 				{
 					title: t('menu.sub.grants'),
 					url: '/grants',
-					icon: <Crosshair size={24} />,
+					icon: <Crosshair size={18} />,
 				},
 				{
 					title: t('menu.sub.competitions'),
 					url: '/competitions',
-					icon: <Trophy size={24} />,
+					icon: <Trophy size={18} />,
 				},
 			],
 		},
 		{
 			title: t('articles.title'),
 			url: '/articles',
-			icon: <FileText size={24} />,
+			icon: <FileText size={18} />,
 		},
 	]
 
 	return (
 		<nav
-			className={`sticky top-0 left-0 right-0 bg-[var(--card)] backdrop-blur-md z-[100] px-6 md:px-16 py-4 flex justify-between items-center text-[var(--navy-blue)] transition-all duration-300 ${
-				isScrolled
-					? 'shadow-[0_4px_20px_rgba(0,0,0,0.3)] border-b border-gray-700/50'
-					: 'shadow-[0_2px_8px_rgba(0,0,0,0.15)]'
+			className={`sticky top-0 left-0 right-0 border-b shadow-sm z-[100] px-6 md:px-16 py-3 flex justify-between items-center transition-all duration-300 ${
+				isScrolled || isOpen
+					? 'bg-background border-b shadow-sm'
+					: 'bg-background md:bg-transparent'
 			}`}
 		>
 			{/* LOGO */}
-			<Link to='/' className='flex items-center gap-2'>
-				<img src='/Logo1.png' alt='ung-youth_logo' className='h-16' />
-				<span className='font-bold text-xl text-[var(--navy-blue)]'>
-					UNG Yoshlari
-				</span>
+			<Link
+				to='/'
+				className='flex items-center gap-2 shrink-0 relative z-[110]'
+			>
+				<img
+					src='/Logo1.png'
+					alt='logo'
+					className='h-10 md:h-12 w-auto object-contain'
+				/>
+				<div className='flex flex-col leading-none'>
+					<span className='font-bold font-[montserrat] text-lg md:text-xl'>
+						<span className='text-primary'>{t('brand.part1')}</span>
+						<span className='text-foreground ml-1 font-medium'>
+							{t('brand.part2')}
+						</span>
+					</span>
+					<span className='text-[10px] uppercase text-muted-foreground font-semibold tracking-[0.2em]'>
+						{t('brand.subtitle', 'Portal')}
+					</span>
+				</div>
 			</Link>
 
 			{/* DESKTOP MENU */}
-			<div className='hidden md:flex items-center gap-6 py-1'>
+			<div className='hidden lg:flex items-center gap-2'>
 				<NavigationMenu viewport={false}>
-					<NavigationMenuList className='flex gap-4'>
+					<NavigationMenuList>
 						{menuItems.map(item => (
 							<NavigationMenuItem key={item.title}>
 								{item.subMenu ? (
 									<>
-										<NavigationMenuTrigger className='bg-transparent gap-1 pr-2 text-base font-medium hover:text-primary transition-colors'>
+										<NavigationMenuTrigger className='bg-transparent text-sm font-medium hover:text-primary transition-colors'>
 											{item.title}
 										</NavigationMenuTrigger>
 										<NavigationMenuContent>
-											<ul className='p-4 space-y-2 min-w-[220px]'>
+											<ul className='p-3 w-[240px] grid gap-1'>
 												{item.subMenu.map(sub => (
 													<li key={sub.title}>
 														<Link
 															to={sub.url}
-															className='flex items-center gap-3 p-3 rounded-md hover:bg-accent font-medium text-sm transition-colors'
+															className='flex items-center gap-3 p-2 rounded-md hover:bg-accent text-sm font-medium transition-colors'
 														>
-															{sub.icon && (
-																<span className='text-muted-foreground shrink-0'>
-																	{sub.icon}
-																</span>
-															)}
-															<span className='whitespace-nowrap'>
-																{sub.title}
+															<span className='text-muted-foreground'>
+																{sub.icon}
 															</span>
+															{sub.title}
 														</Link>
 													</li>
 												))}
@@ -197,7 +203,7 @@ export default function Navbar() {
 									<NavigationMenuLink asChild>
 										<Link
 											to={item.url}
-											className='px-3 py-2 text-base font-medium hover:text-primary transition-colors'
+											className='px-4 py-2 text-sm font-medium hover:text-primary transition-colors'
 										>
 											{item.title}
 										</Link>
@@ -208,87 +214,86 @@ export default function Navbar() {
 					</NavigationMenuList>
 				</NavigationMenu>
 			</div>
-			{/* RIGHT SIDE BUTTONS */}
-			<div className='gap-2 hidden md:flex items-center'>
+
+			{/* RIGHT SIDE (Desktop) */}
+			<div className='hidden md:flex items-center gap-3'>
 				<ColorModeToggle />
 				<LanguageSelector />
+				<div className='h-6 w-px bg-border mx-1' />
 				<Useravatar />
 			</div>
-			{/* MOBILE MENU */}
-			<div className='md:hidden '>
-				<Sheet>
+
+			{/* MOBILE MENU SECTION */}
+			<div className='md:hidden flex items-center gap-2 relative z-[110]'>
+				<Sheet open={isOpen} onOpenChange={setIsOpen}>
 					<SheetTrigger asChild>
-						<Button variant='ghost' size='icon'>
-							<MenuIcon />
+						<Button
+							variant='ghost'
+							size='icon'
+							className='text-foreground focus-visible:ring-0'
+						>
+							{isOpen ? <X size={24} /> : <MenuIcon size={24} />}
 						</Button>
 					</SheetTrigger>
 
 					<SheetContent
 						side='right'
-						aria-describedby={undefined}
-						className='p-0 flex flex-col h-full overflow-hidden transform transition-transform duration-300 ease-in-out data-[state=open]:translate-x-0 data-[state=closed]:translate-x-full'
+						className={`
+              [&>button]:hidden p-0 border-t bg-card shadow-2xl flex flex-col
+              top-[${navHeight}px] h-[calc(100vh-${navHeight}px)]
+            `}
 					>
-						<AnimatePresence mode='wait'>
-							<motion.div
-								key='mobileMenu'
-								initial={{ opacity: 0, x: 100 }}
-								animate={{ opacity: 1, x: 0 }}
-								exit={{ opacity: 0, x: 100 }}
-								transition={{ duration: 0.3, ease: 'easeInOut' }}
-								className='flex flex-col h-full'
-							>
-								{/* HEADER (fixed top) */}
-								<div className='flex bg-[var(--navy-blue)] text-white justify-start flex-col px-6 py-4 border-b'>
-									<div className='flex items-center gap-2'>
-										<MdElectricBolt className='text-primary' size={22} />
-										<SheetTitle className='text-lg text-white font-semibold'>
-											UNG Yoshlari
-										</SheetTitle>
-									</div>
-									<div className='flex justify-end items-center'>
-										<ColorModeToggle />
-										<LanguageSelector />
-									</div>
-								</div>
+						<SheetHeader>
+							{/* Mobile Nav Header */}
+							<div className='px-6 py-4 border-b flex items-center justify-center bg-muted/20'>
+								<ColorModeToggle />
+								<LanguageSelector />
+							</div>
+						</SheetHeader>
 
-								{/* SCROLLABLE MENU */}
-								<div className='flex-1 overflow-y-auto px-6 py-6 space-y-4'>
-									{menuItems.map(item =>
-										item.subMenu ? (
-											<div key={item.title}>
-												<p className='font-semibold mb-2'>{item.title}</p>
-												<ul className='ml-4 space-y-2'>
-													{item.subMenu.map(sub => (
-														<li key={sub.title}>
-															<Link
-																to={sub.url}
-																className='flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors'
-															>
-																{sub.icon}
-																{sub.title}
-															</Link>
-														</li>
-													))}
-												</ul>
-											</div>
-										) : (
-											<Link
-												key={item.title}
-												to={item.url}
-												className='block text-base hover:text-primary transition-colors'
-											>
+						{/* Scrollable Links */}
+						<div className='flex-1 overflow-y-auto px-6 py-8'>
+							<div className='flex flex-col gap-8'>
+								{menuItems.map(item =>
+									item.subMenu ? (
+										<div key={item.title} className='space-y-4'>
+											<h4 className='text-[11px] font-bold text-muted-foreground uppercase tracking-[0.2em] px-1'>
 												{item.title}
-											</Link>
-										)
-									)}
-								</div>
-
-								{/* FOOTER (fixed bottom) */}
-								<div className='px-6 py-4 border-t flex flex-col gap-3 relative overflow-visible'>
-									<Useravatar />
-								</div>
-							</motion.div>
-						</AnimatePresence>
+											</h4>
+											<div className='grid gap-3 ml-1 border-l-2 border-primary/10 pl-5'>
+												{item.subMenu.map(sub => (
+													<Link
+														key={sub.title}
+														to={sub.url}
+														onClick={() => setIsOpen(false)}
+														className='flex items-center gap-4 text-sm font-medium py-1 hover:text-primary transition-colors text-foreground'
+													>
+														<span className='text-primary/60'>{sub.icon}</span>
+														{sub.title}
+													</Link>
+												))}
+											</div>
+										</div>
+									) : (
+										<Link
+											key={item.title}
+											to={item.url}
+											onClick={() => setIsOpen(false)}
+											className='flex gap-4 text-sm font-semibold px-1 hover:text-primary transition-colors text-foreground'
+										>
+											<span className='text-primary/60'>{item.icon}</span>
+											{item.title}
+										</Link>
+									)
+								)}
+							</div>
+						</div>
+						<SheetFooter>
+							{/* User Section at the bottom */}
+							<div className='flex justify-center p-4 border-t bg-muted/20 shrink-0'>
+								<Useravatar />
+							</div>
+						</SheetFooter>
 					</SheetContent>
 				</Sheet>
 			</div>

@@ -24,6 +24,12 @@
 	"success": "Success!",
 	"useful_resources": "Useful resources",
 
+	"brand": {
+		"part1": "UNG",
+		"part2": "Youth",
+		"subtitle": "Unified Portal"
+	},
+
 	"menu": {
 		"about": "About Us",
 		"news": "News",

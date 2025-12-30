@@ -24,6 +24,12 @@
 	"success": "Muvaffaqiyatli!",
 	"useful_resources": "Foydali manbalar",
 
+	"brand": {
+		"part1": "UNG",
+		"part2": "Yoshlari",
+		"subtitle": "Yagona portali"
+	},
+
 	"menu": {
 		"about": "Biz haqimizda",
 		"news": "Yangiliklar",

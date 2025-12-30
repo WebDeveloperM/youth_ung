@@ -21,7 +21,7 @@ import {
 	MessageSquare,
 	Settings,
 	User,
-	UserCircle,
+	UserCircle2,
 	X,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -72,22 +72,17 @@ export function Useravatar() {
 		loadOrganisations()
 	}, [])
 
-	// Проверяем авторизацию при загрузке
 	useEffect(() => {
 		const loadUser = async () => {
-			// Сначала проверяем localStorage
 			const localUser = authAPI.getCurrentUser()
 			if (localUser) {
 				console.log('📦 Пользователь из localStorage:', localUser)
 				setCurrentUser(localUser)
-
-				// Затем загружаем актуальные данные с сервера
 				const profileResult = await authAPI.getProfile()
 				if (profileResult.success) {
 					console.log('✅ Профиль загружен с сервера:', profileResult.data)
 					console.log('🖼️ Avatar URL:', profileResult.data.avatar_url)
 					setCurrentUser(profileResult.data)
-					// Обновляем localStorage
 					localStorage.setItem('user', JSON.stringify(profileResult.data))
 				}
 			}
@@ -814,13 +809,13 @@ export function Useravatar() {
 										}}
 									/>
 								) : (
-									<div className='w-full h-full bg-transparent flex items-center justify-center'>
-										<UserCircle className='w-9 h-9 text-muted-foreground' />
+									<div className='w-full h-full font-extralight bg-transparent flex items-center justify-center'>
+										<UserCircle2 className='w-9 h-9 font-extralight text-muted-foreground' />
 									</div>
 								)
 							})()}
 						</Avatar>
-						<div className='hidden md:block text-left'>
+						<div className='block text-left'>
 							<p className='text-sm font-semibold'>
 								{currentUser.first_name} {currentUser.last_name}
 							</p>
