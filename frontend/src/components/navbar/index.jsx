@@ -238,9 +238,12 @@ export default function Navbar() {
 
 					<SheetContent
 						side='right'
+						style={{
+							top: `${navHeight}px`,
+							height: `calc(100vh - ${navHeight}px)`,
+						}}
 						className={`
               [&>button]:hidden p-0 border-t bg-card shadow-2xl flex flex-col
-              top-[${navHeight}px] h-[calc(100vh-${navHeight}px)]
             `}
 					>
 						<SheetHeader>
