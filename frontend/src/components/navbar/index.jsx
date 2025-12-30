@@ -141,10 +141,10 @@ export default function Navbar() {
 
 	return (
 		<nav
-			className={`sticky top-0 left-0 right-0 border-b shadow-sm z-[100] px-6 md:px-16 py-3 flex justify-between items-center transition-all duration-300 ${
+			className={`top-0 left-0 right-0 border-b z-[100] px-6 md:px-16 py-3 flex justify-between items-center transition-all duration-300 backdrop-blur-md ${
 				isScrolled || isOpen
-					? 'bg-background border-b shadow-sm'
-					: 'bg-background md:bg-transparent'
+					? 'fixed bg-background/80 shadow-md border-b animate-in fade-in slide-in-from-top-2'
+					: 'absolute bg-background/80 border-transparent'
 			}`}
 		>
 			{/* LOGO */}
@@ -169,9 +169,8 @@ export default function Navbar() {
 					</span>
 				</div>
 			</Link>
-
 			{/* DESKTOP MENU */}
-			<div className='hidden lg:flex items-center gap-2'>
+			<div className='hidden xl:flex items-center gap-2'>
 				<NavigationMenu viewport={false}>
 					<NavigationMenuList>
 						{menuItems.map(item => (
@@ -214,23 +213,21 @@ export default function Navbar() {
 					</NavigationMenuList>
 				</NavigationMenu>
 			</div>
-
 			{/* RIGHT SIDE (Desktop) */}
-			<div className='hidden md:flex items-center gap-3'>
+			<div className='hidden xl:flex items-center gap-3'>
 				<ColorModeToggle />
 				<LanguageSelector />
 				<div className='h-6 w-px bg-border mx-1' />
 				<Useravatar />
 			</div>
-
 			{/* MOBILE MENU SECTION */}
-			<div className='md:hidden flex items-center gap-2 relative z-[110]'>
+			<div className='xl:hidden flex items-center gap-2 relative z-[110] '>
 				<Sheet open={isOpen} onOpenChange={setIsOpen}>
 					<SheetTrigger asChild>
 						<Button
 							variant='ghost'
 							size='icon'
-							className='text-foreground focus-visible:ring-0'
+							className='text-foreground focus-visible:ring-0 '
 						>
 							{isOpen ? <X size={24} /> : <MenuIcon size={24} />}
 						</Button>
@@ -243,7 +240,7 @@ export default function Navbar() {
 							height: `calc(100vh - ${navHeight}px)`,
 						}}
 						className={`
-              [&>button]:hidden p-0 border-t bg-card shadow-2xl flex flex-col
+              [&>button]:hidden p-0 border-t bg-card shadow-2xl flex flex-col bg-background/80
             `}
 					>
 						<SheetHeader>
