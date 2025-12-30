@@ -5,7 +5,7 @@ import NewsListMainpage from '@/components/newsListMainpage'
 export function HomePage() {
 	return (
 		<div className='relative'>
-			<div className='absolute top-0 left-0 w-full h-[90vh] -z-10 overflow-hidden'>
+			<div className='absolute  w-full h-[90vh] -z-10 overflow-hidden'>
 				<img
 					src='/youth_background.jpeg'
 					className='w-full h-full object-cover '
