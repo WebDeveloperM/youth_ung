@@ -140,7 +140,7 @@ export function EnergyCarousel() {
 	)
 
 	return (
-		<div className='container mx-auto bg-card py-12 relative px-8 md:px-12 group'>
+		<div className='container mx-auto py-12 relative px-8 md:px-12 group'>
 			<div className='flex items-center justify-between mb-8 max-w-[1400px] mx-auto'>
 				<h2 className='text-2xl font-bold text-muted-foreground italic'>
 					{t('useful_resources')}
