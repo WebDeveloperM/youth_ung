@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
-import { FaThumbsDown, FaThumbsUp, FaTrash } from 'react-icons/fa'
-import { useTranslation } from 'react-i18next'
-import { commentsAPI } from '@/api/comments'
 import { authAPI } from '@/api/auth'
+import { commentsAPI } from '@/api/comments'
+import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { FaThumbsDown, FaThumbsUp, FaTrash } from 'react-icons/fa'
 
 const Comments = ({ contentType, objectId }) => {
 	const { t } = useTranslation()
@@ -10,7 +10,7 @@ const Comments = ({ contentType, objectId }) => {
 	const [newComment, setNewComment] = useState('')
 	const [loading, setLoading] = useState(true)
 	const [submitting, setSubmitting] = useState(false)
-	const [currentUser, setCurrentUser] = useState(null)
+	const [, setCurrentUser] = useState(null)
 
 	// Загрузка комментариев при монтировании
 	useEffect(() => {
@@ -41,14 +41,21 @@ const Comments = ({ contentType, objectId }) => {
 		}
 
 		setSubmitting(true)
-		const result = await commentsAPI.createComment(contentType, objectId, newComment.trim())
-		
+		const result = await commentsAPI.createComment(
+			contentType,
+			objectId,
+			newComment.trim()
+		)
+
 		if (result.success) {
 			// Добавляем новый комментарий в список
 			setComments(prev => [result.data.comment, ...prev])
 			setNewComment('')
 		} else {
-			const errorMessage = result.error?.content?.[0] || result.error?.message || 'Ошибка при добавлении комментария'
+			const errorMessage =
+				result.error?.content?.[0] ||
+				result.error?.message ||
+				'Ошибка при добавлении комментария'
 			alert(errorMessage)
 		}
 		setSubmitting(false)
@@ -60,23 +67,25 @@ const Comments = ({ contentType, objectId }) => {
 			return
 		}
 
-		const result = isLikedByMe 
+		const result = isLikedByMe
 			? await commentsAPI.unlikeComment(commentId)
 			: await commentsAPI.likeComment(commentId)
-		
+
 		if (result.success) {
 			// Обновляем комментарий в списке
-			setComments(prev => prev.map(c => 
-				c.id === commentId 
-					? { 
-						...c, 
-						likes: result.data.likes,
-						dislikes: result.data.dislikes,
-						is_liked_by_me: !isLikedByMe,
-						is_disliked_by_me: false
-					}
-					: c
-			))
+			setComments(prev =>
+				prev.map(c =>
+					c.id === commentId
+						? {
+								...c,
+								likes: result.data.likes,
+								dislikes: result.data.dislikes,
+								is_liked_by_me: !isLikedByMe,
+								is_disliked_by_me: false,
+						  }
+						: c
+				)
+			)
 		}
 	}
 
@@ -86,28 +95,35 @@ const Comments = ({ contentType, objectId }) => {
 			return
 		}
 
-		const result = isDislikedByMe 
+		const result = isDislikedByMe
 			? await commentsAPI.undislikeComment(commentId)
 			: await commentsAPI.dislikeComment(commentId)
-		
+
 		if (result.success) {
 			// Обновляем комментарий в списке
-			setComments(prev => prev.map(c => 
-				c.id === commentId 
-					? { 
-						...c, 
-						likes: result.data.likes,
-						dislikes: result.data.dislikes,
-						is_liked_by_me: false,
-						is_disliked_by_me: !isDislikedByMe
-					}
-					: c
-			))
+			setComments(prev =>
+				prev.map(c =>
+					c.id === commentId
+						? {
+								...c,
+								likes: result.data.likes,
+								dislikes: result.data.dislikes,
+								is_liked_by_me: false,
+								is_disliked_by_me: !isDislikedByMe,
+						  }
+						: c
+				)
+			)
 		}
 	}
 
-	const handleDelete = async (commentId) => {
-		if (!confirm(t('comments.confirmDelete') || 'Вы уверены что хотите удалить комментарий?')) {
+	const handleDelete = async commentId => {
+		if (
+			!confirm(
+				t('comments.confirmDelete') ||
+					'Вы уверены что хотите удалить комментарий?'
+			)
+		) {
 			return
 		}
 
@@ -137,7 +153,9 @@ const Comments = ({ contentType, objectId }) => {
 				<h3 className='text-xl font-semibold mb-4 text-[#0098C7]'>
 					{t('comments.title')}
 				</h3>
-				<p className='text-gray-500 text-sm'>{t('comments.loading') || 'Загрузка комментариев...'}</p>
+				<p className='text-gray-500 text-sm'>
+					{t('comments.loading') || 'Загрузка комментариев...'}
+				</p>
 			</div>
 		)
 	}
@@ -163,13 +181,16 @@ const Comments = ({ contentType, objectId }) => {
 					disabled={submitting || !authAPI.isAuthenticated()}
 					className='bg-[#0098C7] text-white px-4 py-2 rounded-lg hover:bg-[#0078a1] disabled:bg-gray-400 disabled:cursor-not-allowed'
 				>
-					{submitting ? t('comments.submitting') || 'Отправка...' : t('comments.submit')}
+					{submitting
+						? t('comments.submitting') || 'Отправка...'
+						: t('comments.submit')}
 				</button>
 			</div>
 
 			{!authAPI.isAuthenticated() && (
 				<p className='text-sm text-gray-500 mb-4'>
-					{t('comments.loginToComment') || 'Войдите, чтобы оставить комментарий'}
+					{t('comments.loginToComment') ||
+						'Войдите, чтобы оставить комментарий'}
 				</p>
 			)}
 
@@ -186,8 +207,8 @@ const Comments = ({ contentType, objectId }) => {
 							<div className='flex justify-between items-start'>
 								<div className='flex items-center gap-2'>
 									{c.author_avatar && (
-										<img 
-											src={c.author_avatar} 
+										<img
+											src={c.author_avatar}
 											alt={c.author_full_name}
 											className='w-8 h-8 rounded-full object-cover'
 										/>
@@ -196,7 +217,9 @@ const Comments = ({ contentType, objectId }) => {
 										<h4 className='font-semibold text-sm text-gray-800 dark:text-gray-200'>
 											{c.author_full_name || c.author_name}
 										</h4>
-										<p className='text-xs text-gray-400'>{formatDate(c.created_at)}</p>
+										<p className='text-xs text-gray-400'>
+											{formatDate(c.created_at)}
+										</p>
 									</div>
 								</div>
 								{c.can_delete && (
@@ -217,8 +240,8 @@ const Comments = ({ contentType, objectId }) => {
 									onClick={() => handleLike(c.id, c.is_liked_by_me)}
 									disabled={!authAPI.isAuthenticated()}
 									className={`flex items-center gap-1 cursor-pointer transition ${
-										c.is_liked_by_me 
-											? 'text-[#0098C7] font-bold' 
+										c.is_liked_by_me
+											? 'text-[#0098C7] font-bold'
 											: 'hover:text-[#0098C7]'
 									} disabled:cursor-not-allowed disabled:opacity-50`}
 								>
@@ -228,8 +251,8 @@ const Comments = ({ contentType, objectId }) => {
 									onClick={() => handleDislike(c.id, c.is_disliked_by_me)}
 									disabled={!authAPI.isAuthenticated()}
 									className={`flex items-center gap-1 cursor-pointer transition ${
-										c.is_disliked_by_me 
-											? 'text-red-500 font-bold' 
+										c.is_disliked_by_me
+											? 'text-red-500 font-bold'
 											: 'hover:text-red-500'
 									} disabled:cursor-not-allowed disabled:opacity-50`}
 								>

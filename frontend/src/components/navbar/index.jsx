@@ -12,6 +12,7 @@ import {
 	SheetContent,
 	SheetFooter,
 	SheetHeader,
+	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet'
 import {
@@ -240,6 +241,7 @@ export default function Navbar() {
             `}
 					>
 						<SheetHeader>
+							<SheetTitle></SheetTitle>
 							{/* Mobile Nav Header */}
 							<div className='px-6 py-4 border-b flex items-center justify-center bg-muted/20'>
 								<ColorModeToggle />
