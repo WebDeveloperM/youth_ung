@@ -141,9 +141,9 @@ export default function Navbar() {
 
 	return (
 		<nav
-			className={`top-0 left-0 right-0 border-b z-[100] px-6 md:px-16 py-3 flex justify-between items-center transition-all duration-300 backdrop-blur-md ${
+			className={` sticky top-0 left-0 right-0 border-b z-[100] px-6 md:px-16 py-3 flex justify-between items-center transition-all duration-300 backdrop-blur-md ${
 				isScrolled || isOpen
-					? 'sticky bg-background/80 shadow-md border-b animate-in fade-in slide-in-from-top-2'
+					? 'bg-background/80 shadow-md border-b animate-in fade-in slide-in-from-top-2'
 					: ' bg-background/80 border-transparent'
 			}`}
 		>
