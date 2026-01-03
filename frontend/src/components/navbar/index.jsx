@@ -41,7 +41,7 @@ import { Useravatar } from '../userAvatar'
 
 export default function Navbar() {
 	const { t } = useTranslation()
-	const [isScrolled, setIsScrolled] = useState(false)
+	const [setIsScrolled] = useState(false)
 	const [isOpen, setIsOpen] = useState(false)
 
 	const navHeight = 64
