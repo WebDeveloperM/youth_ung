@@ -10,7 +10,7 @@
 #     permission_classes = (AllowAny,)
 #
 #     def post(self, request):
-#         serializer = CheckInSerializer(data=request.data)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
+#         serializers = CheckInSerializer(data=request.data)
+#         serializers.is_valid(raise_exception=True)
+#         user = serializers.validated_data['user']
 #         return Response(check_in_response(user))

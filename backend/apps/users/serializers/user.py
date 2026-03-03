@@ -1,5 +1,4 @@
 from rest_framework import serializers
-
 from users.models import User
 
 
@@ -143,9 +142,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
             return obj.organization.name
         return None
 
-
-class UserAvatarSerializer(serializers.ModelSerializer):
-    avatar = serializers.ImageField()
 
     class Meta:
         model = User

@@ -6,6 +6,8 @@ from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
 from django.utils.decorators import method_decorator
 from users.serializers.sign_up import SignUpSerializer
+from users.serializers.sign_in import SignInSerializer
+
 
 
 # Rate limiting decorator для защиты от спама регистраций

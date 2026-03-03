@@ -1,4 +1,6 @@
+from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import AllowAny
+from users.serializers.sign_in import SignInSerializer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -18,6 +20,7 @@ class SignInView(APIView):
     Rate Limiting: 5 попыток в минуту с одного IP
     """
     permission_classes = (AllowAny,)
+    serializer_class = SignInSerializer
 
     @swagger_auto_schema(request_body=SignInSerializer)
     def post(self, request):

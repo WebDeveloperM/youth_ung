@@ -31,6 +31,7 @@ urlpatterns = [
     # path('bot/', include(('bot.urls', 'bot'))),
     path('api/v1/', include([
         path('core/', include(('core.urls', 'core'), namespace='core')),
+        path('organisation/', include(('organisation.urls', 'organisation'), namespace='organisation')),
         path('users/', include(('users.urls', 'user'), namespace='users')),
         path('comments/', include('content.urls.comments')),
         path('news/', include('content.urls.news')),  # Публичный API новостей для frontend
