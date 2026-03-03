@@ -29,7 +29,7 @@ venv.bak/
 backend/env
 backend/venv
 .claude
-.cursor*
+.cursorrules
 # Security - Sensitive Files
 *.pem
 *.key
