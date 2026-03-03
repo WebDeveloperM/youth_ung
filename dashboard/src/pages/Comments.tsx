@@ -267,7 +267,7 @@ const Comments = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 bg-linear-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center text-white font-semibold">
                         {(comment.author?.first_name?.[0] || '?').toUpperCase()}{(comment.author?.last_name?.[0] || '?').toUpperCase()}
                       </div>
                       <div className="ml-3">

@@ -36,25 +36,13 @@ const Layout = () => {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const location = useLocation();
 
-  // Загружаем текущего пользователя при монтировании
   useEffect(() => {
     const loadUser = async () => {
       try {
-        console.log('🔄 ЗАГРУЖАЕМ ПОЛЬЗОВАТЕЛЯ...');
         const user = await authAPI.getMe();
-        console.log('👤 ==========================================');
-        console.log('👤 ПОЛНЫЙ ОБЪЕКТ ПОЛЬЗОВАТЕЛЯ:', user);
-        console.log('👤 ==========================================');
-        console.log('🆔 ID:', user.id);
-        console.log('📧 Email:', user.email);
-        console.log('👔 Role:', user.role);
-        console.log('🛡️ is_superuser:', user.is_superuser);
-        console.log('🔑 allowed_menus:', user.allowed_menus);
-        console.log('📊 allowed_menus length:', user.allowed_menus?.length);
-        console.log('👤 ==========================================');
         setCurrentUser(user);
       } catch (error) {
-        console.error('❌ ОШИБКА ЗАГРУЗКИ ПОЛЬЗОВАТЕЛЯ:', error);
+        console.error('Failed to load user:', error);
       }
     };
 
@@ -86,47 +74,17 @@ const Layout = () => {
     { name: 'Administratorlar', href: '/administrators', icon: Shield, key: 'admins' },
   ];
 
-  // Фильтруем меню на основе прав пользователя
-  console.log('🔍 ========== ПРОВЕРКА ПРАВ ДОСТУПА ==========');
-  console.log('🔍 currentUser существует:', !!currentUser);
-  console.log('🔍 is_superuser:', currentUser?.is_superuser);
-  console.log('🔍 role:', currentUser?.role);
-  console.log('🔍 allowed_menus:', currentUser?.allowed_menus);
-  console.log('🔍 allowed_menus is array:', Array.isArray(currentUser?.allowed_menus));
-  console.log('🔍 allowed_menus length:', currentUser?.allowed_menus?.length);
-  
-  const showAllMenus = 
-    currentUser?.is_superuser === true || // Superuser видит всё
-    (currentUser?.role === 'Admin' && (!currentUser?.allowed_menus || currentUser?.allowed_menus?.length === 0)); // Admin без ограничений видит всё
-  
-  console.log('🔍 ПОКАЗАТЬ ВСЕ МЕНЮ?', showAllMenus);
-  console.log('🔍 ПРОВЕРКА: is_superuser === true?', currentUser?.is_superuser === true);
-  console.log('🔍 ПРОВЕРКА: role === Admin?', currentUser?.role === 'Admin');
-  console.log('🔍 ПРОВЕРКА: allowed_menus пустой?', !currentUser?.allowed_menus || currentUser?.allowed_menus?.length === 0);
-  
+  const showAllMenus =
+    currentUser?.is_superuser === true ||
+    (currentUser?.role === 'Admin' && (!currentUser?.allowed_menus || currentUser?.allowed_menus?.length === 0));
+
   const navigation = showAllMenus
-    ? allNavigation // Показываем все меню
+    ? allNavigation
     : allNavigation.filter(item => {
-        // Dashboard доступен всем
-        if (item.key === 'dashboard') {
-          console.log(`🔍 Меню "${item.name}" (${item.key}): ✅ (dashboard всегда доступен)`);
-          return true;
-        }
-        
-      // Coordinator ТОЛЬКО "Foydalanuvchilar" (БЕЗ администраторов!)
-      if (currentUser?.role === 'Coordinator' && item.key === 'users') {
-        console.log(`🔍 Меню "${item.name}" (${item.key}): ✅ (доступно для Coordinator)`);
-        return true;
-      }
-        
-        // Остальные проверяем по allowed_menus
-        const hasAccess = currentUser?.allowed_menus?.includes(item.key);
-        console.log(`🔍 Меню "${item.name}" (${item.key}): ${hasAccess ? '✅' : '❌'}`);
-        return hasAccess;
+        if (item.key === 'dashboard') return true;
+        if (currentUser?.role === 'Coordinator' && item.key === 'users') return true;
+        return currentUser?.allowed_menus?.includes(item.key);
       });
-  
-  console.log('🔍 ИТОГО ДОСТУПНЫХ МЕНЮ:', navigation.length, 'из', allNavigation.length);
-  console.log('🔍 ==========================================');
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -142,7 +100,7 @@ const Layout = () => {
           {/* Logo */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-linear-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
                 <LayoutDashboard className="w-6 h-6 text-white" />
               </div>
               <h1 className="text-xl font-bold text-gray-900">Admin Panel</h1>
@@ -179,7 +137,7 @@ const Layout = () => {
           {/* User Profile */}
           <div className="p-4 border-t border-gray-200">
             <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
+              <div className="w-10 h-10 bg-linear-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-semibold">
                 {currentUser?.first_name?.[0]}{currentUser?.last_name?.[0]}
               </div>
               <div className="flex-1">
@@ -190,11 +148,10 @@ const Layout = () => {
                 <p className="text-xs text-indigo-600 font-semibold">{currentUser?.role}</p>
               </div>
             </div>
-            <button 
+            <button
               onClick={() => {
                 if (window.confirm('Чиқишга ишончингиз комилми?')) {
-                  localStorage.removeItem('admin_token');
-                  window.location.href = '/login';
+                  authAPI.logout();
                 }
               }}
               className="w-full flex items-center space-x-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"

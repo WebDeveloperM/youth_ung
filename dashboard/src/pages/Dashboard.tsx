@@ -7,6 +7,7 @@ import {
   Tooltip, Legend, ResponsiveContainer 
 } from 'recharts';
 import { analyticsAPI, DashboardStats, DailyVisitor, PageAnalytics } from '../api';
+import apiClient from '../api/client';
 
 const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -63,19 +64,8 @@ const Dashboard = () => {
 
   const loadYouthData = async () => {
     try {
-      // Загружаем РЕАЛЬНЫЕ данные из пользователей (НЕ ручные!)
-      const token = localStorage.getItem('admin_token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/v1/admin/all-users/detailed_statistics/`, {
-        headers: {
-          'Authorization': `Token ${token}`
-        }
-      });
-      const apiData = await response.json();
-      
-      console.log('📊 РЕАЛЬНАЯ СТАТИСТИКА ИЗ ПОЛЬЗОВАТЕЛЕЙ:', apiData);
-      console.log('✅ Total users:', apiData.total_youth);
-      console.log('✅ Male:', apiData.male_count, 'Female:', apiData.female_count);
-      console.log('✅ Higher edu:', apiData.higher_education, 'Secondary:', apiData.secondary_education);
+      const response = await apiClient.get('/admin/all-users/detailed_statistics/');
+      const apiData = response.data;
     
       // РЕАЛЬНЫЕ данные из пользователей (без fallback!)
       setYouthTotal(apiData.total_youth || 0);
@@ -155,7 +145,7 @@ const Dashboard = () => {
       setMedalsCount(apiData.medals_count || 0);
       setHonoraryCount(apiData.honorary_count || 0);
     } catch (error) {
-      console.error('❌ Ошибка загрузки РЕАЛЬНОЙ статистики:', error);
+      console.error('Failed to load youth statistics:', error);
       // Устанавливаем нулевые значения - данных нет
       setYouthTotal(0);
       setGenderDistribution([
@@ -204,7 +194,7 @@ const Dashboard = () => {
       setDailyVisitors(visitorsData.daily || []);
       setPageAnalytics(pagesData || []);
     } catch (error) {
-      console.error('Ошибка загрузки данных dashboard:', error);
+      console.error('Failed to load dashboard data:', error);
       // Fallback to mock data if API fails
       const mockDailyVisitors = Array.from({ length: 30 }, (_, i) => ({
         date: new Date(Date.now() - (29 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -281,7 +271,7 @@ const Dashboard = () => {
       {/* 🆕 МОЛОДЕЖНАЯ СТАТИСТИКА - ПЕРВАЯ! */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Umumiy yoshlar soni - с большой цифрой и линейным графиком */}
-        <div className="bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 text-white overflow-hidden relative">
+        <div className="bg-linear-to-br from-blue-500 via-blue-600 to-indigo-600 rounded-2xl shadow-xl p-6 text-white overflow-hidden relative">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24"></div>
           
@@ -342,7 +332,7 @@ const Dashboard = () => {
         {/* Jins bo'yicha taqsimot - Pie Chart */}
         <div className="bg-white rounded-2xl shadow-xl p-6 border border-gray-100">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-blue-500 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-linear-to-br from-pink-500 to-blue-500 rounded-xl flex items-center justify-center">
               <Activity className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -407,11 +397,11 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Chet el oliygohlarini bitirgan yoshlar */}
         <div className="relative bg-white rounded-2xl shadow-lg p-6 border-2 border-purple-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-purple-100 to-purple-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
           
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-linear-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Globe className="w-7 h-7 text-white" />
               </div>
               <div className="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">
@@ -430,7 +420,7 @@ const Dashboard = () => {
             
             <div className="flex items-center gap-2 text-sm mb-4">
               <div className="flex-1 bg-purple-100 rounded-full h-2">
-                <div className="bg-gradient-to-r from-purple-500 to-purple-600 h-2 rounded-full" style={{ width: '85%' }}></div>
+                <div className="bg-linear-to-r from-purple-500 to-purple-600 h-2 rounded-full" style={{ width: '85%' }}></div>
               </div>
               <span className="text-xs font-semibold text-purple-600">85%</span>
             </div>
@@ -477,11 +467,11 @@ const Dashboard = () => {
 
         {/* TOP 300 oliygohlarini bitirgan yoshlar */}
         <div className="relative bg-white rounded-2xl shadow-lg p-6 border-2 border-amber-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-amber-100 to-amber-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-amber-100 to-amber-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
           
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-linear-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center shadow-lg">
                 <Award className="w-7 h-7 text-white" />
               </div>
               <div className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
@@ -501,7 +491,7 @@ const Dashboard = () => {
             
             <div className="flex items-center gap-2 text-sm mb-4">
               <div className="flex-1 bg-amber-100 rounded-full h-2">
-                <div className="bg-gradient-to-r from-amber-500 to-amber-600 h-2 rounded-full" style={{ width: '92%' }}></div>
+                <div className="bg-linear-to-r from-amber-500 to-amber-600 h-2 rounded-full" style={{ width: '92%' }}></div>
               </div>
               <span className="text-xs font-semibold text-amber-600">92%</span>
             </div>
@@ -548,11 +538,11 @@ const Dashboard = () => {
 
         {/* TOP 500 oliygohlarni bitirgan yoshlar */}
         <div className="relative bg-white rounded-2xl shadow-lg p-6 border-2 border-emerald-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-emerald-100 to-emerald-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
           
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-14 h-14 bg-linear-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
                 <GraduationCap className="w-7 h-7 text-white" />
               </div>
               <div className="bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
@@ -572,7 +562,7 @@ const Dashboard = () => {
             
             <div className="flex items-center gap-2 text-sm mb-4">
               <div className="flex-1 bg-emerald-100 rounded-full h-2">
-                <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full" style={{ width: '88%' }}></div>
+                <div className="bg-linear-to-r from-emerald-500 to-emerald-600 h-2 rounded-full" style={{ width: '88%' }}></div>
               </div>
               <span className="text-xs font-semibold text-emerald-600">88%</span>
             </div>
@@ -622,12 +612,12 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Xodimlar taqsimoti - Объединенный Pie Chart */}
         <div className="relative bg-white rounded-2xl shadow-lg p-5 border-2 border-purple-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-purple-100 to-purple-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-purple-100 to-purple-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
           
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
                   <Users className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -641,7 +631,7 @@ const Dashboard = () => {
             </div>
             
             {/* Компактный Pie Chart */}
-            <div className="bg-gradient-to-br from-purple-50 to-white rounded-xl p-2 mb-3">
+            <div className="bg-linear-to-br from-purple-50 to-white rounded-xl p-2 mb-3">
               <ResponsiveContainer width="100%" height={180}>
                 <PieChart>
                   <Pie
@@ -694,12 +684,12 @@ const Dashboard = () => {
 
         {/* Ma'lumot darajasi - Pie Chart */}
         <div className="relative bg-white rounded-2xl shadow-lg p-5 border-2 border-teal-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-teal-100 to-teal-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-teal-100 to-teal-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
           
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-teal-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
                   <GraduationCap className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -713,7 +703,7 @@ const Dashboard = () => {
             </div>
             
             {/* Компактный Pie Chart */}
-            <div className="bg-gradient-to-br from-teal-50 to-white rounded-xl p-2 mb-3">
+            <div className="bg-linear-to-br from-teal-50 to-white rounded-xl p-2 mb-3">
               <ResponsiveContainer width="100%" height={180}>
                 <PieChart>
                   <Pie
@@ -766,12 +756,12 @@ const Dashboard = () => {
 
         {/* Lavozimi ko'tarilgan yoshlar */}
         <div className="relative bg-white rounded-2xl shadow-lg p-5 border-2 border-indigo-100 overflow-hidden group hover:shadow-2xl transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-100 to-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
+          <div className="absolute top-0 right-0 w-32 h-32 bg-linear-to-br from-indigo-100 to-indigo-50 rounded-full -mr-16 -mt-16 group-hover:scale-110 transition-transform duration-500"></div>
           
           <div className="relative z-10">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <div className="w-12 h-12 bg-linear-to-br from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
                   <TrendingUpIcon className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -792,13 +782,13 @@ const Dashboard = () => {
             
             <div className="flex items-center gap-2 text-sm mb-3">
               <div className="flex-1 bg-indigo-100 rounded-full h-2">
-                <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 h-2 rounded-full" style={{ width: '94%' }}></div>
+                <div className="bg-linear-to-r from-indigo-500 to-indigo-600 h-2 rounded-full" style={{ width: '94%' }}></div>
               </div>
               <span className="text-xs font-semibold text-indigo-600">94%</span>
             </div>
             
             {/* Компактный Line Chart */}
-            <div className="bg-gradient-to-br from-indigo-50 to-white rounded-xl p-2 mb-3">
+            <div className="bg-linear-to-br from-indigo-50 to-white rounded-xl p-2 mb-3">
               <ResponsiveContainer width="100%" height={120}>
                 <LineChart data={promotedYouthGrowth}>
                   <XAxis 
@@ -842,7 +832,7 @@ const Dashboard = () => {
       {/* 🏆 ДОСТИЖЕНИЯ МОЛОДЕЖИ */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Til sertifikatiga ega yoshlar */}
-        <div className="relative bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
+        <div className="relative bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
           
           <div className="relative z-10">
@@ -888,7 +878,7 @@ const Dashboard = () => {
         </div>
 
         {/* Ilmiy darajaga ega yoshlar */}
-        <div className="relative bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
+        <div className="relative bg-linear-to-br from-emerald-500 to-emerald-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
           
           <div className="relative z-10">
@@ -934,7 +924,7 @@ const Dashboard = () => {
         </div>
 
         {/* Yosh rahbarlar */}
-        <div className="relative bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
+        <div className="relative bg-linear-to-br from-amber-500 to-amber-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
           
           <div className="relative z-10">
@@ -980,7 +970,7 @@ const Dashboard = () => {
         </div>
 
         {/* Davlat mukofoti bilan taqdirlangan yoshlar */}
-        <div className="relative bg-gradient-to-br from-rose-500 to-rose-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
+        <div className="relative bg-linear-to-br from-rose-500 to-rose-600 rounded-2xl shadow-lg p-5 overflow-hidden group hover:shadow-2xl hover:scale-105 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-500"></div>
           
           <div className="relative z-10">

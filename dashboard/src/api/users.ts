@@ -9,6 +9,7 @@ export interface User {
   phone?: string;
   role: string;
   is_active: boolean;
+  is_superuser?: boolean;
   date_joined: string;
   last_login?: string;
   avatar_url?: string;
@@ -169,5 +170,35 @@ export const updateUser = async (id: number, data: UpdateUserData): Promise<User
  */
 export const getDetailedStatistics = async (): Promise<DetailedStatistics> => {
   const response = await apiClient.get('/admin/all-users/detailed_statistics/');
+  return response.data;
+};
+
+/**
+ * Переключить статус активности пользователя (active ↔ inactive)
+ */
+export const toggleUserStatus = async (id: number): Promise<{ id: number; is_active: boolean }> => {
+  const response = await apiClient.patch(`/admin/all-users/${id}/toggle-status/`);
+  return response.data;
+};
+
+/**
+ * Удалить пользователя
+ */
+export const deleteUser = async (id: number): Promise<void> => {
+  await apiClient.delete(`/admin/all-users/${id}/`);
+};
+
+/**
+ * Установить новый пароль пользователю (Admin/Superuser only)
+ */
+export const setUserPassword = async (id: number, password: string): Promise<void> => {
+  await apiClient.patch(`/admin/all-users/${id}/set-password/`, { password });
+};
+
+/**
+ * Изменить роль пользователя (Admin/Superuser only)
+ */
+export const setUserRole = async (id: number, role: string): Promise<{ id: number; role: string }> => {
+  const response = await apiClient.patch(`/admin/all-users/${id}/set-role/`, { role });
   return response.data;
 };

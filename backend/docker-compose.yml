@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:18
+    image: postgres:17
     container_name: postgres_db
     restart: always
     environment:
@@ -8,7 +8,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: qwerty1514
     ports:
-      - "0.0.0.0:5433:5432"
+      - '0.0.0.0:5433:5432'
     volumes:
       - postgres_data:/var/lib/postgresql
     networks:
@@ -21,7 +21,7 @@ services:
     volumes:
       - .:/app
     ports:
-      - "0.0.0.0:8000:8000"
+      - '0.0.0.0:8000:8000'
     depends_on:
       - db
     environment:
@@ -53,7 +53,7 @@ services:
     command: http web:8000 --log=stdout
     networks:
       - my_network
-    restart: "no"
+    restart: 'no'
 
 volumes:
   postgres_data:

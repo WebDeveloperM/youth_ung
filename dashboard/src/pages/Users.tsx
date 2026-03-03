@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Search, Eye, Users as UsersIcon, UserCheck, UserX, Shield, User as UserIcon, Edit } from 'lucide-react';
+import { Search, Eye, UserCheck, UserX, Shield, User as UserIcon, Edit, Trash2, KeyRound } from 'lucide-react';
 import { toast } from 'sonner';
-import { getAllUsers, getUserStatistics, User, UserStatistics } from '../api/users';
+import { getAllUsers, getUserStatistics, toggleUserStatus, deleteUser, setUserPassword, setUserRole, User, UserStatistics } from '../api/users';
 import UserEditForm from '../components/forms/UserEditForm';
-import { authAPI } from '../api';
+import { authAPI, AdminUser } from '../api/auth';
 
 const Users = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -15,7 +15,11 @@ const Users = () => {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
+  const [resetPasswordUser, setResetPasswordUser] = useState<User | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
 
   useEffect(() => {
     loadCurrentUser();
@@ -33,7 +37,23 @@ const Users = () => {
   };
 
   useEffect(() => {
-    filterUsers();
+    let filtered = users;
+    if (roleFilter !== 'all') {
+      filtered = filtered.filter(u => u.role === roleFilter);
+    }
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(u => u.is_active === (statusFilter === 'active'));
+    }
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(u =>
+        u.username?.toLowerCase().includes(term) ||
+        u.email?.toLowerCase().includes(term) ||
+        u.first_name?.toLowerCase().includes(term) ||
+        u.last_name?.toLowerCase().includes(term)
+      );
+    }
+    setFilteredUsers(filtered);
   }, [searchTerm, roleFilter, statusFilter, users]);
 
   const loadUsers = async () => {
@@ -58,32 +78,70 @@ const Users = () => {
     }
   };
 
-  const filterUsers = () => {
-    let filtered = users;
-
-    // Фильтр по роли
-    if (roleFilter !== 'all') {
-      filtered = filtered.filter(user => user.role === roleFilter);
+  const handleToggleStatus = async (user: User) => {
+    if (!window.confirm(`${user.first_name || user.email} ni ${user.is_active ? 'nofaol' : 'faol'} qilmoqchimisiz?`)) return;
+    try {
+      const updated = await toggleUserStatus(user.id);
+      setUsers(prev => prev.map(u => u.id === user.id ? { ...u, is_active: updated.is_active } : u));
+      toast.success(`Foydalanuvchi ${updated.is_active ? 'faollashtirildi' : 'nofaol qilindi'}`);
+    } catch {
+      toast.error(`Statusni o'zgartirib bo'lmadi`);
     }
-
-    // Фильтр по статусу
-    if (statusFilter !== 'all') {
-      const isActive = statusFilter === 'active';
-      filtered = filtered.filter(user => user.is_active === isActive);
-    }
-
-    // Поиск
-    if (searchTerm) {
-      filtered = filtered.filter(user =>
-        user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.first_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.last_name?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    setFilteredUsers(filtered);
   };
+
+  const handleDeleteUser = async (user: User) => {
+    if (!window.confirm(`${user.first_name || user.email} ni o'chirishni xohlaysizmi? Bu amalni bekor qilib bo'lmaydi.`)) return;
+    try {
+      await deleteUser(user.id);
+      setUsers(prev => prev.filter(u => u.id !== user.id));
+      toast.success('Foydalanuvchi o\'chirildi');
+    } catch {
+      toast.error('Foydalanuvchini o\'chirib bo\'lmadi');
+    }
+  };
+
+  const canManage = currentUser?.role === 'Admin' || currentUser?.is_superuser;
+
+  const handleResetPassword = async () => {
+    if (!resetPasswordUser) return;
+    if (newPassword.length < 12) {
+      toast.error('Parol kamida 12 ta belgidan iborat bo\'lishi kerak');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('Parollar mos kelmadi');
+      return;
+    }
+    setResetLoading(true);
+    try {
+      await setUserPassword(resetPasswordUser.id, newPassword);
+      toast.success('Parol muvaffaqiyatli o\'zgartirildi');
+      setResetPasswordUser(null);
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { data?: { error?: string } } };
+      const msg = apiErr?.response?.data?.error || 'Parolni o\'zgartirib bo\'lmadi';
+      toast.error(msg);
+    } finally {
+      setResetLoading(false);
+    }
+  };
+
+  const handleSetRole = async (user: User, newRole: string) => {
+    if (newRole === user.role) return;
+    if (!window.confirm(`${user.first_name || user.email} rolini "${newRole}" ga o'zgartirishni xohlaysizmi?`)) return;
+    try {
+      const updated = await setUserRole(user.id, newRole);
+      setUsers(prev => prev.map(u => u.id === user.id ? { ...u, role: updated.role } : u));
+      toast.success(`Rol "${updated.role}" ga o'zgartirildi`);
+    } catch (err: unknown) {
+      const apiErr = err as { response?: { data?: { error?: string } } };
+      const msg = apiErr?.response?.data?.error || 'Rolni o\'zgartirib bo\'lmadi';
+      toast.error(msg);
+    }
+  };
+
 
   const getRoleBadge = (role: string) => {
     const styles = {
@@ -227,7 +285,7 @@ const Users = () => {
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
+                      <div className="shrink-0 h-10 w-10">
                         {user.avatar_url ? (
                           <img
                             className="h-10 w-10 rounded-full object-cover"
@@ -264,14 +322,23 @@ const Users = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadge(
-                        user.role
-                      )}`}
-                    >
-                      {getRoleIcon(user.role)}
-                      {user.role}
-                    </span>
+                    {canManage && !user.is_superuser && user.id !== currentUser?.id ? (
+                      <select
+                        value={user.role}
+                        onChange={e => handleSetRole(user, e.target.value)}
+                        className={`text-xs font-semibold rounded-full px-3 py-1 border-0 outline-none cursor-pointer ${getRoleBadge(user.role)}`}
+                      >
+                        <option value="Admin">Admin</option>
+                        <option value="Moderator">Moderator</option>
+                        <option value="Coordinator">Coordinator</option>
+                        <option value="User">User</option>
+                      </select>
+                    ) : (
+                      <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold ${getRoleBadge(user.role)}`}>
+                        {getRoleIcon(user.role)}
+                        {user.role}
+                      </span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span
@@ -299,26 +366,63 @@ const Users = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
                     <div className="flex items-center gap-2">
-                      {/* Кнопка редактирования - доступна Coordinator */}
-                      {currentUser?.role === 'Coordinator' && (
-                        <button
-                          onClick={() => setEditingUserId(user.id)}
-                          className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
-                          title="Таҳрирлаш"
-                        >
-                          <Edit className="w-4 h-4" />
-                          Tahrirlash
-                        </button>
-                      )}
-                      {/* Кнопка просмотра */}
+                      {/* View */}
                       <button
                         onClick={() => setSelectedUser(user)}
                         className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
-                        title="Кўриш"
+                        title="Ko'rish"
                       >
                         <Eye className="w-4 h-4" />
-                        Ko'rish
                       </button>
+
+                      {/* Edit — Coordinator only */}
+                      {currentUser?.role === 'Coordinator' && (
+                        <button
+                          onClick={() => setEditingUserId(user.id)}
+                          className="text-indigo-600 hover:text-indigo-900"
+                          title="Tahrirlash"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      {/* Toggle active/inactive — Admin only */}
+                      {canManage && !user.is_superuser && (
+                        <button
+                          onClick={() => handleToggleStatus(user)}
+                          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${
+                            user.is_active
+                              ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-200'
+                              : 'bg-green-100 text-green-700 hover:bg-green-200'
+                          }`}
+                          title={user.is_active ? 'Nofaol qilish' : 'Faollashtirish'}
+                        >
+                          {user.is_active ? <UserX className="w-3 h-3" /> : <UserCheck className="w-3 h-3" />}
+                          {user.is_active ? 'Bloklash' : 'Faollashtirish'}
+                        </button>
+                      )}
+
+                      {/* Reset password — Admin only */}
+                      {canManage && (
+                        <button
+                          onClick={() => { setResetPasswordUser(user); setNewPassword(''); setConfirmPassword(''); }}
+                          className="text-purple-600 hover:text-purple-800"
+                          title="Parolni tiklash"
+                        >
+                          <KeyRound className="w-4 h-4" />
+                        </button>
+                      )}
+
+                      {/* Delete — Admin only, not superusers */}
+                      {canManage && !user.is_superuser && (
+                        <button
+                          onClick={() => handleDeleteUser(user)}
+                          className="text-red-600 hover:text-red-800"
+                          title="O'chirish"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -435,6 +539,70 @@ const Users = () => {
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {resetPasswordUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-sm p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <KeyRound className="w-5 h-5 text-purple-600" />
+                Parolni tiklash
+              </h2>
+              <button onClick={() => setResetPasswordUser(null)} className="text-gray-400 hover:text-gray-600">✕</button>
+            </div>
+
+            <p className="text-sm text-gray-600 mb-4">
+              <span className="font-medium text-gray-800">
+                {resetPasswordUser.first_name || resetPasswordUser.email}
+              </span>{' '}
+              uchun yangi parol o'rnating.
+            </p>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Yangi parol</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="Kamida 12 ta belgi"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Parolni tasdiqlang</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="Parolni qayta kiriting"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none text-sm"
+                />
+              </div>
+              {newPassword && confirmPassword && newPassword !== confirmPassword && (
+                <p className="text-xs text-red-600">Parollar mos kelmadi</p>
+              )}
+            </div>
+
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => setResetPasswordUser(null)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
+              >
+                Bekor qilish
+              </button>
+              <button
+                onClick={handleResetPassword}
+                disabled={resetLoading || !newPassword || newPassword !== confirmPassword}
+                className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {resetLoading ? 'Saqlanmoqda...' : 'Saqlash'}
+              </button>
             </div>
           </div>
         </div>

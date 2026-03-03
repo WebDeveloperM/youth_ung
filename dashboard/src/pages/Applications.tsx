@@ -139,7 +139,7 @@ export default function Applications() {
             onClick={() => setFilter(f)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               filter === f
-                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'
+                ? 'bg-linear-to-r from-indigo-500 to-purple-500 text-white'
                 : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
             }`}
           >

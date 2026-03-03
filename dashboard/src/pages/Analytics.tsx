@@ -4,7 +4,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { TrendingUp, Eye, Users, Clock } from 'lucide-react';
-import { mockDailyVisitors, mockPageAnalytics } from '../data/mockData';
+import { mockDailyVisitors, mockPageAnalytics } from '../data/mockDATA';
 
 const Analytics = () => {
   // Calculate totals
@@ -221,7 +221,7 @@ const Analytics = () => {
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {mockPageAnalytics.map((page, index) => (
-                <tr key={index} className="hover:bg-gray-50">
+                <tr key={page.page} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {index + 1}
                   </td>
@@ -251,19 +251,19 @@ const Analytics = () => {
 
       {/* Performance Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm p-6 text-white">
+        <div className="bg-linear-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm p-6 text-white">
           <h3 className="text-sm font-medium opacity-90 mb-2">Eng ko'p ko'rilgan</h3>
           <p className="text-2xl font-bold">{mockPageAnalytics[0].page}</p>
           <p className="text-sm opacity-90 mt-2">{mockPageAnalytics[0].views.toLocaleString()} ko'rish</p>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-xl shadow-sm p-6 text-white">
+        <div className="bg-linear-to-br from-green-500 to-green-600 rounded-xl shadow-sm p-6 text-white">
           <h3 className="text-sm font-medium opacity-90 mb-2">Eng uzun vaqt</h3>
           <p className="text-2xl font-bold">{mockPageAnalytics[2].page}</p>
           <p className="text-sm opacity-90 mt-2">{mockPageAnalytics[2].avgDuration} o'rtacha</p>
         </div>
 
-        <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm p-6 text-white">
+        <div className="bg-linear-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm p-6 text-white">
           <h3 className="text-sm font-medium opacity-90 mb-2">Eng yuqori konversiya</h3>
           <p className="text-2xl font-bold">{mockPageAnalytics[3].page}</p>
           <p className="text-sm opacity-90 mt-2">

@@ -385,7 +385,7 @@ const ScholarshipForm = ({ scholarship, onClose, onSuccess }: ScholarshipFormPro
               const form = document.querySelector('form');
               if (form) form.requestSubmit();
             }}
-            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg disabled:opacity-50"
+            className="flex-1 bg-linear-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-lg font-semibold hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg disabled:opacity-50"
           >
             {loading ? 'Сохранение...' : scholarship ? 'Сохранить изменения' : 'Создать стипендию'}
           </button>

@@ -38,7 +38,7 @@ const StatCard = ({ title, value, icon: Icon, trend, color }: StatCardProps) => 
           )}
         </div>
         <div
-          className={`w-14 h-14 rounded-xl bg-gradient-to-br ${
+          className={`w-14 h-14 rounded-xl bg-linear-to-br ${
             colorClasses[color as keyof typeof colorClasses]
           } flex items-center justify-center`}
         >

@@ -41,10 +41,6 @@ export const authAPI = {
   // Получить текущего пользователя
   getCurrentUser: async (): Promise<AdminUser> => {
     const response = await apiClient.get('/users/profile/');
-    console.log('🔍 RAW PROFILE API RESPONSE:', response.data);
-    console.log('🔍 is_superuser:', response.data.is_superuser);
-    console.log('🔍 allowed_menus:', response.data.allowed_menus);
-    console.log('🔍 role:', response.data.role);
     return response.data;
   },
 

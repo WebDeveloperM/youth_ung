@@ -228,6 +228,29 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 15,
 }
 
+# Настройки Swagger (drf_yasg)
+SWAGGER_SETTINGS = {
+    'USE_SESSION_AUTH': False,
+    'SECURITY_DEFINITIONS': {
+        # OAuth2 password flow — click Authorize in Swagger UI, enter email/username
+        # and password. Swagger calls /api/v1/users/token/ and stores the token
+        # automatically, sending it as "Bearer <token>" on every request.
+        'Login (email / username + password)': {
+            'type': 'oauth2',
+            'flow': 'password',
+            'tokenUrl': '/api/v1/users/token/',
+            'scopes': {},
+        },
+        # Manual fallback: paste an existing token as "Token <key>"
+        'Token (manual)': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Format: Token &lt;your_token&gt;',
+        },
+    },
+}
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

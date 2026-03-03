@@ -18,8 +18,8 @@ schema_view = get_schema_view(
         description="Guide for the REST API",
     ),
     public=True,
-    url = 'https://sublenticular-steely-kelsi.ngrok-free.dev',
-
+    # Важно: не указываем фиксированный URL, чтобы Swagger/Redoc
+    # использовали текущий хост (localhost:8000 в вашем случае).
     permission_classes=(permissions.AllowAny,),
 )
 

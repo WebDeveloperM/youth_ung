@@ -95,6 +95,125 @@ class AllUsersViewSet(viewsets.ModelViewSet):
         kwargs['partial'] = True
         return self.update(request, *args, **kwargs)
     
+    def destroy(self, request, *args, **kwargs):
+        """Delete user — Admin/Moderator only. Cannot delete superusers or self."""
+        requesting_user = request.user
+        instance = self.get_object()
+
+        if requesting_user.role == User.COORDINATOR:
+            return Response(
+                {'error': 'Координаторы не могут удалять пользователей'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if instance.is_superuser:
+            return Response(
+                {'error': 'Нельзя удалить суперпользователя'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if instance == requesting_user:
+            return Response(
+                {'error': 'Нельзя удалить собственную учётную запись'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        return super().destroy(request, *args, **kwargs)
+
+    @action(detail=True, methods=['patch'], url_path='toggle-status')
+    def toggle_status(self, request, pk=None):
+        """Toggle is_active for a user. Admin/Moderator only."""
+        requesting_user = request.user
+        instance = self.get_object()
+
+        if requesting_user.role == User.COORDINATOR:
+            return Response(
+                {'error': 'Координаторы не могут менять статус пользователей'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if instance.is_superuser:
+            return Response(
+                {'error': 'Нельзя изменить статус суперпользователя'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if instance == requesting_user:
+            return Response(
+                {'error': 'Нельзя изменить собственный статус'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        instance.is_active = not instance.is_active
+        instance.save(update_fields=['is_active'])
+        return Response({'id': instance.id, 'is_active': instance.is_active})
+
+    @action(detail=True, methods=['patch'], url_path='set-role')
+    def set_role(self, request, pk=None):
+        """Set a user's role. Admin/Superuser only."""
+        requesting_user = request.user
+        instance = self.get_object()
+
+        if not (requesting_user.is_superuser or requesting_user.role == User.ADMIN):
+            return Response(
+                {'error': 'Только администраторы могут менять роли пользователей'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if instance.is_superuser:
+            return Response(
+                {'error': 'Нельзя изменить роль суперпользователя'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if instance == requesting_user:
+            return Response(
+                {'error': 'Нельзя изменить собственную роль'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        new_role = request.data.get('role', '').strip()
+        valid_roles = [User.ADMIN, User.MODERATOR, User.COORDINATOR, User.USER]
+        if new_role not in valid_roles:
+            return Response(
+                {'error': f'Недопустимая роль. Допустимые: {", ".join(valid_roles)}'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        instance.role = new_role
+        instance.save(update_fields=['role'])
+        return Response({'id': instance.id, 'role': instance.role})
+
+    @action(detail=True, methods=['patch'], url_path='set-password')
+    def set_password(self, request, pk=None):
+        """Set a new password for a user. Admin/Superuser only."""
+        requesting_user = request.user
+        instance = self.get_object()
+
+        if not (requesting_user.is_superuser or requesting_user.role == User.ADMIN):
+            return Response(
+                {'error': 'Только администраторы могут менять пароли пользователей'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if instance.is_superuser and not requesting_user.is_superuser:
+            return Response(
+                {'error': 'Только суперадмин может менять пароль суперадмина'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        new_password = request.data.get('password', '').strip()
+        if not new_password:
+            return Response(
+                {'error': 'Новый пароль обязателен'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if len(new_password) < 12:
+            return Response(
+                {'error': 'Пароль должен содержать не менее 12 символов'},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        instance.set_password(new_password)
+        instance.save(update_fields=['password'])
+        # Invalidate all active tokens so the user must log in again with the new password
+        from users.models import Token as UserToken
+        UserToken.objects.filter(user=instance, is_active=True).update(is_active=False)
+        return Response({'message': 'Пароль успешно изменён'})
+
     @action(detail=False, methods=['get'])
     def statistics(self, request):
         """

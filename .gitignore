@@ -45,7 +45,6 @@ frontend/package-lock.json
 sys
 data/
 sys
-package.json
 yarn.lock
 .idea
 

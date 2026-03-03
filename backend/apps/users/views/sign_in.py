@@ -5,6 +5,7 @@ from rest_framework import status
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
 from django.utils.decorators import method_decorator
+from drf_yasg.utils import swagger_auto_schema
 from users.serializers.sign_in import SignInSerializer
 
 
@@ -18,6 +19,7 @@ class SignInView(APIView):
     """
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(request_body=SignInSerializer)
     def post(self, request):
         """
         Вход пользователя в систему
