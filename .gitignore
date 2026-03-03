@@ -28,7 +28,8 @@ env.bak/
 venv.bak/
 backend/env
 backend/venv
-
+.claude
+.cursor*
 # Security - Sensitive Files
 *.pem
 *.key

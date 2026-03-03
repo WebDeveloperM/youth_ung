@@ -64,6 +64,7 @@ def create_superadmin():
             phone='+998000000000',
             address='Toshkent',
             gender='Erkak',
+            confirm_password=SUPERADMIN_PASSWORD,
         )
         user.set_password(SUPERADMIN_PASSWORD)
         user.save()

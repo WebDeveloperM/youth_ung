@@ -35,7 +35,7 @@ export const authAPI = {
   // Выход
   logout: () => {
     localStorage.removeItem('admin_token');
-    window.location.href = '/login';
+    window.location.href = `${import.meta.env.BASE_URL}login`;
   },
 
   // Получить текущего пользователя

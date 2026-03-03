@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
 		if (error.response?.status === 401) {
 			// Токен истек или невалиден - редирект на логин
 			localStorage.removeItem('admin_token')
-			window.location.href = '/login'
+			window.location.href = `${import.meta.env.BASE_URL}login`
 		}
 		return Promise.reject(error)
 	},

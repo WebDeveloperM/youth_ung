@@ -10,12 +10,13 @@ from users.serializers.sign_in import SignInSerializer
 
 
 # Rate limiting decorator для защиты от brute-force атак
-@method_decorator(ratelimit(key='ip', rate='5/m', method='POST'), name='post')
+# key='header:x-forwarded-for' uses real client IP from nginx proxy (not 127.0.0.1)
+@method_decorator(ratelimit(key='header:x-forwarded-for', rate='10/m', method='POST'), name='post')
 class SignInView(APIView):
     """
     API endpoint для входа пользователя
-    
-    Rate Limiting: 5 попыток в минуту с одного IP
+
+    Rate Limiting: 10 попыток в минуту с одного IP
     """
     permission_classes = (AllowAny,)
 

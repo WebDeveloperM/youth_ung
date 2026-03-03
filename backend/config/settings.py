@@ -485,27 +485,20 @@ JAZZMIN_UI_TWEAKS = {
 # SECURITY SETTINGS FOR PRODUCTION
 # =============================================================================
 if not DEBUG:
-    # HTTPS/SSL Settings
-    SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    
-    # HSTS (HTTP Strict Transport Security)
-    SECURE_HSTS_SECONDS = 31536000  # 1 год
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
-    
-    # Security Headers
+    # HTTPS/SSL — disabled: site runs over plain HTTP behind internal nginx
+    # Enable SECURE_SSL_REDIRECT only after adding an SSL certificate
+    SECURE_SSL_REDIRECT = False
+    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+
+    # Security Headers (safe for HTTP)
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_BROWSER_XSS_FILTER = True
     X_FRAME_OPTIONS = 'DENY'
-    
+
     # Session Security
     SESSION_COOKIE_HTTPONLY = True
-    SESSION_COOKIE_SAMESITE = 'Strict'
     CSRF_COOKIE_HTTPONLY = True
-    CSRF_COOKIE_SAMESITE = 'Strict'
 
 # =============================================================================
 # Load development settings if available
