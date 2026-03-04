@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { Toaster } from 'sonner'
 
 // Components
+import { AuthModal } from './components/AuthModal'
 import BreadcrumbComp from './components/breadCrumb'
 import Footer from './components/footer/Footer'
 import { Header } from './components/header'
@@ -54,6 +55,9 @@ function AppContent() {
 
 	return (
 		<>
+			{/* Auth modal lives here — outside Navbar/Sheet React tree so Radix FocusScope can't trap focus in it */}
+			<AuthModal />
+
 			{/* Login sahifasida Header va Navbarni ko'rsatmaslik */}
 			{!isLoginPage && (
 				<>

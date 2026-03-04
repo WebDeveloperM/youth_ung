@@ -3,8 +3,6 @@ import axios from 'axios'
 // Базовый URL API
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api/v1'
 
-console.log('🔧 API Base URL:', API_BASE_URL)
-
 // Создаем экземпляр axios с базовой конфигурацией
 const apiClient = axios.create({
 	baseURL: API_BASE_URL,
@@ -44,7 +42,6 @@ export const authAPI = {
 	 */
 	signUp: async (data) => {
 		try {
-			console.log('📤 Отправка регистрации:', data)
 			const payload = {
 				full_name: data.fullName,
 				date_of_birth: data.dateOfBirth,
@@ -56,9 +53,6 @@ export const authAPI = {
 				password: data.password,
 				confirm_password: data.confirmPassword,
 			}
-			console.log('📦 Payload:', payload)
-			console.log('🌐 URL:', `${API_BASE_URL}/users/sign-up/`)
-			
 			const response = await apiClient.post('/users/sign-up/', payload)
 			
 			// Сохраняем токен в localStorage
@@ -169,7 +163,6 @@ export const authAPI = {
 	 */
 	updateProfile: async (profileData) => {
 		try {
-			console.log('📤 Отправка обновления профиля:', profileData)
 			const response = await apiClient.patch('/users/profile/', profileData)
 			
 			// Обновляем данные пользователя в localStorage
@@ -200,8 +193,6 @@ export const authAPI = {
 		try {
 			const formData = new FormData()
 			formData.append('avatar', file)
-			
-			console.log('📤 Загрузка аватара...')
 			const response = await apiClient.post('/users/profile/avatar/', formData, {
 				headers: {
 					'Content-Type': 'multipart/form-data',

@@ -24,6 +24,10 @@
 	"success": "Muvaffaqiyatli!",
 	"useful_resources": "Foydali manbalar",
 
+	"homepage": {
+		"explore": "Imkoniyatlarni kashf eting"
+	},
+
 	"brand": {
 		"part1": "UNG",
 		"part2": "Yoshlari",

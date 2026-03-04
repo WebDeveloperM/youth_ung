@@ -24,6 +24,10 @@
 	"success": "Success!",
 	"useful_resources": "Useful resources",
 
+	"homepage": {
+		"explore": "Explore Opportunities"
+	},
+
 	"brand": {
 		"part1": "UNG",
 		"part2": "Youth",

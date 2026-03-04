@@ -1,5 +1,4 @@
 import { Icon } from '@iconify/react'
-// eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from 'framer-motion'
 import { useState, useEffect } from 'react'
 import {
@@ -20,7 +19,7 @@ import { getOrganisationsList } from '@/api/organisations'
 import './Auth.css'
 
 const Auth = () => {
-	const { t, i18n } = useTranslation()
+	const { t } = useTranslation()
 	const navigate = useNavigate()
 
 	const [isLogin, setIsLogin] = useState(true)
@@ -40,26 +39,18 @@ const Auth = () => {
 	const [errors, setErrors] = useState({})
 	const [touched, setTouched] = useState({})
 
-	// Загрузка списка организаций при монтировании
 	useEffect(() => {
 		const loadOrganisations = async () => {
 			try {
-				console.log('🔄 Загрузка организаций...')
 				const data = await getOrganisationsList()
-				console.log('📦 Получены организации:', data)
-				const orgList = data.results || data
-				console.log('📋 Список организаций:', orgList)
-				setOrganisations(orgList)
-				console.log('✅ Организаций загружено:', orgList.length)
-			} catch (error) {
-				console.error('❌ Ошибка загрузки организаций:', error)
-				console.error('❌ Детали:', error.response?.data || error.message)
+				setOrganisations(data.results || data)
+			} catch {
+				// Non-critical — form is still usable without the list
 			}
 		}
 		loadOrganisations()
 	}, [])
 
-	// Валидация полей
 	const validateField = (name, value) => {
 		switch (name) {
 			case 'fullName':
@@ -68,7 +59,7 @@ const Auth = () => {
 					: ''
 
 			case 'phoneNumber':
-				return !/^\+?[\d\s-()]{10,}$/.test(value)
+				return !/^\+?[\d\s\-()]{10,}$/.test(value)
 					? t('errors.invalidPhone')
 					: ''
 
@@ -90,33 +81,24 @@ const Auth = () => {
 		}
 	}
 
-	// Обработка изменения значения поля
 	const handleChange = e => {
 		const { name, value } = e.target
 		setFormData(prev => ({ ...prev, [name]: value }))
-
 		if (touched[name]) {
-			const error = validateField(name, value)
-			setErrors(prev => ({ ...prev, [name]: error }))
+			setErrors(prev => ({ ...prev, [name]: validateField(name, value) }))
 		}
 	}
 
-	// Обработка потери фокуса
 	const handleBlur = e => {
 		const { name, value } = e.target
 		setTouched(prev => ({ ...prev, [name]: true }))
-		const error = validateField(name, value)
-		setErrors(prev => ({ ...prev, [name]: error }))
+		setErrors(prev => ({ ...prev, [name]: validateField(name, value) }))
 	}
 
-	// Отправка формы
 	const handleSubmit = async e => {
 		e.preventDefault()
 
-		const fieldsToValidate = isLogin
-			? ['login', 'password']
-			: Object.keys(formData)
-
+		const fieldsToValidate = isLogin ? ['login', 'password'] : Object.keys(formData)
 		const newErrors = {}
 		const newTouched = {}
 
@@ -129,87 +111,48 @@ const Auth = () => {
 		setErrors(newErrors)
 		setTouched(newTouched)
 
-		if (Object.keys(newErrors).length === 0) {
-			console.log('✅ Form submitted:', formData)
-			console.log('🔍 Is Login?', isLogin)
-			console.log('🌐 authAPI:', authAPI)
-			
-			try {
-				console.log('🚀 Starting API call...')
-				// Отправка данных на API
-				let result
-				if (isLogin) {
-					console.log('📞 Calling signIn...')
-					result = await authAPI.signIn({
-						login: formData.login,
-						password: formData.password,
-					})
-				} else {
-					console.log('📞 Calling signUp...')
-					result = await authAPI.signUp(formData)
-				}
-				
-				console.log('📥 Result:', result)
-				
-				if (result.success) {
-					console.log('✅ Success!')
-					// Показываем успешное сообщение
-					setShowSuccess(true)
-					
-					// Перенаправляем на главную через 2 секунды
-					setTimeout(() => {
-						navigate('/')
-					}, 2000)
-				} else {
-					console.log('❌ Failed:', result.error)
-					// Обрабатываем ошибки от API
-					const apiErrors = {}
-					if (result.error) {
-						// Если ошибка - строка
-						if (typeof result.error === 'string') {
-							apiErrors.form = result.error
-						} 
-						// Если ошибка - объект с полями
-						else if (typeof result.error === 'object') {
-							// Проверяем есть ли поле message для общей ошибки
-							if (result.error.message) {
-								apiErrors.form = result.error.message
+		if (Object.keys(newErrors).length > 0) return
+
+		try {
+			const result = isLogin
+				? await authAPI.signIn({ login: formData.login, password: formData.password })
+				: await authAPI.signUp(formData)
+
+			if (result.success) {
+				setShowSuccess(true)
+				setTimeout(() => navigate('/'), 2000)
+			} else {
+				const apiErrors = {}
+				if (result.error) {
+					if (typeof result.error === 'string') {
+						apiErrors.form = result.error
+					} else if (typeof result.error === 'object') {
+						if (result.error.message) apiErrors.form = result.error.message
+						Object.keys(result.error).forEach(key => {
+							if (key !== 'message') {
+								const val = result.error[key]
+								apiErrors[key] = Array.isArray(val) ? val[0] : val
 							}
-							// Обрабатываем ошибки для конкретных полей
-							Object.keys(result.error).forEach(key => {
-								if (key !== 'message') {
-									const errorValue = result.error[key]
-									apiErrors[key] = Array.isArray(errorValue) ? errorValue[0] : errorValue
-								}
-							})
-						}
+						})
 					}
-					// Если нет конкретных ошибок, показываем общую
-					if (Object.keys(apiErrors).length === 0) {
-						apiErrors.form = t('errors.loginFailed') || 'Ошибка входа. Проверьте логин и пароль.'
-					}
-					setErrors(apiErrors)
 				}
-			} catch (error) {
-				console.error('💥 CATCH ERROR:', error)
-				console.error('💥 ERROR MESSAGE:', error.message)
-				console.error('💥 ERROR STACK:', error.stack)
-				setErrors({ form: 'Произошла ошибка. Попробуйте позже.' })
+				if (Object.keys(apiErrors).length === 0) {
+					apiErrors.form = 'Ошибка входа. Проверьте логин и пароль.'
+				}
+				setErrors(apiErrors)
 			}
-		} else {
-			console.log('❌ Validation errors:', newErrors)
+		} catch {
+			setErrors({ form: 'Произошла ошибка. Попробуйте позже.' })
 		}
 	}
 
-	// Переключение между режимами вход/регистрация
 	const switchMode = () => {
-		setIsLogin(!isLogin)
+		setIsLogin(prev => !prev)
 		setErrors({})
 		setTouched({})
 	}
 
-	// Рендер input поля
-	const renderInput = (name, icon, type = 'text') => (
+	const renderInput = (name, _icon, type = 'text') => (
 		<div className='form-group'>
 			<label htmlFor={name} className='form-label'>
 				{t(name === 'login' ? 'loginField' : name)}
@@ -218,17 +161,22 @@ const Auth = () => {
 				type={type}
 				id={name}
 				name={name}
-				className={`form-control ${
-					errors[name] && touched[name] ? 'is-invalid' : ''
-				} ${
-					touched[name] && !errors[name] && formData[name] ? 'is-valid' : ''
-				}`}
+				className={`form-control${errors[name] && touched[name] ? ' is-invalid' : ''}${touched[name] && !errors[name] && formData[name] ? ' is-valid' : ''}`}
 				value={formData[name]}
 				onChange={handleChange}
 				onBlur={handleBlur}
 				placeholder={t(name === 'login' ? 'loginField' : name)}
 				aria-invalid={errors[name] && touched[name] ? 'true' : 'false'}
 				aria-describedby={errors[name] ? `${name}-error` : undefined}
+				autoComplete={
+					type === 'password'
+						? name === 'password' && isLogin
+							? 'current-password'
+							: 'new-password'
+						: name === 'login'
+						? 'username'
+						: 'off'
+				}
 			/>
 			<AnimatePresence>
 				{errors[name] && touched[name] && (
@@ -248,114 +196,86 @@ const Auth = () => {
 		</div>
 	)
 
-	// Рендер select поля
-	const renderSelect = (name, icon, options) => {
-		console.log(`🎨 Рендер select для ${name}, опций:`, options?.length || 0)
-		return (
-			<div className='form-group'>
-				<label htmlFor={name} className='form-label'>
-					{t(name)}
-				</label>
-				<select
-					id={name}
-					name={name}
-					className={`form-control ${
-						errors[name] && touched[name] ? 'is-invalid' : ''
-					} ${
-						touched[name] && !errors[name] && formData[name] ? 'is-valid' : ''
-					}`}
-					value={formData[name]}
-					onChange={handleChange}
-					onBlur={handleBlur}
-					aria-invalid={errors[name] && touched[name] ? 'true' : 'false'}
-					aria-describedby={errors[name] ? `${name}-error` : undefined}
-				>
-					<option value="">{t('selectOrganisation')}</option>
-					{options && options.length > 0 ? (
-						options.map(option => (
-							<option key={option.id} value={option.id}>
-								{option.name}
-							</option>
-						))
-					) : (
-						<option disabled>Загрузка организаций...</option>
-					)}
-				</select>
-				<AnimatePresence>
-					{errors[name] && touched[name] && (
-						<motion.div
-							id={`${name}-error`}
-							role='alert'
-							className='error-message'
-							initial={{ opacity: 0, height: 0, y: -10 }}
-							animate={{ opacity: 1, height: 'auto', y: 0 }}
-							exit={{ opacity: 0, height: 0, y: -10 }}
-							transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-						>
-							{errors[name]}
-						</motion.div>
-					)}
-				</AnimatePresence>
-			</div>
-		)
-	}
+	const renderSelect = (name, _icon, options) => (
+		<div className='form-group'>
+			<label htmlFor={name} className='form-label'>
+				{t(name)}
+			</label>
+			<select
+				id={name}
+				name={name}
+				className={`form-control${errors[name] && touched[name] ? ' is-invalid' : ''}${touched[name] && !errors[name] && formData[name] ? ' is-valid' : ''}`}
+				value={formData[name]}
+				onChange={handleChange}
+				onBlur={handleBlur}
+				aria-invalid={errors[name] && touched[name] ? 'true' : 'false'}
+				aria-describedby={errors[name] ? `${name}-error` : undefined}
+			>
+				<option value=''>{t('selectOrganisation')}</option>
+				{options && options.length > 0 ? (
+					options.map(option => (
+						<option key={option.id} value={option.id}>
+							{option.name}
+						</option>
+					))
+				) : (
+					<option disabled>Загрузка организаций...</option>
+				)}
+			</select>
+			<AnimatePresence>
+				{errors[name] && touched[name] && (
+					<motion.div
+						id={`${name}-error`}
+						role='alert'
+						className='error-message'
+						initial={{ opacity: 0, height: 0, y: -10 }}
+						animate={{ opacity: 1, height: 'auto', y: 0 }}
+						exit={{ opacity: 0, height: 0, y: -10 }}
+						transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+					>
+						{errors[name]}
+					</motion.div>
+				)}
+			</AnimatePresence>
+		</div>
+	)
 
 	return (
 		<div className='auth-container'>
-			{/* Фоновые фигуры */}
+			{/* Animated background shapes */}
 			<div className='background-shapes'>
 				<motion.div
 					className='shape shape-1'
-					animate={{
-						y: [0, -20, 0],
-						rotate: [0, 180, 360],
-					}}
-					transition={{
-						duration: 20,
-						repeat: Infinity,
-						ease: 'linear',
-					}}
+					animate={{ y: [0, -20, 0], rotate: [0, 180, 360] }}
+					transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
 				/>
 				<motion.div
 					className='shape shape-2'
-					animate={{
-						y: [0, 20, 0],
-						rotate: [0, -180, -360],
-					}}
-					transition={{
-						duration: 15,
-						repeat: Infinity,
-						ease: 'linear',
-					}}
+					animate={{ y: [0, 20, 0], rotate: [0, -180, -360] }}
+					transition={{ duration: 15, repeat: Infinity, ease: 'linear' }}
 				/>
 				<motion.div
 					className='shape shape-3'
-					animate={{
-						x: [0, 20, 0],
-						rotate: [0, 90, 180],
-					}}
-					transition={{
-						duration: 18,
-						repeat: Infinity,
-						ease: 'linear',
-					}}
+					animate={{ x: [0, 20, 0], rotate: [0, 90, 180] }}
+					transition={{ duration: 18, repeat: Infinity, ease: 'linear' }}
 				/>
 			</div>
 
-			{/* Переключатель языка */}
+			{/* Top-right controls */}
 			<div className='language-switcher'>
 				<motion.button
 					className='home-btn'
 					onClick={() => navigate('/')}
 					whileHover={{ scale: 1.05 }}
 					whileTap={{ scale: 0.95 }}
+					aria-label='Bosh sahifaga qaytish'
 				>
 					<Icon icon='mdi:home' width='32' height='32' />
 				</motion.button>
 				<LanguageSelector />
 			</div>
 
-			{/* Карточка аутентификации */}
+			{/* Card */}
 			<motion.div
 				className='auth-card'
 				initial={{ opacity: 0, scale: 0.9 }}
@@ -363,7 +283,7 @@ const Auth = () => {
 				transition={{ duration: 0.5 }}
 				layout
 			>
-				{/* Логотип компании */}
+				{/* Logo */}
 				<motion.div
 					className='company-logo'
 					initial={{ opacity: 0, y: -30 }}
@@ -376,7 +296,7 @@ const Auth = () => {
 					</div>
 				</motion.div>
 
-				{/* Заголовок */}
+				{/* Heading */}
 				<motion.div
 					className='auth-header'
 					key={isLogin ? 'login' : 'register'}
@@ -384,12 +304,12 @@ const Auth = () => {
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.4 }}
 				>
-					<h1>{isLogin ? t('welcomeBack') : t('welcome')}</h1>
-					<p>{isLogin ? t('signInToContinue') : t('createAccount')}</p>
+					<h1>{isLogin ? t('welcomeBack') : t('createAccount')}</h1>
+					<p>{isLogin ? t('signInToContinue') : t('welcome')}</p>
 				</motion.div>
 
-				{/* Форма */}
-				<form onSubmit={handleSubmit}>
+				{/* Form */}
+				<form onSubmit={handleSubmit} noValidate>
 					<AnimatePresence mode='wait'>
 						{isLogin ? (
 							<motion.div
@@ -397,17 +317,14 @@ const Auth = () => {
 								initial={{ opacity: 0, scale: 0.95, y: 20 }}
 								animate={{ opacity: 1, scale: 1, y: 0 }}
 								exit={{ opacity: 0, scale: 0.95, y: -20 }}
-								transition={{
-									duration: 0.5,
-									ease: [0.4, 0, 0.2, 1],
-								}}
+								transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
 								layout
 							>
 								<div className='form-row single'>
-									{renderInput('login', <FaUser />, 'text')}
+									{renderInput('login', null, 'text')}
 								</div>
 								<div className='form-row single'>
-									{renderInput('password', <FaLock />, 'password')}
+									{renderInput('password', null, 'password')}
 								</div>
 							</motion.div>
 						) : (
@@ -416,112 +333,77 @@ const Auth = () => {
 								initial={{ opacity: 0, scale: 0.95, y: 20 }}
 								animate={{ opacity: 1, scale: 1, y: 0 }}
 								exit={{ opacity: 0, scale: 0.95, y: -20 }}
-								transition={{
-									duration: 0.5,
-									ease: [0.4, 0, 0.2, 1],
-								}}
+								transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
 								layout
 							>
 								<div className='form-row single'>
-									{renderInput('fullName', <FaUser />, 'text')}
+									{renderInput('fullName', null, 'text')}
 								</div>
 								<div className='form-row double'>
-									{renderInput('dateOfBirth', <FaCalendar />, 'date')}
-									{renderInput('phoneNumber', <FaPhone />, 'tel')}
+									{renderInput('dateOfBirth', null, 'date')}
+									{renderInput('phoneNumber', null, 'tel')}
 								</div>
 								<div className='form-row single'>
-									{renderInput(
-										'residentialAddress',
-										<FaMapMarkerAlt />,
-										'text'
-									)}
+									{renderInput('residentialAddress', null, 'text')}
 								</div>
 								<div className='form-row double'>
-									{renderSelect('placeOfWork', <FaBuilding />, organisations)}
-									{renderInput('position', <FaBriefcase />, 'text')}
+									{renderSelect('placeOfWork', null, organisations)}
+									{renderInput('position', null, 'text')}
 								</div>
 								<div className='form-row single'>
-									{renderInput('login', <FaUser />, 'text')}
+									{renderInput('login', null, 'text')}
 								</div>
 								<div className='form-row double'>
-									{renderInput('password', <FaLock />, 'password')}
-									{renderInput('confirmPassword', <FaLock />, 'password')}
+									{renderInput('password', null, 'password')}
+									{renderInput('confirmPassword', null, 'password')}
 								</div>
 							</motion.div>
 						)}
 					</AnimatePresence>
 
-					{/* Общая ошибка формы */}
+					{/* Form-level error */}
 					{errors.form && (
 						<motion.div
+							role='alert'
 							className='error-message'
-							style={{ textAlign: 'center', marginBottom: '1rem', padding: '0.75rem', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '8px', color: '#ef4444' }}
+							style={{
+								textAlign: 'center',
+								marginBottom: '1rem',
+								padding: '0.75rem',
+								background: 'rgba(239,68,68,0.1)',
+								borderRadius: '8px',
+								color: '#ef4444',
+							}}
 							initial={{ opacity: 0, y: -10 }}
 							animate={{ opacity: 1, y: 0 }}
 						>
 							{errors.form}
 						</motion.div>
 					)}
-					
-					{/* Кнопка отправки */}
+
 					<motion.button
 						type='submit'
 						className='btn-submit'
 						layout
-						whileHover={{
-							scale: 1.02,
-							y: -4,
-						}}
+						whileHover={{ scale: 1.02, y: -4 }}
 						whileTap={{ scale: 0.98, y: -2 }}
 						transition={{ duration: 0.2 }}
 					>
 						{isLogin ? t('login') : t('register')}
 					</motion.button>
 
-					{/* Переключение режима */}
 					<motion.div className='switch-mode' layout>
 						<p>
 							{isLogin ? t('switchToRegister') : t('switchToLogin')}{' '}
-							<button
-								type='button'
-								onClick={switchMode}
-								className='switch-link'
-							>
+							<button type='button' onClick={switchMode} className='switch-link'>
 								{isLogin ? t('register') : t('login')}
 							</button>
 						</p>
 					</motion.div>
 				</form>
-
-				{/* Секция партнёров */}
-				<motion.div
-					className='partners-section'
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.6, delay: 0.4 }}
-					layout
-				>
-					<p className='partners-title'>
-						{t('footer.partners')}
-					</p>
-					<div className='partners-logos'>
-						{[1, 2, 3, 4].map(num => (
-							<motion.div
-								key={num}
-								className='partner-logo'
-								whileHover={{ scale: 1.1, y: -5 }}
-								transition={{ duration: 0.3 }}
-							>
-								<div className='partner-placeholder'>
-									<span>Partner {num}</span>
-								</div>
-							</motion.div>
-						))}
-					</div>
-				</motion.div>
 			</motion.div>
 
-			{/* Модальное окно успеха */}
+			{/* Success modal */}
 			<AnimatePresence>
 				{showSuccess && (
 					<motion.div
@@ -544,8 +426,8 @@ const Auth = () => {
 							>
 								<FaCheckCircle className='success-icon' />
 							</motion.div>
-							<h2>{isLogin ? t('welcome') : t('createAccount')}</h2>
-							<p>{isLogin ? t('signInToContinue') : t('welcomeBack')}</p>
+							<h2>{t('success')}</h2>
+							<p>{t('signInToContinue')}</p>
 						</motion.div>
 					</motion.div>
 				)}

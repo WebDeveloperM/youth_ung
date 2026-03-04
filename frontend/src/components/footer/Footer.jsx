@@ -1,55 +1,64 @@
 import { FaInstagram, FaLinkedin, FaXTwitter } from 'react-icons/fa6'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 const Footer = () => {
 	const { t } = useTranslation()
 
-	const partnerLinks = [
-		{ name: 'BNPZ', href: '#' },
-		{ name: 'GTL', href: '#' },
-		{ name: 'MGNK', href: '#' },
+	const platformLinks = [
+		{ label: t('menu.about'), to: '/about' },
+		{ label: t('menu.sub.latestNews'), to: '/news' },
+		{ label: t('menu.sub.innovations'), to: '/innovations' },
+		{ label: t('menu.sub.technologies'), to: '/technologies' },
+		{ label: t('menu.sub.research'), to: '/research' },
 	]
 
-	const projectLinks = [{ name: t('footer.youthPolicy'), href: '#' }]
-
-	const contactLinks = [
-		{ name: t('footer.contactEmail'), href: '#' },
-		{ name: t('footer.support'), href: '#' },
-		{ name: t('footer.legal'), href: '#' },
+	const careerLinks = [
+		{ label: t('menu.sub.jobs'), to: '/jobs' },
+		{ label: t('menu.sub.internship'), to: '/internships' },
+		{ label: t('menu.sub.scholarships'), to: '/scholarships' },
+		{ label: t('menu.sub.grants'), to: '/grants' },
+		{ label: t('menu.sub.competitions'), to: '/competitions' },
 	]
 
 	return (
 		<footer
-			className=' text-[var(--muted-foreground)] py-16 border-t border-gray-200'
+			className='text-muted-foreground py-16 border-t border-gray-200 dark:border-gray-800'
 			role='contentinfo'
 		>
-			<div className='container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12'>
+			<div className='container mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12'>
 				{/* Company Info & Socials */}
-				<div className='flex flex-col space-y-4 lg:col-span-1'>
-					<h3 className='font-bold text-4xl text-[var(--navy-blue)]'>
+				<div className='flex flex-col space-y-4'>
+					<h3 className='font-bold text-3xl text-(--navy-blue)'>
 						{t('footer.company')}
 					</h3>
-					<p className='text-[var(--muted-foreground)] text-sm max-w-xs'>
+					<p className='text-sm max-w-xs leading-relaxed'>
 						{t('footer.description')}
 					</p>
-					<div className='flex space-x-5 text-[var(--muted-foreground)] mt-4'>
+					<div className='flex space-x-4 mt-2'>
 						<a
-							href='#'
-							className='hover:text-gray-800 transition-colors'
+							href='https://instagram.com'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='hover:text-pink-500 transition-colors'
 							aria-label="O'zbekneftgaz Instagram sahifasi"
 						>
 							<FaInstagram size={22} />
 						</a>
 						<a
-							href='#'
-							className='hover:text-gray-800 transition-colors'
+							href='https://linkedin.com'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='hover:text-blue-600 transition-colors'
 							aria-label="O'zbekneftgaz LinkedIn sahifasi"
 						>
 							<FaLinkedin size={22} />
 						</a>
 						<a
-							href='#'
-							className='hover:text-gray-800 transition-colors'
+							href='https://x.com'
+							target='_blank'
+							rel='noopener noreferrer'
+							className='hover:text-gray-800 dark:hover:text-gray-300 transition-colors'
 							aria-label="O'zbekneftgaz X Twitter sahifasi"
 						>
 							<FaXTwitter size={22} />
@@ -57,67 +66,47 @@ const Footer = () => {
 					</div>
 				</div>
 
-				{/* Navigation Sections */}
-				<div className='grid grid-cols-2 sm:grid-cols-3 gap-8 md:col-span-1 lg:col-span-3'>
-					<nav aria-label={t('footer.partners')}>
-						<h4 className='font-semibold text-[var(--muted-foreground)] mb-4'>
-							{t('footer.partners')}
-						</h4>
-						<ul className='space-y-3 text-sm'>
-							{/* Ma'lumotlar dinamik ravishda render qilinadi */}
-							{partnerLinks.map(link => (
-								<li key={link.name}>
-									<a
-										href={link.href}
-										className='hover:text-blue-600 transition-colors'
-									>
-										{link.name}
-									</a>
-								</li>
-							))}
-						</ul>
-					</nav>
+				{/* Platform links */}
+				<nav aria-label={t('menu.projects')}>
+					<h4 className='font-semibold text-(--navy-blue) dark:text-white mb-5 text-sm uppercase tracking-wider'>
+						{t('menu.projects')}
+					</h4>
+					<ul className='space-y-3 text-sm'>
+						{platformLinks.map(link => (
+							<li key={link.to}>
+								<Link
+									to={link.to}
+									className='hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
+								>
+									{link.label}
+								</Link>
+							</li>
+						))}
+					</ul>
+				</nav>
 
-					<nav aria-label={t('footer.projects')}>
-						<h4 className='font-semibold text-[var(--muted-foreground)] mb-4'>
-							{t('footer.projects')}
-						</h4>
-						<ul className='space-y-3 text-sm'>
-							{projectLinks.map(link => (
-								<li key={link.name}>
-									<a
-										href={link.href}
-										className='hover:text-blue-600 transition-colors'
-									>
-										{link.name}
-									</a>
-								</li>
-							))}
-						</ul>
-					</nav>
-
-					<nav aria-label={t('footer.contact')}>
-						<h4 className='font-semibold text-[var(--muted-foreground)] mb-4'>
-							{t('footer.contact')}
-						</h4>
-						<ul className='space-y-3 text-sm'>
-							{contactLinks.map(link => (
-								<li key={link.name}>
-									<a
-										href={link.href}
-										className='hover:text-blue-600 transition-colors'
-									>
-										{link.name}
-									</a>
-								</li>
-							))}
-						</ul>
-					</nav>
-				</div>
+				{/* Career & Opportunities */}
+				<nav aria-label={t('menu.opportunities')}>
+					<h4 className='font-semibold text-(--navy-blue) dark:text-white mb-5 text-sm uppercase tracking-wider'>
+						{t('menu.opportunities')}
+					</h4>
+					<ul className='space-y-3 text-sm'>
+						{careerLinks.map(link => (
+							<li key={link.to}>
+								<Link
+									to={link.to}
+									className='hover:text-blue-600 dark:hover:text-blue-400 transition-colors'
+								>
+									{link.label}
+								</Link>
+							</li>
+						))}
+					</ul>
+				</nav>
 			</div>
 
-			{/* Copyright Section */}
-			<div className='container mx-auto px-6 mt-16 text-center text-[var(--muted-foreground)] text-xs'>
+			{/* Copyright */}
+			<div className='container mx-auto px-6 mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 text-center text-xs'>
 				<p>
 					&copy; {new Date().getFullYear()} {t('footer.company')}.{' '}
 					{t('footer.rights')}

@@ -219,7 +219,14 @@ export default function Navbar() {
 			</div>
 			{/* MOBILE MENU SECTION */}
 			<div className='xl:hidden flex items-center gap-2 relative z-[110] '>
-				<Sheet open={isOpen} onOpenChange={setIsOpen}>
+				<Sheet
+					open={isOpen}
+					onOpenChange={open => {
+						// Block close while auth modal is active
+						if (!open && document.querySelector('[data-auth-modal]')) return
+						setIsOpen(open)
+					}}
+				>
 					<SheetTrigger asChild>
 						<Button
 							variant='ghost'
@@ -239,7 +246,7 @@ export default function Navbar() {
 						className={`
               [&>button]:hidden p-0 border-t bg-card shadow-2xl flex flex-col bg-background/80
             `}
-					>
+						>
 						<SheetHeader>
 							<SheetTitle></SheetTitle>
 							{/* Mobile Nav Header */}
