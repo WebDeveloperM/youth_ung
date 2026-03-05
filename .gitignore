@@ -28,7 +28,8 @@ env.bak/
 venv.bak/
 backend/env
 backend/venv
-.claude
+# Claude Code AI assistant files (settings, memory, session data — never commit these)
+.claude/
 .cursorrules
 # Security - Sensitive Files
 *.pem
