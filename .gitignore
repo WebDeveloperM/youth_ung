@@ -36,7 +36,7 @@ CLAUDE*
 SECURITY_AUDIT*
 # Docker dev overrides (local only)
 docker-compose.override.yml
-
+todo*
 # Security - Sensitive Files
 *.pem
 *.key
