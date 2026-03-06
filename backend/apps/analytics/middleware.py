@@ -1,13 +1,17 @@
-from django.utils.deprecation import MiddlewareMixin
-from .models import Visitor, PageView
-from django.utils import timezone
+import logging
 import re
+
+from django.utils import timezone
+from django.utils.deprecation import MiddlewareMixin
+
+from .models import PageView, Visitor
+
+logger = logging.getLogger(__name__)
 
 
 class AnalyticsMiddleware(MiddlewareMixin):
-    """Middleware для автоматического отслеживания посещений"""
-    
-    # Пути, которые не нужно отслеживать
+    """Middleware for automatic visit tracking."""
+
     EXCLUDED_PATHS = [
         r'^/admin/jsi18n/',
         r'^/static/',
@@ -19,130 +23,129 @@ class AnalyticsMiddleware(MiddlewareMixin):
         r'\.css$',
         r'\.js$',
     ]
-    
+
     def process_request(self, request):
-        """Обрабатываем запрос и логируем посещение"""
-        # Проверяем, нужно ли отслеживать этот путь
-        path = request.path
-        for pattern in self.EXCLUDED_PATHS:
-            if re.search(pattern, path):
-                return None
-        
-        # Получаем информацию о посетителе
-        ip_address = self.get_client_ip(request)
-        user_agent = request.META.get('HTTP_USER_AGENT', '')
-        session_key = request.session.session_key if hasattr(request, 'session') else None
-        user = request.user if request.user.is_authenticated else None
-        
-        # Парсим user agent для определения браузера, ОС и устройства
-        browser, os, device = self.parse_user_agent(user_agent)
-        
-        # Получаем или создаем посетителя
-        visitor, created = Visitor.objects.get_or_create(
-            ip_address=ip_address,
-            session_key=session_key,
-            defaults={
-                'user': user,
-                'user_agent': user_agent,
-                'browser': browser,
-                'os': os,
-                'device': device,
-            }
-        )
-        
-        if not created:
-            # Обновляем информацию о посетителе
-            visitor.visit_count += 1
-            visitor.last_visit = timezone.now()
-            if user and not visitor.user:
-                visitor.user = user
-            visitor.save(update_fields=['visit_count', 'last_visit', 'user'])
-        
-        # Создаем запись о просмотре страницы
-        referer = request.META.get('HTTP_REFERER', '')
-        PageView.objects.create(
-            visitor=visitor,
-            url=request.build_absolute_uri(),
-            path=path,
-            method=request.method,
-            referer=referer,
-        )
-        
-        # Сохраняем ID посетителя в request для дальнейшего использования
-        request.visitor = visitor
-        
+        """Track visit — wrapped in try/except so analytics never crashes the app."""
+        try:
+            path = request.path
+            for pattern in self.EXCLUDED_PATHS:
+                if re.search(pattern, path):
+                    return None
+
+            ip_address = self.get_client_ip(request)
+            user_agent = request.META.get('HTTP_USER_AGENT', '')
+            session_key = request.session.session_key if hasattr(request, 'session') else None
+            user = request.user if request.user.is_authenticated else None
+
+            browser, os_name, device = self.parse_user_agent(user_agent)
+
+            # Use filter().first() instead of get_or_create to avoid MultipleObjectsReturned
+            # which occurs when multiple gunicorn workers race to create the same Visitor.
+            visitor = Visitor.objects.filter(
+                ip_address=ip_address,
+                session_key=session_key,
+            ).first()
+
+            if visitor is None:
+                try:
+                    visitor = Visitor.objects.create(
+                        ip_address=ip_address,
+                        session_key=session_key,
+                        user=user,
+                        user_agent=user_agent,
+                        browser=browser,
+                        os=os_name,
+                        device=device,
+                    )
+                except Exception:
+                    # Race condition: another worker just created it — fetch it
+                    visitor = Visitor.objects.filter(
+                        ip_address=ip_address,
+                        session_key=session_key,
+                    ).first()
+                    if visitor is None:
+                        return None
+            else:
+                visitor.visit_count += 1
+                visitor.last_visit = timezone.now()
+                if user and not visitor.user:
+                    visitor.user = user
+                visitor.save(update_fields=['visit_count', 'last_visit', 'user'])
+
+            referer = request.META.get('HTTP_REFERER', '')
+            PageView.objects.create(
+                visitor=visitor,
+                url=request.build_absolute_uri(),
+                path=path,
+                method=request.method,
+                referer=referer,
+            )
+
+            request.visitor = visitor
+
+        except Exception as e:
+            logger.warning("Analytics middleware error (non-fatal): %s", e)
+
         return None
-    
+
     def process_response(self, request, response):
-        """Обновляем статус код ответа"""
+        """Update response status code in analytics."""
         if hasattr(request, 'visitor'):
-            # Обновляем последний просмотр с кодом ответа
             try:
-                last_view = PageView.objects.filter(visitor=request.visitor).latest('timestamp')
+                last_view = PageView.objects.filter(
+                    visitor=request.visitor
+                ).latest('timestamp')
                 last_view.status_code = response.status_code
                 last_view.save(update_fields=['status_code'])
-            except PageView.DoesNotExist:
+            except Exception:
                 pass
-        
         return response
-    
+
     @staticmethod
     def get_client_ip(request):
-        """Получаем реальный IP адрес клиента"""
         x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
         if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0].strip()
-        else:
-            ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
-        return ip
-    
+            return x_forwarded_for.split(',')[0].strip()
+        return request.META.get('REMOTE_ADDR', '0.0.0.0')
+
     @staticmethod
     def parse_user_agent(user_agent):
-        """Простой парсинг user agent"""
         browser = 'Unknown'
-        os = 'Unknown'
+        os_name = 'Unknown'
         device = 'desktop'
-        
+
         if not user_agent:
-            return browser, os, device
-        
-        user_agent_lower = user_agent.lower()
-        
-        # Определяем браузер
-        if 'chrome' in user_agent_lower and 'edg' not in user_agent_lower:
+            return browser, os_name, device
+
+        ua = user_agent.lower()
+
+        if 'chrome' in ua and 'edg' not in ua:
             browser = 'Chrome'
-        elif 'safari' in user_agent_lower and 'chrome' not in user_agent_lower:
+        elif 'safari' in ua and 'chrome' not in ua:
             browser = 'Safari'
-        elif 'firefox' in user_agent_lower:
+        elif 'firefox' in ua:
             browser = 'Firefox'
-        elif 'edg' in user_agent_lower:
+        elif 'edg' in ua:
             browser = 'Edge'
-        elif 'opera' in user_agent_lower or 'opr' in user_agent_lower:
+        elif 'opera' in ua or 'opr' in ua:
             browser = 'Opera'
-        elif 'msie' in user_agent_lower or 'trident' in user_agent_lower:
+        elif 'msie' in ua or 'trident' in ua:
             browser = 'Internet Explorer'
-        
-        # Определяем ОС
-        if 'windows' in user_agent_lower:
-            os = 'Windows'
-        elif 'mac' in user_agent_lower or 'darwin' in user_agent_lower:
-            os = 'macOS'
-        elif 'linux' in user_agent_lower:
-            os = 'Linux'
-        elif 'android' in user_agent_lower:
-            os = 'Android'
-        elif 'iphone' in user_agent_lower or 'ipad' in user_agent_lower:
-            os = 'iOS'
-        
-        # Определяем устройство
-        if 'mobile' in user_agent_lower or 'android' in user_agent_lower or 'iphone' in user_agent_lower:
+
+        if 'windows' in ua:
+            os_name = 'Windows'
+        elif 'mac' in ua or 'darwin' in ua:
+            os_name = 'macOS'
+        elif 'linux' in ua:
+            os_name = 'Linux'
+        elif 'android' in ua:
+            os_name = 'Android'
+        elif 'iphone' in ua or 'ipad' in ua:
+            os_name = 'iOS'
+
+        if 'mobile' in ua or 'android' in ua or 'iphone' in ua:
             device = 'mobile'
-        elif 'tablet' in user_agent_lower or 'ipad' in user_agent_lower:
+        elif 'tablet' in ua or 'ipad' in ua:
             device = 'tablet'
-        else:
-            device = 'desktop'
-        
-        return browser, os, device
 
-
-
+        return browser, os_name, device
