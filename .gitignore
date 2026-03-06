@@ -34,6 +34,9 @@ backend/venv
 /docs
 CLAUDE*
 SECURITY_AUDIT*
+# Docker dev overrides (local only)
+docker-compose.override.yml
+
 # Security - Sensitive Files
 *.pem
 *.key

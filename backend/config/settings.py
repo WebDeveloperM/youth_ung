@@ -518,9 +518,12 @@ if not DEBUG:
     CSRF_COOKIE_HTTPONLY = True
 
 # =============================================================================
-# Load development settings if available
+# Load local developer overrides (only when USE_LOCAL_SETTINGS=True in .env)
+# settings_dev.py is for bare-metal dev without Docker; when using Docker + .env
+# this block is intentionally skipped to avoid overriding the postgres config.
 # =============================================================================
-try:
-    from .settings_dev import *
-except ImportError:
-    pass
+if os.environ.get('USE_LOCAL_SETTINGS') == 'True':
+    try:
+        from .settings_dev import *
+    except ImportError:
+        pass

@@ -24,6 +24,7 @@ services:
       - static_files:/app/files/static
       - media_files:/app/files/uploads
     ports:
+      # Production: bind to localhost only — nginx reverse proxy handles public traffic
       - '127.0.0.1:8000:8000'
     depends_on:
       - db
@@ -31,6 +32,8 @@ services:
       - .env
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
+      # Override HOST to point to the db service inside Docker (not host.docker.internal from .env)
+      - HOST=db
     networks:
       - my_network
     restart: always
