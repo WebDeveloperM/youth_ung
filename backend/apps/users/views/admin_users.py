@@ -66,7 +66,7 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     def update(self, request, *args, **kwargs):
         """Обновление администратора"""
         # Проверка что только Admin может редактировать других админов
-        if request.user.role != User.ADMIN and request.user.id != kwargs.get('pk'):
+        if request.user.role != User.ADMIN and request.user.id != int(kwargs.get('pk', 0)):
             return Response(
                 {'error': 'Вы можете редактировать только свой профиль'},
                 status=status.HTTP_403_FORBIDDEN

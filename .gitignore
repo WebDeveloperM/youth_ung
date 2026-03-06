@@ -33,6 +33,7 @@ backend/venv
 /frontend/docs
 /docs
 CLAUDE*
+SECURITY_AUDIT*
 # Security - Sensitive Files
 *.pem
 *.key

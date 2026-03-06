@@ -6,6 +6,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django_ratelimit.decorators import ratelimit
+from django_ratelimit.exceptions import Ratelimited
 from content.models_applications import Application
 from content.serializers.applications import (
     ApplicationCreateSerializer,
@@ -15,22 +18,28 @@ from content.serializers.applications import (
 from users.utils.authentication import CustomTokenAuthentication
 
 
+@method_decorator(ratelimit(key='ip', rate='5/h', method='POST'), name='create')
 class ApplicationCreateView(generics.CreateAPIView):
-    """Публичный API для подачи заявки"""
+    """Публичный API для подачи заявки — ограничен 5 заявками в час с одного IP"""
     serializer_class = ApplicationCreateSerializer
     permission_classes = [AllowAny]
     
     def create(self, request, *args, **kwargs):
         """Создание заявки"""
-        serializer = self.get_serializer(data=request.data, context={'request': request})
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        
-        return Response({
-            'success': True,
-            'message': 'Заявка успешно отправлена!',
-            'application_id': serializer.instance.id,
-        }, status=status.HTTP_201_CREATED)
+        try:
+            serializer = self.get_serializer(data=request.data, context={'request': request})
+            serializer.is_valid(raise_exception=True)
+            self.perform_create(serializer)
+
+            return Response({
+                'success': True,
+                'message': 'Заявка успешно отправлена!',
+                'application_id': serializer.instance.id,
+            }, status=status.HTTP_201_CREATED)
+        except Ratelimited:
+            return Response({
+                'error': 'Слишком много заявок. Пожалуйста, подождите 1 час.',
+            }, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
 
 class IsAdminOrModerator(IsAuthenticated):

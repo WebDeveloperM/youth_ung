@@ -10,8 +10,9 @@ from users.serializers.sign_in import SignInSerializer
 
 
 # Rate limiting decorator для защиты от brute-force атак
-# key='header:x-forwarded-for' uses real client IP from nginx proxy (not 127.0.0.1)
-@method_decorator(ratelimit(key='header:x-forwarded-for', rate='10/m', method='POST'), name='post')
+# key='ip' uses REMOTE_ADDR — not spoofable by client.
+# If behind a trusted nginx proxy, configure DJANGO_RATELIMIT_IP_META_KEY = 'HTTP_X_REAL_IP' in .env.
+@method_decorator(ratelimit(key='ip', rate='10/m', method='POST'), name='post')
 class SignInView(APIView):
     """
     API endpoint для входа пользователя
