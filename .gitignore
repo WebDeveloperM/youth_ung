@@ -32,6 +32,7 @@ backend/venv
 .cursorrules
 /frontend/docs
 /docs
+CLAUDE*
 # Security - Sensitive Files
 *.pem
 *.key
