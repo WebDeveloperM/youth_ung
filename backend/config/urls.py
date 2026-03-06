@@ -23,9 +23,12 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+# Django admin is on a non-default path to reduce automated scanning/attacks (M-6 security fix)
+ADMIN_PATH = settings.ADMIN_URL_PATH if hasattr(settings, 'ADMIN_URL_PATH') else 'ung-platform-admin'
+
 urlpatterns = [
-    path('admin/analytics/', include('analytics.urls')),
-    path('admin/', admin.site.urls),
+    path(f'{ADMIN_PATH}/analytics/', include('analytics.urls')),
+    path(f'{ADMIN_PATH}/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # path('bot/', include(('bot.urls', 'bot'))),

@@ -4,39 +4,33 @@ services:
     container_name: postgres_db
     restart: always
     environment:
-      POSTGRES_DB: youth_database
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: qwerty1514
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - '0.0.0.0:5433:5432'
+      # Bind to localhost only — DB must not be reachable from outside the host
+      - '127.0.0.1:5433:5432'
     volumes:
-      - postgres_data:/var/lib/postgresql
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - my_network
 
   web:
     build: .
     container_name: django_api
-    command: python manage.py runserver 0.0.0.0:8000
+    # Dev override: add "command: python manage.py runserver 0.0.0.0:8000" in docker-compose.override.yml
     volumes:
       - .:/app
+      - static_files:/app/files/static
+      - media_files:/app/files/uploads
     ports:
-      - '0.0.0.0:8000:8000'
+      - '127.0.0.1:8000:8000'
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       - DJANGO_SETTINGS_MODULE=config.settings
-      - HOST=db
-      - POSTGRES_DB=youth_database
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=qwerty1514
-      - POSTGRES_HOST=db
-      - POSTGRES_PORT=5432
-      - SECRET_KEY=2m)nb^qin_cohksys)nvvuo@+@0f#rs9@@yxfsugi9!e!6@%*k
-      - DEBUG=True
-      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:3000,http://127.0.0.1:5173,http://127.0.0.1:5174,http://127.0.0.1:5175,http://127.0.0.1:5176
-      - CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5176,http://localhost:3000
     networks:
       - my_network
     restart: always
@@ -47,9 +41,7 @@ services:
     depends_on:
       - web
     environment:
-      - NGROK_AUTHTOKEN=373ujIpNeSorWddIOcBMZyjMbwx_7aJapwY8E7ud3vdJJ2W1p
-    # Используем случайный URL без фиксированного домена
-    # Добавляем --log=stdout чтобы видеть логи
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
     command: http web:8000 --log=stdout
     networks:
       - my_network
@@ -57,6 +49,8 @@ services:
 
 volumes:
   postgres_data:
+  static_files:
+  media_files:
 
 networks:
   my_network:

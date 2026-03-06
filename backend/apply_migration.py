@@ -5,13 +5,13 @@
 import psycopg2
 import os
 
-# Параметры подключения
+# Параметры подключения — читаем из переменных окружения
 DB_CONFIG = {
-    'dbname': 'youth_database',
-    'user': 'postgres',
-    'password': 'qwerty1514',
-    'host': 'localhost',
-    'port': 5433
+    'dbname': os.environ.get('POSTGRES_DB', 'youth_database'),
+    'user': os.environ.get('POSTGRES_USER', 'postgres'),
+    'password': os.environ.get('POSTGRES_PASSWORD', ''),
+    'host': os.environ.get('HOST', 'localhost'),
+    'port': int(os.environ.get('POSTGRES_PORT', 5433)),
 }
 
 def apply_migration():

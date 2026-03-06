@@ -263,6 +263,10 @@ SWAGGER_SETTINGS = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 FRONTEND_DOMAIN = os.environ.get('FRONTEND_DOMAIN', 'http://localhost:3000')
+
+# Django admin URL path — override via ADMIN_URL_PATH env var in production
+# Never use the default '/admin/' path on a public server
+ADMIN_URL_PATH = os.environ.get('ADMIN_URL_PATH', 'ung-platform-admin')
 COMPANY_NAME = 'BNPZ OOO'
 # BOT_TOKEN = os.environ.get('BOT_TOKEN', '')
 # BOT_NAME = os.environ.get('BOT_NAME', '')
@@ -275,6 +279,9 @@ COMPANY_NAME = 'BNPZ OOO'
 #
 # STREAM_API_KEY = '8k5xmtgkax5k'
 # STREAM_API_SECRET = '4764f3522x33erj4hd2x6ahkcrdyucuutnhp5umaff2ed9u3rtbe4zbstamqxr8s'
+
+# Dynamic admin analytics URL (respects ADMIN_URL_PATH)
+_admin_analytics_url = f'/{ADMIN_URL_PATH}/analytics/dashboard/'
 
 # Jazzmin settings for beautiful admin interface
 JAZZMIN_SETTINGS = {
@@ -321,7 +328,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Главная",  "url": "admin:index", "permissions": ["auth.view_user"]},
         
         # Дашборд аналитики
-        {"name": "📊 Аналитика", "url": "/admin/analytics/dashboard/", "permissions": ["auth.view_user"]},
+        {"name": "📊 Аналитика", "url": _admin_analytics_url, "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
         {"name": "Сайт", "url": "http://localhost:3000", "new_window": True},
@@ -366,13 +373,13 @@ JAZZMIN_SETTINGS = {
     "custom_links": {
         "analytics": [{
             "name": "📊 Дашборд аналитики", 
-            "url": "/admin/analytics/dashboard/", 
+            "url": _admin_analytics_url, 
             "icon": "fas fa-chart-line",
             "permissions": ["auth.view_user"]
         }],
         "content": [{
             "name": "Статистика контента", 
-            "url": "/admin/analytics/dashboard/", 
+            "url": _admin_analytics_url, 
             "icon": "fas fa-chart-bar",
             "permissions": ["content.view_news"]
         }]
