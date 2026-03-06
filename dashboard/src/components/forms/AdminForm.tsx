@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import { toast } from 'sonner';
 import { adminsAPI, AdminUserType, MenuItem } from '../../api';
-import { getOrganisationsList } from '../../api/organisations';
+import { getAllOrganisations } from '../../api/organisations';
 
 interface AdminFormProps {
   admin?: AdminUserType | null;
@@ -12,6 +12,7 @@ interface AdminFormProps {
 
 const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
   const [loading, setLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
   const [menuOptions, setMenuOptions] = useState<MenuItem[]>([]);
   const [organisations, setOrganisations] = useState<any[]>([]);
 
@@ -32,17 +33,27 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
 
   useEffect(() => {
     const loadData = async () => {
-      try {
-        const [menus, orgs] = await Promise.all([
-          adminsAPI.getMenuOptions(),
-          getOrganisationsList()
-        ]);
-        setMenuOptions(menus);
-        const orgList = orgs.results || orgs;
-        setOrganisations(orgList);
-      } catch (error) {
-        // silent
+      setDataLoading(true);
+      // Load menus and organisations independently so one failure doesn't block the other
+      const [menusResult, orgsResult] = await Promise.allSettled([
+        adminsAPI.getMenuOptions(),
+        getAllOrganisations(),
+      ]);
+
+      if (menusResult.status === 'fulfilled') {
+        setMenuOptions(menusResult.value);
+      } else {
+        toast.error('Menyu ro\'yxatini yuklashda xatolik yuz berdi');
       }
+
+      if (orgsResult.status === 'fulfilled') {
+        const data = orgsResult.value;
+        setOrganisations(data.results || []);
+      } else {
+        toast.error('Tashkilotlar ro\'yxatini yuklashda xatolik yuz berdi');
+      }
+
+      setDataLoading(false);
     };
     loadData();
   }, []);
@@ -343,19 +354,30 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Tashkilot * <span className="text-red-500">(majburiy)</span>
                 </label>
-                <select
-                  value={formData.organization || ''}
-                  onChange={(e) => setFormData({ ...formData, organization: e.target.value ? Number(e.target.value) : null })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                  required
-                >
-                  <option value="">Tashkilotni tanlang...</option>
-                  {organisations.map(org => (
-                    <option key={org.id} value={org.id}>
-                      {org.name}
-                    </option>
-                  ))}
-                </select>
+                {dataLoading ? (
+                  <div className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-500 text-sm">
+                    Yuklanmoqda...
+                  </div>
+                ) : (
+                  <select
+                    value={formData.organization || ''}
+                    onChange={(e) => setFormData({ ...formData, organization: e.target.value ? Number(e.target.value) : null })}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                    required
+                  >
+                    <option value="">Tashkilotni tanlang...</option>
+                    {organisations.map(org => (
+                      <option key={org.id} value={org.id}>
+                        {org.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
+                {!dataLoading && organisations.length === 0 && (
+                  <p className="mt-1 text-xs text-red-500">
+                    Tashkilotlar topilmadi. Avval tashkilot qo'shing.
+                  </p>
+                )}
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                   Koordinator faqat shu tashkilot foydalanuvchilarini ko'radi
                 </p>
@@ -413,25 +435,35 @@ const AdminForm = ({ admin, onClose, onSuccess }: AdminFormProps) => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                {menuOptions.map((menu) => (
-                  <div key={menu.key} className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id={`menu-${menu.key}`}
-                      checked={formData.allowed_menus.includes(menu.key)}
-                      onChange={() => handleMenuToggle(menu.key)}
-                      className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
-                    />
-                    <label
-                      htmlFor={`menu-${menu.key}`}
-                      className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
-                    >
-                      {menu.label}
-                    </label>
-                  </div>
-                ))}
-              </div>
+              {dataLoading ? (
+                <div className="p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700/50 text-center text-sm text-gray-500">
+                  Menyular yuklanmoqda...
+                </div>
+              ) : menuOptions.length === 0 ? (
+                <div className="p-4 border border-red-300 dark:border-red-700 rounded-lg bg-red-50 dark:bg-red-900/20 text-center text-sm text-red-600 dark:text-red-400">
+                  Menyular yuklanmadi. Sahifani yangilang va qayta urinib ko'ring.
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                  {menuOptions.map((menu) => (
+                    <div key={menu.key} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id={`menu-${menu.key}`}
+                        checked={formData.allowed_menus.includes(menu.key)}
+                        onChange={() => handleMenuToggle(menu.key)}
+                        className="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
+                      />
+                      <label
+                        htmlFor={`menu-${menu.key}`}
+                        className="text-sm text-gray-700 dark:text-gray-300 cursor-pointer"
+                      >
+                        {menu.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
                 Tanlangan: {formData.allowed_menus.length} ta / {menuOptions.length} ta

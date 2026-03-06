@@ -108,19 +108,19 @@ class AdminUserViewSet(viewsets.ModelViewSet):
     def menu_options(self, request):
         """Получить список всех доступных меню для настройки прав"""
         menus = [
-            {'key': 'dashboard', 'label': 'Панель управления'},
-            {'key': 'news', 'label': 'Новости'},
-            {'key': 'grants', 'label': 'Гранты'},
-            {'key': 'scholarships', 'label': 'Стипендии'},
-            {'key': 'competitions', 'label': 'Конкурсы'},
-            {'key': 'innovations', 'label': 'Инновации'},
-            {'key': 'internships', 'label': 'Стажировки'},
-            {'key': 'jobs', 'label': 'Вакансии'},
-            {'key': 'team', 'label': 'Команда'},
-            {'key': 'comments', 'label': 'Комментарии'},
-            {'key': 'applications', 'label': 'Заявки'},
-            {'key': 'analytics', 'label': 'Аналитика'},
-            {'key': 'admins', 'label': 'Администраторы'},
+            {'key': 'dashboard', 'label': 'Boshqaruv paneli'},
+            {'key': 'news', 'label': 'Yangiliklar'},
+            {'key': 'grants', 'label': 'Grantlar'},
+            {'key': 'scholarships', 'label': 'Stipendiyalar'},
+            {'key': 'competitions', 'label': 'Tanlovlar'},
+            {'key': 'innovations', 'label': 'Innovatsiyalar'},
+            {'key': 'internships', 'label': 'Stajirovkalar'},
+            {'key': 'jobs', 'label': 'Vakansiyalar'},
+            {'key': 'team', 'label': 'Jamoa'},
+            {'key': 'comments', 'label': 'Izohlar'},
+            {'key': 'applications', 'label': 'Arizalar'},
+            {'key': 'analytics', 'label': 'Analitika'},
+            {'key': 'admins', 'label': 'Administratorlar'},
         ]
         return Response(menus)
 
