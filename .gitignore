@@ -60,3 +60,5 @@ deploy/certificates/*
 # Local Netlify folder
 .netlify
 
+
+SERVER_UPDATE*
