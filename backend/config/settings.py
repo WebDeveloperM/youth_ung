@@ -29,9 +29,15 @@ except ImportError:
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY должен быть установлен в .env файле для production
-# Для Docker используем значение из docker-compose.yml environment или hardcoded
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or os.environ.get('SECRET_KEY', '2m)nb^qin_cohksys)nvvuo@+@0f#rs9@@yxfsugi9!e!6@%*k')
+# Must be set via DJANGO_SECRET_KEY or SECRET_KEY environment variable — no fallback allowed.
+_secret_key = os.environ.get('DJANGO_SECRET_KEY') or os.environ.get('SECRET_KEY')
+if not _secret_key:
+    from django.core.exceptions import ImproperlyConfigured
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY environment variable is not set. "
+        "Add it to your .env file before starting the server."
+    )
+SECRET_KEY = _secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
@@ -127,7 +133,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('POSTGRES_DB', 'youth_database'),
         'USER': os.environ.get('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'qwerty1514'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD', ''),
         'HOST': os.getenv('HOST', 'host.docker.internal'),
         'PORT': os.environ.get('POSTGRES_PORT', 5432),
     }
@@ -257,6 +263,10 @@ SWAGGER_SETTINGS = {
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 FRONTEND_DOMAIN = os.environ.get('FRONTEND_DOMAIN', 'http://localhost:3000')
+
+# Django admin URL path — override via ADMIN_URL_PATH env var in production
+# Never use the default '/admin/' path on a public server
+ADMIN_URL_PATH = os.environ.get('ADMIN_URL_PATH', 'ung-platform-admin')
 COMPANY_NAME = 'BNPZ OOO'
 # BOT_TOKEN = os.environ.get('BOT_TOKEN', '')
 # BOT_NAME = os.environ.get('BOT_NAME', '')
@@ -269,6 +279,9 @@ COMPANY_NAME = 'BNPZ OOO'
 #
 # STREAM_API_KEY = '8k5xmtgkax5k'
 # STREAM_API_SECRET = '4764f3522x33erj4hd2x6ahkcrdyucuutnhp5umaff2ed9u3rtbe4zbstamqxr8s'
+
+# Dynamic admin analytics URL (respects ADMIN_URL_PATH)
+_admin_analytics_url = f'/{ADMIN_URL_PATH}/analytics/dashboard/'
 
 # Jazzmin settings for beautiful admin interface
 JAZZMIN_SETTINGS = {
@@ -315,7 +328,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Главная",  "url": "admin:index", "permissions": ["auth.view_user"]},
         
         # Дашборд аналитики
-        {"name": "📊 Аналитика", "url": "/admin/analytics/dashboard/", "permissions": ["auth.view_user"]},
+        {"name": "📊 Аналитика", "url": _admin_analytics_url, "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
         {"name": "Сайт", "url": "http://localhost:3000", "new_window": True},
@@ -360,13 +373,13 @@ JAZZMIN_SETTINGS = {
     "custom_links": {
         "analytics": [{
             "name": "📊 Дашборд аналитики", 
-            "url": "/admin/analytics/dashboard/", 
+            "url": _admin_analytics_url, 
             "icon": "fas fa-chart-line",
             "permissions": ["auth.view_user"]
         }],
         "content": [{
             "name": "Статистика контента", 
-            "url": "/admin/analytics/dashboard/", 
+            "url": _admin_analytics_url, 
             "icon": "fas fa-chart-bar",
             "permissions": ["content.view_news"]
         }]
@@ -485,14 +498,18 @@ JAZZMIN_UI_TWEAKS = {
 # SECURITY SETTINGS FOR PRODUCTION
 # =============================================================================
 if not DEBUG:
-    # HTTPS/SSL — disabled: site runs over plain HTTP behind internal nginx
-    # Enable SECURE_SSL_REDIRECT only after adding an SSL certificate
-    SECURE_SSL_REDIRECT = False
-    # SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
+    # HTTPS/SSL
+    # Set SITE_USES_HTTPS=True in .env once an SSL certificate is in place.
+    _https = os.environ.get('SITE_USES_HTTPS', 'False') == 'True'
+    SECURE_SSL_REDIRECT = _https
+    SESSION_COOKIE_SECURE = _https
+    CSRF_COOKIE_SECURE = _https
+    if _https:
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+        SECURE_HSTS_SECONDS = 31536000  # 1 year
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
-    # Security Headers (safe for HTTP)
+    # Security Headers (safe for both HTTP and HTTPS)
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
 
@@ -501,9 +518,12 @@ if not DEBUG:
     CSRF_COOKIE_HTTPONLY = True
 
 # =============================================================================
-# Load development settings if available
+# Load local developer overrides (only when USE_LOCAL_SETTINGS=True in .env)
+# settings_dev.py is for bare-metal dev without Docker; when using Docker + .env
+# this block is intentionally skipped to avoid overriding the postgres config.
 # =============================================================================
-try:
-    from .settings_dev import *
-except ImportError:
-    pass
+if os.environ.get('USE_LOCAL_SETTINGS') == 'True':
+    try:
+        from .settings_dev import *
+    except ImportError:
+        pass

@@ -1,3 +1,4 @@
+from django.contrib.auth.password_validation import validate_password as django_validate_password
 from rest_framework import serializers
 from users.models import User
 
@@ -56,6 +57,11 @@ class AdminUserCreateSerializer(serializers.ModelSerializer):
             })
         return data
     
+    def validate_password(self, value):
+        """Enforce Django password policy for admin accounts"""
+        django_validate_password(value)
+        return value
+
     def create(self, validated_data):
         password = validated_data.pop('password')
         user = User(**validated_data)
@@ -84,15 +90,21 @@ class AdminUserUpdateSerializer(serializers.ModelSerializer):
             'position',
         ]
     
+    def validate_password(self, value):
+        """Enforce Django password policy when updating admin password"""
+        if value:
+            django_validate_password(value)
+        return value
+
     def update(self, instance, validated_data):
         password = validated_data.pop('password', None)
-        
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        
+
         if password:
             instance.set_password(password)
-        
+
         instance.save()
         return instance
 

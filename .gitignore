@@ -33,6 +33,10 @@ backend/venv
 /frontend/docs
 /docs
 CLAUDE*
+SECURITY_AUDIT*
+# Docker dev overrides (local only)
+docker-compose.override.yml
+todo*
 # Security - Sensitive Files
 *.pem
 *.key
@@ -56,3 +60,5 @@ deploy/certificates/*
 # Local Netlify folder
 .netlify
 
+
+SERVER_UPDATE*

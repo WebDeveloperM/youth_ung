@@ -23,9 +23,12 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+# Django admin is on a non-default path to reduce automated scanning/attacks (M-6 security fix)
+ADMIN_PATH = settings.ADMIN_URL_PATH if hasattr(settings, 'ADMIN_URL_PATH') else 'ung-platform-admin'
+
 urlpatterns = [
-    path('admin/analytics/', include('analytics.urls')),
-    path('admin/', admin.site.urls),
+    path(f'{ADMIN_PATH}/analytics/', include('analytics.urls')),
+    path(f'{ADMIN_PATH}/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
     # path('bot/', include(('bot.urls', 'bot'))),
@@ -63,9 +66,12 @@ urlpatterns = [
             ])),
         ])),
     ])),
-    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]
 
 if settings.DEBUG:
+    # API docs only available in development — never expose in production
+    urlpatterns += [
+        path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+        path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    ]
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

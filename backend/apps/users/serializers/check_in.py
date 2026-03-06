@@ -14,15 +14,6 @@ class CheckInSerializer(BaseSerializer):
         phone = attrs.get("phone")
         code = attrs.get("code")
 
-        if phone == '+998999999999' and code == '999999':
-            # TODO: After testing by Apple. Remove this logic!
-            fake_user = User.objects.filter(phone=phone).first()
-            fake_user.is_active = True
-            fake_user.confirmation_code = None
-            fake_user.save()
-            attrs['user'] = fake_user
-            return attrs
-
         user = User.objects.prefetch_related('chats').filter(phone=phone).first()
 
         if not user:

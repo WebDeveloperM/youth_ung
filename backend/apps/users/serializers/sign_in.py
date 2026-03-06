@@ -57,8 +57,6 @@ class SignInSerializer(serializers.Serializer):
                 'phone': user.phone,
                 'role': user.role,
                 'avatar': user.avatar.url if user.avatar else None,
-                'is_superuser': user.is_superuser,
-                'is_staff': user.is_staff,
                 'allowed_menus': user.allowed_menus if hasattr(user, 'allowed_menus') else [],
             },
             'message': 'Вход выполнен успешно!'

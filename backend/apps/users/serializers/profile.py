@@ -1,3 +1,4 @@
+from django.contrib.auth.password_validation import validate_password as django_validate_password
 from rest_framework import serializers
 from users.models import User
 from organisation.models import Organisation
@@ -79,11 +80,11 @@ class ProfileSerializer(serializers.ModelSerializer):
                     'confirm_password': 'Новый пароль и подтверждение не совпадают.'
                 })
             
-            # Проверяем минимальную длину
-            if len(new_password) < 6:
-                raise serializers.ValidationError({
-                    'new_password': 'Пароль должен содержать минимум 6 символов.'
-                })
+            # Проверяем силу пароля по Django-правилам (min 12 chars, not common, etc.)
+            try:
+                django_validate_password(new_password, user=self.instance)
+            except Exception as e:
+                raise serializers.ValidationError({'new_password': list(e.messages)})
         
         return data
     

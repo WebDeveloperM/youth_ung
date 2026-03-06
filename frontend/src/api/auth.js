@@ -66,9 +66,6 @@ export const authAPI = {
 				data: response.data,
 			}
 		} catch (error) {
-			console.error('❌ Sign up error:', error)
-			console.error('❌ Error response:', error.response)
-			console.error('❌ Error message:', error.message)
 			return {
 				success: false,
 				error: error.response?.data || { message: 'Ошибка при регистрации' },
@@ -100,7 +97,6 @@ export const authAPI = {
 				data: response.data,
 			}
 		} catch (error) {
-			console.error('Sign in error:', error)
 			return {
 				success: false,
 				error: error.response?.data || { message: 'Ошибка при входе' },
@@ -149,7 +145,6 @@ export const authAPI = {
 				data: response.data,
 			}
 		} catch (error) {
-			console.error('Get profile error:', error)
 			return {
 				success: false,
 				error: error.response?.data || { message: 'Ошибка при загрузке профиля' },
@@ -177,7 +172,6 @@ export const authAPI = {
 				data: response.data,
 			}
 		} catch (error) {
-			console.error('Update profile error:', error)
 			return {
 				success: false,
 				error: error.response?.data || { message: 'Ошибка при обновлении профиля' },
@@ -209,7 +203,6 @@ export const authAPI = {
 				data: response.data,
 			}
 		} catch (error) {
-			console.error('Upload avatar error:', error)
 			return {
 				success: false,
 				error: error.response?.data || { message: 'Ошибка при загрузке аватара' },
@@ -234,7 +227,6 @@ export const authAPI = {
 				data: response.data,
 			}
 		} catch (error) {
-			console.error('Delete avatar error:', error)
 			return {
 				success: false,
 				error: error.response?.data || { message: 'Ошибка при удалении аватара' },

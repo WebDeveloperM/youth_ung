@@ -10,15 +10,21 @@ RUN apt-get update && apt-get install -y \
     default-libmysqlclient-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Talablar faylini qo‘shish va pip o‘rnatish
+# Install dependencies first (layer cache)
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Django loyihasini qo‘shish
+# Copy project
 COPY . .
 
-# Portni ochish
+# Create a non-root user and switch to it (L-2 security fix)
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser \
+    && chown -R appuser:appgroup /app
+USER appuser
+
+# Expose port
 EXPOSE 8000
 
-# Django serverini ishga tushirish
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Use gunicorn for production (L-1 security fix)
+# For development, override with: command: python manage.py runserver 0.0.0.0:8000
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "4", "--timeout", "120", "--access-logfile", "-", "--error-logfile", "-"]
