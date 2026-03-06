@@ -18,34 +18,24 @@ const Administrators = () => {
   const loadAdmins = async () => {
     try {
       setLoading(true);
-      console.log('🔄 Загрузка администраторов...');
       const data = await adminsAPI.getAll();
-      console.log('📦 Получены данные администраторов:', data);
-      console.log('📊 Тип данных:', Array.isArray(data) ? 'массив' : 'объект', 'Длина:', Array.isArray(data) ? data.length : 'N/A');
-      
-      // Убедимся что data это массив
       const adminsArray = Array.isArray(data) ? data : [];
-      console.log('✅ Администраторов загружено:', adminsArray.length);
       setAdmins(adminsArray);
     } catch (error: any) {
-      console.error('❌ Ошибка загрузки администраторов:', error);
-      console.error('❌ Детали:', error.response?.data);
-      toast.error('Администраторларни юклашда хатолик!');
-      setAdmins([]); // Устанавливаем пустой массив при ошибке
+      toast.error('Administratorlarni yuklashda xatolik!');
+      setAdmins([]);
     } finally {
       setLoading(false);
     }
   };
 
-  // Загружаем текущего пользователя
   useEffect(() => {
     const loadCurrentUser = async () => {
       try {
         const user = await authAPI.getMe();
-        console.log('👤 Текущий пользователь:', user);
         setCurrentUser(user);
       } catch (error) {
-        console.error('❌ Ошибка загрузки пользователя:', error);
+        // silent
       }
     };
     loadCurrentUser();
@@ -56,18 +46,17 @@ const Administrators = () => {
   }, [refreshKey]);
 
   const handleDelete = async (id: number) => {
-    if (!window.confirm('Администраторни деактивация қилишга ишончингиз комилми?')) {
+    if (!window.confirm('Administratorni deaktivatsiya qilishga ishonchingiz komilmi?')) {
       return;
     }
 
-    const loadingToast = toast.loading('Деактивация қилинмоқда...');
+    const loadingToast = toast.loading('Deaktivatsiya qilinmoqda...');
     try {
       await adminsAPI.delete(id);
-      toast.success('Администратор муваффақиятли деактивация қилинди!', { id: loadingToast });
+      toast.success('Administrator muvaffaqiyatli deaktivatsiya qilindi!', { id: loadingToast });
       setRefreshKey(prev => prev + 1);
     } catch (error: any) {
-      console.error('Ошибка при удалении администратора:', error);
-      toast.error(`Хатолик: ${error.response?.data?.error || error.message}`, { id: loadingToast });
+      toast.error(`Xatolik: ${error.response?.data?.error || error.message}`, { id: loadingToast });
     }
   };
 
@@ -92,9 +81,9 @@ const Administrators = () => {
 
   const getRoleLabel = (role: string) => {
     const labels = {
-      Admin: 'Администратор',
-      Moderator: 'Модератор',
-      Coordinator: 'Координатор',
+      Admin: 'Administrator',
+      Moderator: 'Moderator',
+      Coordinator: 'Koordinator',
     };
     return labels[role as keyof typeof labels] || role;
   };
@@ -102,7 +91,7 @@ const Administrators = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Загрузка...</div>
+        <div className="text-xl">Yuklanmoqda...</div>
       </div>
     );
   }
@@ -113,13 +102,12 @@ const Administrators = () => {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Администраторы
+            Administratorlar
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-2">
-            Управление администраторами и их правами доступа
+            Administratorlar va ularning kirish huquqlarini boshqarish
           </p>
         </div>
-        {/* Кнопка "Добавить" доступна только для Admin */}
         {currentUser?.role === 'Admin' && (
           <button
             onClick={() => {
@@ -129,7 +117,7 @@ const Administrators = () => {
             className="flex items-center gap-2 px-4 py-2 bg-linear-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg"
           >
             <Plus size={20} />
-            Добавить администратора
+            Administrator qo'shish
           </button>
         )}
       </div>
@@ -139,7 +127,7 @@ const Administrators = () => {
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Всего</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Jami</p>
               <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">
                 {Array.isArray(admins) ? admins.length : 0}
               </p>
@@ -151,7 +139,7 @@ const Administrators = () => {
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Активные</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Faol</p>
               <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-1">
                 {Array.isArray(admins) ? admins.filter(a => a.is_active).length : 0}
               </p>
@@ -163,7 +151,7 @@ const Administrators = () => {
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-md">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">Неактивные</p>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">Faol emas</p>
               <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-1">
                 {Array.isArray(admins) ? admins.filter(a => !a.is_active).length : 0}
               </p>
@@ -179,7 +167,7 @@ const Administrators = () => {
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
-            placeholder="Администратор қидириш..."
+            placeholder="Administrator qidirish..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
@@ -197,26 +185,26 @@ const Administrators = () => {
                   ID
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Имя
+                  Ism
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Роль
+                  Rol
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Доступ к меню
+                  Menyu kirish
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Статус
+                  Holat
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Дата создания
+                  Yaratilgan sana
                 </th>
                 {currentUser?.role === 'Admin' && (
                   <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                    Действия
+                    Amallar
                   </th>
                 )}
               </tr>
@@ -225,7 +213,7 @@ const Administrators = () => {
               {filteredAdmins.length === 0 ? (
                 <tr>
                   <td colSpan={currentUser?.role === 'Admin' ? 8 : 7} className="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
-                    {searchTerm ? 'Администратор топилмади' : 'Администраторлар йўқ'}
+                    {searchTerm ? 'Administrator topilmadi' : 'Administratorlar yo\'q'}
                   </td>
                 </tr>
               ) : (
@@ -254,27 +242,31 @@ const Administrators = () => {
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
                     <div className="max-w-xs">
-                      {admin.role === 'Coordinator' ? (
+                      {admin.role === 'Admin' ? (
+                        <span className="text-indigo-600 dark:text-indigo-400">
+                          To'liq kirish
+                        </span>
+                      ) : admin.role === 'Coordinator' ? (
                         <span className="text-green-600 dark:text-green-400">
-                          Организация #{admin.organization || 'N/A'}
+                          Tashkilot #{admin.organization || 'N/A'}
                         </span>
                       ) : admin.allowed_menus && admin.allowed_menus.length > 0 ? (
                         <span className="text-gray-600 dark:text-gray-400">
-                          {admin.allowed_menus.length} меню
+                          {admin.allowed_menus.length} ta menyu
                         </span>
                       ) : (
-                        <span className="text-red-600 dark:text-red-400">Нет доступа</span>
+                        <span className="text-red-600 dark:text-red-400">Kirish yo'q</span>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {admin.is_active ? (
                       <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
-                        Активен
+                        Faol
                       </span>
                     ) : (
                       <span className="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                        Неактивен
+                        Faol emas
                       </span>
                     )}
                   </td>
@@ -286,15 +278,14 @@ const Administrators = () => {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={async () => {
-                            const loadingToast = toast.loading('Администратор юкланмоқда...');
+                            const loadingToast = toast.loading('Administrator yuklanmoqda...');
                             try {
                               const fullAdmin = await adminsAPI.getOne(admin.id);
                               setEditingAdmin(fullAdmin);
                               setIsModalOpen(true);
                               toast.dismiss(loadingToast);
                             } catch (error: any) {
-                              console.error('Ошибка загрузки администратора:', error);
-                              toast.error('Администраторни юклашда хатолик!', { id: loadingToast });
+                              toast.error('Administratorni yuklashda xatolik!', { id: loadingToast });
                             }
                           }}
                           className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300"
@@ -336,5 +327,3 @@ const Administrators = () => {
 };
 
 export default Administrators;
-
-
